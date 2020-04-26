@@ -1,0 +1,6 @@
+include ':core'
+include ':discovery'
+include ':resource-server'
+include ':admin-panel'
+include ':authentication'
+include ':gateway'

@@ -1,0 +1,9 @@
+FROM openjdk:11-alpine
+COPY ./build/libs/resource-server-0.0.1.jar /usr/app/
+WORKDIR /usr/app
+ARG gateway_host
+ARG gateway_port
+ENV GATEWAY_HOST=${gateway_host}
+ENV GATEWAY_PORT=${gateway_port}
+EXPOSE 8092
+ENTRYPOINT ["java", "-jar", "resource-server-0.0.1.jar"]
