@@ -1,0 +1,12 @@
+FROM openjdk:11-alpine
+COPY ./build/libs/gateway-0.0.1.jar /usr/app/
+WORKDIR /usr/app
+
+ENV GATEWAY_SERVICE_PORT=8080
+ENV GATEWAY_SERVICE_ADDRESS=localhost
+
+ENV DISCOVERY_SERVICE_ADDRESS=localhost
+ENV DISCOVERY_SERVICE_PORT=8091
+
+EXPOSE ${SERVICE_PORT}
+ENTRYPOINT ["java", "-jar", "gateway-0.0.1.jar"]
