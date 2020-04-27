@@ -2,8 +2,8 @@ FROM openjdk:11-alpine
 COPY ./build/libs/discovery-0.0.1.jar /usr/app/
 WORKDIR /usr/app
 
-ENV DISCOVERY_SERVICE_ADDRESS=localhost
-ENV DISCOVERY_SERVICE_PORT=8091
+ENV DISCOVERY_SERVICE_ADDRESS host.docker.internal
+ENV DISCOVERY_SERVICE_PORT 8090
 
-EXPOSE ${SERVICE_PORT}
+EXPOSE ${DISCOVERY_SERVICE_PORT}
 ENTRYPOINT ["java", "-jar", "discovery-0.0.1.jar"]

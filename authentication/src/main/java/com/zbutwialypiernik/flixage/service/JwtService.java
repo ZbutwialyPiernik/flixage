@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.time.Clock;
 import java.util.Date;
 
 @Service
@@ -29,10 +30,14 @@ public class JwtService {
     private final TokenRepository tokenRepository;
     private final UserService userService;
 
+    private final Clock clock;
+
     @Autowired
     public JwtService(TokenRepository tokenRepository,
                       UserService userService,
-                      JwtConfig config) {
+                      JwtConfig config,
+                      Clock clock) {
+        this.clock = clock;
         this.config = config;
         this.tokenRepository = tokenRepository;
         this.userService = userService;
@@ -59,7 +64,7 @@ public class JwtService {
     public AuthenticationResponse regenerateAuthentication(String refreshToken, String expiredJwt) {
         RefreshToken session = tokenRepository.findById(refreshToken).orElseThrow(() -> new AuthenticationException("Invalid Refresh Token"));
 
-        if (session.isExpired()) {
+        if (session.isExpired(clock)) {
             throw new AuthenticationException("Refresh token is expired");
         }
 
