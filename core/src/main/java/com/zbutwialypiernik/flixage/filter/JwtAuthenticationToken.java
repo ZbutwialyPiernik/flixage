@@ -16,18 +16,15 @@ public class JwtAuthenticationToken implements Authentication {
 
     private final JwtUserPrincipal principal;
 
-    private final Role role;
-
     private boolean authenticated = true;
 
     public JwtAuthenticationToken(String id, String name, Role role) {
-        this.principal = new JwtUserPrincipal(id, name);
-        this.role = role;
+        this.principal = new JwtUserPrincipal(id, name, role);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(role.toAuthority());
+        return Collections.singleton(principal.getRole().toAuthority());
     }
 
     @Override

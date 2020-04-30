@@ -1,4 +1,4 @@
-FROM openjdk:9-alpine
+FROM openjdk:12-alpine
 COPY ./build/libs/resource-server-0.0.1.jar /usr/app/
 WORKDIR /usr/app
 
@@ -10,6 +10,10 @@ ENV GATEWAY_SERVICE_PORT 8080
 
 ENV DISCOVERY_SERVICE_ADDRESS host.docker.internal
 ENV DISCOVERY_SERVICE_PORT 8090
+
+ENV DATABASE_USERNAME root
+ENV DATABASE_PASSWORD password
+ENV DATABASE_URL jdbc:mysql://host.docker.internal:3306/flixage
 
 EXPOSE ${RESOURCE_SERVICE_PORT}
 

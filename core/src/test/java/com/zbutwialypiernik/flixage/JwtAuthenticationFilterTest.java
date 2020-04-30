@@ -83,7 +83,7 @@ public class JwtAuthenticationFilterTest {
         if (expectedAuthentication != null) {
             Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_ID)).thenReturn(expectedAuthentication.getPrincipal().getId());
             Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_USERNAME)).thenReturn(expectedAuthentication.getPrincipal().getName());
-            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_ROLE)).thenReturn(expectedAuthentication.getRole());
+            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_ROLE)).thenReturn(expectedAuthentication.getPrincipal().getRole());
         }
 
         // Call tested method

@@ -89,7 +89,6 @@ project(':core') {
         implementation "com.github.paulcwarren:spring-content-fs-boot-starter:1.0.0.M9"
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
 
-
         // Database
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
@@ -106,16 +105,14 @@ project(':core') {
 }
 
 project(':gateway') {
-    apply plugin: 'war'
-
     dependencies {
         implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-        providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+        runtimeOnly 'mysql:mysql-connector-java'
 
         // Database
-        runtimeOnly 'com.h2database:h2'
+        testRuntimeOnly 'com.h2database:h2'
     }
 }
 
@@ -125,7 +122,9 @@ project(':discovery') {
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
         implementation 'org.springframework.boot:spring-boot-starter-security'
 
-        runtimeOnly 'com.h2database:h2'
+        runtimeOnly 'mysql:mysql-connector-java'
+
+        testRuntimeOnly 'com.h2database:h2'
     }
 }
 
@@ -151,11 +150,14 @@ project(':authentication') {
 
         // Database
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-        runtimeOnly 'com.h2database:h2'
+
+        runtimeOnly 'mysql:mysql-connector-java'
+
+        testRuntimeOnly 'com.h2database:h2'
     }
 }
 
-project(':resource-server') {
+project(':resource') {
 
     dependencies {
         implementation project(':core')
@@ -176,10 +178,10 @@ project(':resource-server') {
 
         implementation "org.hibernate:hibernate-validator:6.1.2.Final"
 
-        //providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+        runtimeOnly 'mysql:mysql-connector-java'
 
         // Database
-        runtimeOnly 'com.h2database:h2'
+        testRuntimeOnly 'com.h2database:h2'
     }
 }
 

@@ -18,7 +18,6 @@ import java.io.*;
 import java.time.Clock;
 
 @Log4j2
-@Service
 public class QueryableService<T extends Queryable> extends CrudService<T> {
 
     private final QueryableRepository<T> repository;

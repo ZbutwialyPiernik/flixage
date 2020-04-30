@@ -14,6 +14,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 public class CrudServiceTest {
@@ -60,7 +61,7 @@ public class CrudServiceTest {
 
     @Test
     public void entity_does_get_updated_when_entity_exists_in_database() {
-        LocalDateTime creationTime = LocalDateTime.now(clock).minus(5, ChronoUnit.MINUTES);
+        LocalDateTime creationTime = LocalDateTime.now(clock).minus(new Random().nextInt(), ChronoUnit.MINUTES);
         LocalDateTime updateTime = LocalDateTime.now(clock);
 
         String entityId = UUID.randomUUID().toString();
@@ -86,7 +87,7 @@ public class CrudServiceTest {
 
     @Test
     public void entity_does_not_get_updated_when_entity_does_not_exists_in_database() {
-        LocalDateTime creationTime = LocalDateTime.now(clock).minus(5, ChronoUnit.MINUTES);
+        LocalDateTime creationTime = LocalDateTime.now(clock).minus(new Random().nextInt(), ChronoUnit.MINUTES);
 
         String entityId = UUID.randomUUID().toString();
         entity.setId(entityId);
@@ -108,7 +109,7 @@ public class CrudServiceTest {
     @Test
     public void entity_does_not_get_updated_when_entity_has_other_creation_time_than_existing_in_database() {
         LocalDateTime creationTime = LocalDateTime.now(clock);
-        LocalDateTime newCreationTime = LocalDateTime.now(clock);
+        LocalDateTime newCreationTime = LocalDateTime.now(clock).plus(new Random().nextInt(), ChronoUnit.MINUTES);
 
         String entityId = UUID.randomUUID().toString();
 
@@ -121,14 +122,14 @@ public class CrudServiceTest {
         entity.setCreationTime(newCreationTime);
         entity.setLastUpdateTime(creationTime);
 
-        Mockito.when(repository.findById(entityId)).thenReturn(Optional.empty());
+        Mockito.when(repository.findById(entityId)).thenReturn(Optional.of(oldEntity));
 
         Assertions.assertThrows(IllegalStateException.class,
                 () -> service.update(entity));
 
         // Entity shouldn't get updated
         Mockito.verify(repository, Mockito.never()).save(Mockito.any());
-        Assertions.assertTrue(entity.getCreationTime().isEqual(creationTime));
+        Assertions.assertTrue(entity.getCreationTime().isEqual(newCreationTime));
         Assertions.assertTrue(entity.getLastUpdateTime().isEqual(creationTime));
     }
 

@@ -19,6 +19,7 @@ public abstract class Queryable extends BaseEntity {
     private String name;
 
     @ContentId
+    @Column(nullable = false)
     private String thumbnailId;
 
 }
