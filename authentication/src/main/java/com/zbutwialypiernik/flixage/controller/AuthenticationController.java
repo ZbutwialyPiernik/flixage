@@ -1,6 +1,6 @@
 package com.zbutwialypiernik.flixage.controller;
 
-import com.zbutwialypiernik.flixage.AuthenticationResponse;
+import com.zbutwialypiernik.flixage.dto.AuthenticationResponse;
 import com.zbutwialypiernik.flixage.service.JwtService;
 import com.zbutwialypiernik.flixage.validator.password.ValidPassword;
 import lombok.Value;
@@ -32,11 +32,6 @@ public class AuthenticationController {
     @PostMapping("/invalidate")
     public void invalidateToken(@Valid @RequestBody InvalidateTokenRequest request) {
         jwtService.invalidateToken(request.getRefreshToken());
-    }
-
-    @GetMapping("/public")
-    public String getPublicKey() {
-        return jwtService.getPublicKey();
     }
 
     @Value

@@ -1,4 +1,4 @@
-version: '3.3'
+version: '2.3'
 
 services:
   gateway:
@@ -8,16 +8,16 @@ services:
     build:
       context: gateway
       dockerfile: dockerfile
-    #ports:
-      #- "8080:8080"
+    ports:
+      - "8080:8080"
   discovery:
     depends_on:
       - database
     build:
       context: discovery
       dockerfile: dockerfile
-    #ports:
-    #  - "8090:8090"
+    ports:
+      - "8090:8090"
   authentication:
     depends_on:
       - database
@@ -25,8 +25,8 @@ services:
     build:
       context: authentication
       dockerfile: dockerfile
-    #ports:
-      #- "8091:8091"
+    ports:
+      - "8091:8091"
   resource:
     depends_on:
       - database
@@ -34,16 +34,15 @@ services:
     build:
       context: resource
       dockerfile: dockerfile
-    #ports:
-      #- "8092:8092"
+    ports:
+      - "8092:8092"
 
 # External Dependencies
   database:
     image: mysql
     ports:
       - "3306:3306"
-    restart: always
     environment:
       MYSQL_DATABASE: flixage
       MYSQL_USER: admin
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: password

@@ -46,7 +46,7 @@ public class User extends Queryable implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(role.toString()));
+        return Collections.singleton(role.toAuthority());
     }
 
     @Override

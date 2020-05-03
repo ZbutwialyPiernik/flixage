@@ -11,12 +11,12 @@ public class RouteConfig {
     @Bean
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route(r -> r.path("/authentication/**")
-                    .uri("lb://authentication-server/authentication")
-                    .id("authentication-server"))
-                .route(r -> r.path("/api/**")
-                     .uri("lb://resource-server/")
-                     .id("resource-server"))
+                .route(r -> r.path("/api/authentication/**")
+                    .uri("lb://authentication/api/authentication")
+                    .id("authentication"))
+                .route(r -> r.path("/api/**").and().path("/api/authentication/**").negate()
+                     .uri("lb://resource/api")
+                     .id("resource"))
                 .build();
     }
 

@@ -47,31 +47,6 @@ public class GlobalSecurityConfiguration {
                 ));
     }
 
-    // TODO: temp implementation, /public endpoint will be replaced with Spring Cloud Vault, it will prevent hardcoding secrets in authentication microservice.
-    @Lazy
-    @Bean("public-parser")
-    public JwtParser publicParser(RestTemplate restTemplate, DiscoveryClient discoveryClient) {
-        // Get random authentication microservice instance and gain public key from API.
-        List<ServiceInstance> instances = discoveryClient.getInstances("authentication-server");
-
-        if (instances.isEmpty()) {
-            throw new IllegalStateException("Authentication server not found!");
-        }
-
-        ServiceInstance instanceInfo = instances.get(new Random().nextInt(instances.size()));
-
-        String endpoint = "http://" + instanceInfo.getHost() + ":" + instanceInfo.getPort() + "/authentication/public";
-        ResponseEntity<String> response = restTemplate.getForEntity(endpoint, String.class);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new IllegalStateException("Public key not found");
-        }
-
-        return Jwts.parserBuilder()
-                .setSigningKey(KeyUtil.getRsaPublicKey(response.getBody()))
-                .build();
-    }
-
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

@@ -1,7 +1,12 @@
 package com.zbutwialypiernik.flixage.dto.playlist;
 
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
+import lombok.Data;
+import lombok.Value;
 
-public class PlaylistRequest extends QueryableResponse {
+@Data
+public class PlaylistRequest {
+
+    private String name;
 
 }

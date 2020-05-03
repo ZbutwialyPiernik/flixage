@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage;
+package com.zbutwialypiernik.flixage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

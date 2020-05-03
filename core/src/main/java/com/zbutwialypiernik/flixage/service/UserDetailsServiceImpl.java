@@ -19,11 +19,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetailsServiceImpl(UserService userService) {
         this.userService = userService;
 
+        if (userService.isUsernameTaken("admin")) {
+            return;
+        }
+
         User admin = new User();
         admin.setUsername("admin");
         admin.setName("John Wick");
         admin.setPassword("Passw0rd");
         admin.setRole(Role.ADMIN);
+        userService.create(admin);
 
         for (int i = 0; i < 100; i++) {
             int leftLimit = 97; // letter 'a'
@@ -43,8 +48,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             newUser.setPassword("Passw0rd");
             userService.create(newUser);
         }
-
-        userService.create(admin);
     }
 
     @Override

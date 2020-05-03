@@ -5,7 +5,7 @@ import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.exception.ResourceForbiddenException;
-import com.zbutwialypiernik.flixage.filter.JwtUserPrincipal;
+import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.QueryableService;
 import ma.glasnost.orika.MapperFacade;
@@ -40,21 +40,26 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @PostMapping
-    public void create(@Valid PlaylistRequest request) {
+    public PlaylistResponse create(@Valid @RequestBody PlaylistRequest request) {
         Playlist playlist = mapper.map(request, Playlist.class);
 
         service.create(playlist);
+
+        return toResponse(playlist);
     }
 
     @PutMapping("/{id}")
-    public void updatePlaylist(String id, @Valid PlaylistRequest request) {
-        Playlist playlist = mapper.map(request, Playlist.class);
+    public PlaylistResponse updatePlaylist(@PathVariable String id, @Valid @RequestBody PlaylistRequest request) {
+        Playlist playlist = service.findById(id);
+        mapper.map(request, playlist);
 
         service.update(playlist);
+
+        return toResponse(playlist);
     }
 
     @DeleteMapping("/{id}")
-    public void deletePlaylistById(String id, @AuthenticationPrincipal JwtUserPrincipal principal) {
+    public void deletePlaylistById(@PathVariable String id, @AuthenticationPrincipal JwtAuthenticationToken principal) {
         Playlist playlist = service.findById(id);
 
         if (isNotOwner(principal, playlist)) {
@@ -65,7 +70,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @PostMapping("/{id}/thumbnail")
-    public ResponseEntity<String> uploadThumbnail(String id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal JwtUserPrincipal principal) {
+    public ResponseEntity<String> uploadThumbnail(@PathVariable String id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal JwtAuthenticationToken principal) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest()
                     .body("File not included");
@@ -90,7 +95,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @PutMapping("/{id}/tracks")
-    public void addTracksToPlaylist(@PathVariable String id, @RequestBody AddTracksRequest addTracksRequest, @AuthenticationPrincipal JwtUserPrincipal principal) {
+    public void addTracksToPlaylist(@PathVariable String id, @RequestBody AddTracksRequest addTracksRequest, @AuthenticationPrincipal JwtAuthenticationToken principal) {
         Playlist playlist = service.findById(id);
 
         if (isNotOwner(principal, playlist)) {
@@ -100,7 +105,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
         service.addTrackToPlaylistByIds(playlist, addTracksRequest.getIds());
     }
 
-    public boolean isNotOwner(JwtUserPrincipal principal, Playlist playlist) {
+    public boolean isNotOwner(JwtAuthenticationToken principal, Playlist playlist) {
         // Service should throw exception if playlist is null, we check for null only to be sure.
         return playlist == null || !playlist.getOwner().getId().equals(principal.getId());
     }

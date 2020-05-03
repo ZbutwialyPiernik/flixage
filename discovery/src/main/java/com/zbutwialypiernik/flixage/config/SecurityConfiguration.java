@@ -20,6 +20,9 @@ import java.util.Collections;
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private UserDetailsManager userDetailsManager;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
@@ -27,11 +30,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        UserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
-
-        User user = new User("admin", passwordEncoder().encode("admin"), Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        userDetailsManager.createUser(user);
-
         auth.userDetailsService(userDetailsManager)
                 .passwordEncoder(passwordEncoder());
     }

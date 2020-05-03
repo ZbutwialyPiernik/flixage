@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-public class RegisterController {
+public class    RegisterController {
 
     private final UserService userService;
 

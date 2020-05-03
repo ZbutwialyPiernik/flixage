@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@javax.persistence.Entity
+@Entity
 public class Track extends Queryable {
 
     @Column

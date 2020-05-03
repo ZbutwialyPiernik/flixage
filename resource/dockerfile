@@ -1,20 +1,17 @@
 FROM openjdk:12-alpine
-COPY ./build/libs/resource-server-0.0.1.jar /usr/app/
+COPY ./build/libs/resource-0.0.1.jar /usr/app/
 WORKDIR /usr/app
 
-ENV RESOURCE_SERVICE_ADDRESS host.docker.internal
 ENV RESOURCE_SERVICE_PORT 8092
 
-ENV GATEWAY_SERVICE_ADDRESS host.docker.internal
-ENV GATEWAY_SERVICE_PORT 8080
+ENV GATEWAY_SERVICE_URL host.docker.internal:8080/api
 
-ENV DISCOVERY_SERVICE_ADDRESS host.docker.internal
-ENV DISCOVERY_SERVICE_PORT 8090
+ENV DISCOVERY_SERVICE_URL http://host.docker.internal:8090/eureka/
 
 ENV DATABASE_USERNAME root
 ENV DATABASE_PASSWORD password
 ENV DATABASE_URL jdbc:mysql://host.docker.internal:3306/flixage
 
-EXPOSE ${RESOURCE_SERVICE_PORT}
+ENV JWT_PUBLIC_KEY MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiC4e7rbNZa5xLwr5bGDxzpmmjoxPnGpqjtOxpPOQE+OWXIj7T7HYhgHX5Q5ZvCdf9tD0FBLwq3iR7dE4msrev0ENViQK5Ia/wtxKQp8p0tpgzollvThoRULdINZ7ApKDDwmfaEdvQG2VJFzT92kRT9zTPBUE5KlxVUuMBnTjYDAJdw2B/wFrEpr3wg0Frp7RxV4mqBEpUBqr1N68g2tISw6/QGYgBCbwNsjPURnUY/XpJUk7fIc77OWYjprM0MpWYWx5gs24w86TLm6xSgICh3a9D8DVDblHUC2VEAEn/C5DjBFs2NsUxIOanjkxWLHZUJgqcF1pQTxvmgyCY2xuCQIDAQAB
 
-ENTRYPOINT ["java", "-jar", "resource-server-0.0.1.jar"]
+ENTRYPOINT ["java", "-jar", "resource-0.0.1.jar"]

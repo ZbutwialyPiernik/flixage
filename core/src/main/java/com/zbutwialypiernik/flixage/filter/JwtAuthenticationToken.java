@@ -8,28 +8,29 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Collections;
 
 @Data
 public class JwtAuthenticationToken implements Authentication {
 
-    private final JwtUserPrincipal principal;
+    private final String id;
+
+    private final String username;
+
+    private final Role role;
 
     private boolean authenticated = true;
 
-    public JwtAuthenticationToken(String id, String name, Role role) {
-        this.principal = new JwtUserPrincipal(id, name, role);
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(principal.getRole().toAuthority());
+        return Collections.singleton(role.toAuthority());
     }
 
     @Override
     public String getName() {
-        return principal.getName();
+        return username;
     }
 
     @Override
@@ -40,6 +41,11 @@ public class JwtAuthenticationToken implements Authentication {
     @Override
     public Object getDetails() {
         return null;
+    }
+
+    @Override
+    public Object getPrincipal() {
+        return username;
     }
 
 }

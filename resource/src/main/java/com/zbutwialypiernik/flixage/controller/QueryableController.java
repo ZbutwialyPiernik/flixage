@@ -10,6 +10,7 @@ import com.zbutwialypiernik.flixage.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -39,12 +40,12 @@ public abstract class QueryableController<T extends Queryable, DTO extends Query
     }
 
     @GetMapping("/{id}")
-    public DTO getById(String id) {
+    public DTO getById(@PathVariable String id) {
         return toResponse(service.findById(id));
     }
 
     @GetMapping("/{id}/thumbnail")
-    public byte[] getThumbnail(String id) {
+    public byte[] getThumbnail(@PathVariable String id) {
         return service.getThumbnailById(id);
     }
 

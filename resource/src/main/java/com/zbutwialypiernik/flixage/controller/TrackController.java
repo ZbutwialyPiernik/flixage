@@ -7,18 +7,17 @@ import ma.glasnost.orika.MapperFacade;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.stream.IntStream;
+
 @RestController
 @RequestMapping("/tracks")
 public class TrackController extends QueryableController<Track, TrackResponse>{
-
-    private final TrackService trackService;
 
     private final MapperFacade mapper;
 
     public TrackController(TrackService trackService, MapperFacade mapper) {
         super(trackService);
         this.mapper = mapper;
-        this.trackService = trackService;
     }
 
     @Override

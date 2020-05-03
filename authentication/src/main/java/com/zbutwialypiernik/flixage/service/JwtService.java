@@ -1,6 +1,6 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.AuthenticationResponse;
+import com.zbutwialypiernik.flixage.dto.AuthenticationResponse;
 import com.zbutwialypiernik.flixage.config.JwtConfig;
 import com.zbutwialypiernik.flixage.entity.RefreshToken;
 import com.zbutwialypiernik.flixage.entity.User;
@@ -127,10 +127,6 @@ public class JwtService {
         tokenRepository.save(refreshToken);
 
         return refreshToken;
-    }
-
-    public String getPublicKey() {
-        return config.getPublicKey();
     }
 
 }

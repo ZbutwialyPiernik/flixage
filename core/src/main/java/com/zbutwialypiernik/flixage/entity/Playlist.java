@@ -12,9 +12,6 @@ import java.util.List;
 @Entity
 public class Playlist extends Queryable {
 
-    @Column
-    private String thumbnail;
-
     @OneToMany(cascade = CascadeType.ALL)
     private List<Track> tracks = new ArrayList<>();
 

@@ -18,7 +18,4 @@ public class Artist extends Queryable {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Track> singles = new ArrayList<>();
 
-    @Lob
-    private byte[] artistAvatar;
-
 }

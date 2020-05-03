@@ -3,7 +3,7 @@ package com.zbutwialypiernik.flixage.controller;
 import com.zbutwialypiernik.flixage.dto.UserResponse;
 import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.User;
-import com.zbutwialypiernik.flixage.filter.JwtUserPrincipal;
+import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.repository.ThumbnailStore;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.UserService;
@@ -32,8 +32,13 @@ public class UserController extends QueryableController<User, UserResponse> {
         this.userService = userService;
     }
 
+    @GetMapping("/me")
+    public UserResponse getCurrentUser(@AuthenticationPrincipal JwtAuthenticationToken principal) {
+        return toResponse(userService.findById(principal.getId()));
+    }
+
     @GetMapping("/me/playlists")
-    public List<Playlist> getCurrentUserPlaylist(@AuthenticationPrincipal JwtUserPrincipal principal) {
+    public List<Playlist> getCurrentUserPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal) {
         return playlistService.findByUserId(principal.getId());
     }
 
