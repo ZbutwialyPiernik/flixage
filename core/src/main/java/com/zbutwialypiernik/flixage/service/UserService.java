@@ -1,17 +1,21 @@
 package com.zbutwialypiernik.flixage.service;
 
+import com.zbutwialypiernik.flixage.entity.Thumbnail;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.repository.ThumbnailStore;
 import com.zbutwialypiernik.flixage.repository.UserRepository;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -22,12 +26,20 @@ public class UserService extends QueryableService<User> {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final ThumbnailStore store;
+
+    private final byte[] defaultThumbnail;
 
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder encoder, ThumbnailStore<User> store, Clock clock) {
+    public UserService(UserRepository repository, PasswordEncoder encoder, ThumbnailStore store, Clock clock) throws IOException {
         super(repository, store, clock);
         this.repository = repository;
         this.encoder = encoder;
+        this.store = store;
+
+        defaultThumbnail = new ClassPathResource("img/default_album_thumbnail.png")
+                .getInputStream()
+                .readAllBytes();
     }
 
     public Page<User> findByUsername(String query, int page, int size) {
@@ -44,7 +56,10 @@ public class UserService extends QueryableService<User> {
             throw new ConflictException("Username is already taken by other user");
         }
 
+        user.setThumbnail(new Thumbnail());
         user.setPassword(encoder.encode(user.getPassword()));
+
+        store.associate(user.getThumbnail(), defaultThumbnail);
 
         super.create(user);
     }

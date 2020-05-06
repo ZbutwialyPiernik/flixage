@@ -1,12 +1,16 @@
 package com.zbutwialypiernik.flixage.controller;
 
-import com.zbutwialypiernik.flixage.dto.AuthenticationResponse;
+import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationRequest;
+import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationResponse;
+import com.zbutwialypiernik.flixage.dto.authentication.RenewAuthenticationRequest;
 import com.zbutwialypiernik.flixage.service.JwtService;
 import com.zbutwialypiernik.flixage.validator.password.ValidPassword;
 import lombok.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @RestController
@@ -35,28 +39,9 @@ public class AuthenticationController {
     }
 
     @Value
-    private static class AuthenticationRequest {
-
-        @Size(min = 5, max = 32, message = "Length between 5-32")
-        String username;
-
-        @ValidPassword
-        String password;
-
-    }
-
-    @Value
-    private static class RenewAuthenticationRequest {
-
-        String refreshToken;
-
-        String accessToken;
-
-    }
-
-    @Value
     private static class InvalidateTokenRequest {
 
+        @NotNull
         String refreshToken;
 
     }

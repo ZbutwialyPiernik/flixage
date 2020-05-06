@@ -12,7 +12,7 @@ public class AlbumService extends QueryableService<Album> {
 
     private final AlbumRepository repository;
 
-    public AlbumService(AlbumRepository repository, ThumbnailStore<Album> store, Clock clock) {
+    public AlbumService(AlbumRepository repository, ThumbnailStore store, Clock clock) {
         super(repository, store, clock);
         this.repository = repository;
     }

@@ -3,11 +3,14 @@ package com.zbutwialypiernik.flixage.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.FORBIDDEN)
-public class ResourceForbiddenException extends RuntimeException {
+public class ResourceForbiddenException extends ApiException {
 
     public ResourceForbiddenException() {
-        super("Forbidden access");
+        super(HttpStatus.FORBIDDEN, "Forbidden access");
+    }
+
+    public ResourceForbiddenException(String message) {
+        super(HttpStatus.FORBIDDEN, message);
     }
 
 }

@@ -30,9 +30,9 @@ public class ListPanel<T> extends VerticalLayout {
         this.listBox = new ListBox<>();
 
         addButton = new Button(new Icon(VaadinIcon.PLUS), (event) -> formDialog.open());
-        removeButton = new Button(new Icon(VaadinIcon.MINUS), (event) -> {
-            deleteDialog.setEntity(listBox.getValue());
-        });
+        removeButton = new Button(new Icon(VaadinIcon.MINUS), (event) ->
+            deleteDialog.setEntity(listBox.getValue())
+        );
         removeButton.setEnabled(false);
 
 
@@ -40,10 +40,7 @@ public class ListPanel<T> extends VerticalLayout {
 
         });
 
-        listBox.addValueChangeListener((event) -> {
-            System.out.println(event.getValue());
-            removeButton.setEnabled(event.getValue() != null);
-        });
+        listBox.addValueChangeListener((event) -> removeButton.setEnabled(event.getValue() != null));
 
         HorizontalLayout buttonsLayout = new HorizontalLayout(addButton, removeButton);
         buttonsLayout.setWidthFull();

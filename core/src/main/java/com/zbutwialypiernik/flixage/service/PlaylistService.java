@@ -21,7 +21,7 @@ public class PlaylistService extends QueryableService<Playlist> {
     private final TrackService trackService;
 
     @Autowired
-    public PlaylistService(PlaylistRepository repository, TrackService trackService, ThumbnailStore<Playlist> store, Clock clock) {
+    public PlaylistService(PlaylistRepository repository, TrackService trackService, ThumbnailStore store, Clock clock) {
         super(repository, store, clock);
         this.playlistRepository = repository;
         this.trackService = trackService;

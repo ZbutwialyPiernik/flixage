@@ -3,11 +3,10 @@ package com.zbutwialypiernik.flixage.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-public class ResourceLoadingException extends RuntimeException {
+public class ResourceLoadingException extends ApiException {
 
     public ResourceLoadingException(String message) {
-        super(message);
+        super(HttpStatus.INTERNAL_SERVER_ERROR, message);
     }
 
 }

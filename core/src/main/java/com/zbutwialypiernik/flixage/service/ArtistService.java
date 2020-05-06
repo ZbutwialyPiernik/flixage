@@ -16,7 +16,7 @@ public class ArtistService extends QueryableService<Artist> {
 
     private final ArtistRepository repository;
 
-    public ArtistService(ArtistRepository repository, ThumbnailStore<Artist> store, Clock clock) {
+    public ArtistService(ArtistRepository repository, ThumbnailStore store, Clock clock) {
         super(repository, store, clock);
         this.repository = repository;
     }

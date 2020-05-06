@@ -2,6 +2,8 @@ package com.zbutwialypiernik.flixage.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.content.commons.annotations.ContentId;
+import org.springframework.content.commons.annotations.ContentLength;
 
 import javax.persistence.*;
 
@@ -18,5 +20,13 @@ public class Track extends Queryable {
 
     @ManyToOne
     private Artist artist;
+
+    @ContentId
+    @Column
+    private String fileId;
+
+    @ContentLength
+    @Column
+    private long fileSize;
 
 }

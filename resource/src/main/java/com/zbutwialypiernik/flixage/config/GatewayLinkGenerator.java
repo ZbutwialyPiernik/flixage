@@ -11,12 +11,17 @@ import org.springframework.context.annotation.PropertySource;
  * Config that is needed to dynamically create links to resources
  * Will be mostly used in links to thumbnails
  */
-
-@Getter
 @Configuration
-public class GatewayConfiguration {
+public class GatewayLinkGenerator {
 
-    @Value("${GATEWAY_SERVICE_URL}")
-    private String url;
+    private final String baseUrl;
+
+    public GatewayLinkGenerator(@Value("${GATEWAY_SERVICE_URL}") String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public String generateLink(String path) {
+        return baseUrl + path;
+    }
 
 }

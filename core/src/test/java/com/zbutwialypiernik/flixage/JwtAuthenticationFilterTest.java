@@ -81,9 +81,9 @@ public class JwtAuthenticationFilterTest {
         Mockito.when(jws.getBody()).thenReturn(claims);
 
         if (expectedAuthentication != null) {
-            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_ID)).thenReturn(expectedAuthentication.getPrincipal().getId());
-            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_USERNAME)).thenReturn(expectedAuthentication.getPrincipal().getName());
-            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_ROLE)).thenReturn(expectedAuthentication.getPrincipal().getRole());
+            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_ID)).thenReturn(expectedAuthentication.getId());
+            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_USERNAME)).thenReturn(expectedAuthentication.getName());
+            Mockito.when(claims.get(JwtAuthenticationFilter.CLAIM_ROLE)).thenReturn(expectedAuthentication.getRole());
         }
 
         // Call tested method
@@ -125,7 +125,6 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void when_token_is_valid_then_user_gets_authentication() throws ServletException, IOException {
         test(JwtAuthenticationFilter.TOKEN_HEADER,
                 JwtAuthenticationFilter.TOKEN_PREFIX + "eyJhbGciOiJQUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.hZnl5amPk_I3tb4O-Otci_5XZdVWhPlFyVRvcqSwnDo_srcysDvhhKOD01DigPK1lJvTSTolyUgKGtpLqMfRDXQlekRsF4XhAjYZTmcynf-C-6wO5EI4wYewLNKFGGJzHAknMgotJFjDi_NCVSjHsW3a10nTao1lB82FRS305T226Q0VqNVJVWhE4G0JQvi2TssRtCxYTqzXVt22iDKkXeZJARZ1paXHGV5Kd1CljcZtkNZYIGcwnj65gvuCwohbkIxAnhZMJXCLaVvHqv9l-AAUV7esZvkQR1IpwBAiDQJh4qxPjFGylyXrHMqh5NlT_pWL2ZoULWTg_TJjMO9TuQ",

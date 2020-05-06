@@ -1,6 +1,7 @@
 package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Queryable;
+import com.zbutwialypiernik.flixage.entity.Thumbnail;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceLoadingException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
@@ -21,14 +22,14 @@ import java.time.Clock;
 public class QueryableService<T extends Queryable> extends CrudService<T> {
 
     private final QueryableRepository<T> repository;
-    private final ThumbnailStore<T> store;
+    private final ThumbnailStore store;
 
     public static final String[] ACCEPTED_EXTENSIONS = {"jpg", "jpeg", "png"};
     public static final String[] ACCEPTED_MIME_TYPES =  {"images/jpeg", "png"};
 
     private static final String OUTPUT_FORMAT = "png";
 
-    public QueryableService(QueryableRepository<T> repository, ThumbnailStore<T> store, Clock clock) {
+    public QueryableService(QueryableRepository<T> repository, ThumbnailStore store, Clock clock) {
         super(repository, clock);
         this.repository = repository;
         this.store = store;
@@ -60,8 +61,12 @@ public class QueryableService<T extends Queryable> extends CrudService<T> {
     public void saveThumbnail(T t, File file) {
         transcodeToOutputFormat(file);
 
+        if (t.getThumbnail() == null) {
+            t.setThumbnail(new Thumbnail());
+        }
+
         try (InputStream inputStream = new FileInputStream(file)){
-            store.setContent(t, inputStream);
+            store.setContent(t.getThumbnail(), inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,20 +75,20 @@ public class QueryableService<T extends Queryable> extends CrudService<T> {
     }
 
     public void deleteThumbnail(T t) {
-        store.unsetContent(t);
+        store.unsetContent(t.getThumbnail());
         update(t);
     }
 
     public byte[] getThumbnailById(String id) {
         T t = findById(id);
 
-        Resource resource = store.getResource(t);
+        Resource resource = store.getResource(t.getThumbnail());
 
         if (!resource.exists()) {
             throw new ResourceNotFoundException();
         }
 
-        try (InputStream stream = store.getContent(t)) {
+        try (InputStream stream = store.getContent(t.getThumbnail())) {
             return stream.readAllBytes();
         } catch (IOException e) {
             log.error("Error during loading thumbnail: ", e);

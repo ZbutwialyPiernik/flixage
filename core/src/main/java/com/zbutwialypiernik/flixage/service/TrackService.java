@@ -11,7 +11,7 @@ import java.time.Clock;
 @Service
 public class TrackService extends QueryableService<Track> {
 
-    public TrackService(TrackRepository repository, ThumbnailStore<Track> store, Clock clock)  {
+    public TrackService(TrackRepository repository, ThumbnailStore store, Clock clock)  {
         super(repository, store, clock);
     }
 

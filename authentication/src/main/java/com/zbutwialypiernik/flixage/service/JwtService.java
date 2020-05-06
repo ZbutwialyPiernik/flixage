@@ -1,6 +1,6 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.dto.AuthenticationResponse;
+import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationResponse;
 import com.zbutwialypiernik.flixage.config.JwtConfig;
 import com.zbutwialypiernik.flixage.entity.RefreshToken;
 import com.zbutwialypiernik.flixage.entity.User;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -61,7 +62,7 @@ public class JwtService {
         return new AuthenticationResponse(createAccessToken(user), refreshToken.getId(), config.getAccessTokenExpireTime());
     }
 
-    public AuthenticationResponse regenerateAuthentication(String refreshToken, String expiredJwt) {
+    public AuthenticationResponse regenerateAuthentication(String refreshToken, String expiredAccessToken) {
         RefreshToken session = tokenRepository.findById(refreshToken).orElseThrow(() -> new AuthenticationException("Invalid Refresh Token"));
 
         if (session.isExpired(clock)) {
@@ -69,7 +70,7 @@ public class JwtService {
         }
 
         try {
-            String username = parser.parseClaimsJwt(expiredJwt).getBody().getSubject();
+            String username = parser.parseClaimsJws(expiredAccessToken).getBody().getSubject();
 
             if (!username.equals(session.getUser().getUsername())) {
                 throw new AuthenticationException("Invalid access token");
@@ -103,8 +104,8 @@ public class JwtService {
     }
 
     private String createAccessToken(User user) {
-        long now = System.currentTimeMillis();
-
+        long now = clock.millis();
+        
         return Jwts.builder()
                 .setIssuer(user.getId())
                 .setSubject(user.getUsername())
@@ -123,6 +124,8 @@ public class JwtService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setExpireTime(config.getRefreshTokenExpireTime());
+        refreshToken.setCreationTime(LocalDateTime.now(clock));
+        refreshToken.setLastUpdateTime(LocalDateTime.now(clock));
 
         tokenRepository.save(refreshToken);
 

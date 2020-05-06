@@ -1,8 +1,9 @@
 package com.zbutwialypiernik.flixage.repository;
 
 import com.zbutwialypiernik.flixage.entity.Queryable;
+import com.zbutwialypiernik.flixage.entity.Thumbnail;
 import org.springframework.content.commons.repository.ContentStore;
 
-public interface ThumbnailStore<T extends Queryable> extends ContentStore<T, byte[]> {
+public interface ThumbnailStore extends ContentStore<Thumbnail, byte[]> {
 
 }

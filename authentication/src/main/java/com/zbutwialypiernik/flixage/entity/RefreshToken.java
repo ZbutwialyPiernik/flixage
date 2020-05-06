@@ -33,7 +33,7 @@ public class RefreshToken extends BaseEntity {
     }
 
     public boolean isExpired(Clock clock) {
-        return getExpireDate().isBefore(LocalDateTime.now(clock));
+        return LocalDateTime.now(clock).isAfter(getExpireDate());
     }
 
 }

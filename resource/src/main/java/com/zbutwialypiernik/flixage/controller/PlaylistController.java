@@ -1,15 +1,19 @@
 package com.zbutwialypiernik.flixage.controller;
 
+import com.zbutwialypiernik.flixage.config.GatewayLinkGenerator;
 import com.zbutwialypiernik.flixage.dto.playlist.AddTracksRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.Playlist;
+import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.ResourceForbiddenException;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.QueryableService;
+import com.zbutwialypiernik.flixage.service.UserService;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,52 +32,69 @@ import java.util.Arrays;
 @RequestMapping("/playlists")
 public class PlaylistController extends QueryableController<Playlist, PlaylistResponse> {
 
-    private final PlaylistService service;
+    private final int MB_IN_BYTES = 1048576;
+
+    private final PlaylistService playlistService;
+    private final UserService userService;
 
     private final MapperFacade mapper;
+    private final GatewayLinkGenerator linkGenerator;
 
     @Autowired
-    public PlaylistController(PlaylistService service, MapperFacade mapper) {
-        super(service);
-        this.service = service;
+    public PlaylistController(PlaylistService playlistService, UserService userService, MapperFacade mapper, GatewayLinkGenerator linkGenerator) {
+        super(playlistService);
+        this.playlistService = playlistService;
+        this.userService = userService;
         this.mapper = mapper;
+        this.linkGenerator = linkGenerator;
     }
 
     @PostMapping
-    public PlaylistResponse create(@Valid @RequestBody PlaylistRequest request) {
+    public PlaylistResponse create(@Valid @RequestBody PlaylistRequest request, @AuthenticationPrincipal JwtAuthenticationToken principal) {
         Playlist playlist = mapper.map(request, Playlist.class);
-
-        service.create(playlist);
+        User user = userService.findById(principal.getId());
+        playlist.setOwner(user);
+        playlistService.create(playlist);
 
         return toResponse(playlist);
     }
 
     @PutMapping("/{id}")
-    public PlaylistResponse updatePlaylist(@PathVariable String id, @Valid @RequestBody PlaylistRequest request) {
-        Playlist playlist = service.findById(id);
+    public PlaylistResponse updatePlaylist(@PathVariable String id, @Valid @RequestBody PlaylistRequest request, @AuthenticationPrincipal JwtAuthenticationToken principal) {
+        Playlist playlist = playlistService.findById(id);
+
+        if (isNotOwner(principal, playlist)) {
+            throw new ResourceForbiddenException();
+        }
+
         mapper.map(request, playlist);
 
-        service.update(playlist);
+        playlistService.update(playlist);
 
         return toResponse(playlist);
     }
 
     @DeleteMapping("/{id}")
     public void deletePlaylistById(@PathVariable String id, @AuthenticationPrincipal JwtAuthenticationToken principal) {
-        Playlist playlist = service.findById(id);
+        Playlist playlist = playlistService.findById(id);
 
         if (isNotOwner(principal, playlist)) {
             throw new ResourceForbiddenException();
         }
 
-        service.deleteById(id);
+        playlistService.deleteById(id);
     }
 
     @PostMapping("/{id}/thumbnail")
     public ResponseEntity<String> uploadThumbnail(@PathVariable String id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal JwtAuthenticationToken principal) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest()
-                    .body("File not included");
+                    .body("Required file not included");
+        }
+
+        if (file.getSize() > 5 * MB_IN_BYTES) {
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                    .body("File is too big, limit i 5 mb.");
         }
 
         if (Arrays.stream(QueryableService.ACCEPTED_MIME_TYPES)
@@ -82,13 +103,13 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
                     .body("Unsupported file format");
         }
 
-        Playlist playlist = service.findById(id);
+        Playlist playlist = playlistService.findById(id);
 
         if (isNotOwner(principal, playlist)) {
             throw new ResourceForbiddenException();
         }
 
-        service.saveThumbnail(playlist, new File(file.getOriginalFilename()));
+        playlistService.saveThumbnail(playlist, new File(file.getOriginalFilename()));
 
         return ResponseEntity.accepted()
                 .build();
@@ -96,13 +117,13 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
 
     @PutMapping("/{id}/tracks")
     public void addTracksToPlaylist(@PathVariable String id, @RequestBody AddTracksRequest addTracksRequest, @AuthenticationPrincipal JwtAuthenticationToken principal) {
-        Playlist playlist = service.findById(id);
+        Playlist playlist = playlistService.findById(id);
 
         if (isNotOwner(principal, playlist)) {
             throw new ResourceForbiddenException();
         }
 
-        service.addTrackToPlaylistByIds(playlist, addTracksRequest.getIds());
+        playlistService.addTrackToPlaylistByIds(playlist, addTracksRequest.getIds());
     }
 
     public boolean isNotOwner(JwtAuthenticationToken principal, Playlist playlist) {
@@ -112,7 +133,10 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
 
     @Override
     public PlaylistResponse toResponse(Playlist playlist) {
-        return mapper.map(playlist, PlaylistResponse.class);
+        PlaylistResponse response =  mapper.map(playlist, PlaylistResponse.class);
+        response.setThumbnailUrl(linkGenerator.generateLink("playlists/" + playlist.getId() + "/thumbnail"));
+
+        return response;
     }
 
 }

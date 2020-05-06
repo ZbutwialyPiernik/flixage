@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.dto;
+package com.zbutwialypiernik.flixage.dto.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

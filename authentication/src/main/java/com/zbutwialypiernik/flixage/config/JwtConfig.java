@@ -23,7 +23,7 @@ public class JwtConfig {
     @Value("${jwt.refresh-token.expire-time:360000}")
     private Long refreshTokenExpireTime;
 
-    @Value("${jwt.refresh-token.max-count:3}")
+    @Value("${jwt.refresh-token.max-count:10}")
     private Short maxSessionCount;
 
     @Value("${jwt.private-key}")

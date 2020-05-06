@@ -65,8 +65,6 @@ public class ArtistEditorDialog extends Dialog {
         artistAvatar.setWidth("96px");
 
         songList.setItems(artist.getSingles());
-
-        System.out.println(artist);
     }
 
     public void setArtist(Artist artist) {
