@@ -1,9 +1,9 @@
 package com.zbutwialypiernik.flixage.config.security;
 
-import com.zbutwialypiernik.flixage.service.UserDetailsServiceImpl;
 import com.zbutwialypiernik.flixage.config.Routes;
 import com.zbutwialypiernik.flixage.config.security.filter.LoggedUserFilter;
 import com.zbutwialypiernik.flixage.entity.Role;
+import com.zbutwialypiernik.flixage.service.UserDetailsServiceImpl;
 import com.zbutwialypiernik.flixage.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

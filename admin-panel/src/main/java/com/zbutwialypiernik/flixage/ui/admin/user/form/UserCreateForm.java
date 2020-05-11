@@ -1,12 +1,11 @@
 package com.zbutwialypiernik.flixage.ui.admin.user.form;
 
 import com.zbutwialypiernik.flixage.entity.Role;
-import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.validator.password.ValidPassword;
 import lombok.Data;
 
-import javax.persistence.*;
-import javax.validation.constraints.Pattern;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Size;
 
 @Data

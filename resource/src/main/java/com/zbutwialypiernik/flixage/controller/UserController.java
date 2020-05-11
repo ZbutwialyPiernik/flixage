@@ -2,12 +2,14 @@ package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.dto.UserResponse;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
+import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.repository.ThumbnailStore;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.UserService;
-import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.BoundMapperFacade;
+import ma.glasnost.orika.MapperFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,21 +24,20 @@ import java.util.stream.Collectors;
 public class UserController extends QueryableController<User, UserResponse> {
     
     private final PlaylistService playlistService;
-
     private final UserService userService;
 
-    private final MapperFacade mapper;
+    private final BoundMapperFacade<Playlist, PlaylistResponse> playlistMapper;
 
-    public UserController(UserService userService, PlaylistService playlistService, ThumbnailStore thumbnailStore, MapperFacade mapper) {
-        super(userService);
+    public UserController(UserService userService, PlaylistService playlistService, ThumbnailStore thumbnailStore, MapperFactory mapperFactory) {
+        super(userService, mapperFactory);
         this.playlistService = playlistService;
-        this.mapper = mapper;
         this.userService = userService;
+        this.playlistMapper = mapperFactory.getMapperFacade(Playlist.class, PlaylistResponse.class);
     }
 
     @GetMapping("/me")
     public UserResponse getCurrentUser(@AuthenticationPrincipal JwtAuthenticationToken principal) {
-        return toResponse(userService.findById(principal.getId()));
+        return dtoMapper.map(userService.findById(principal.getId()));
     }
 
     @GetMapping("/me/playlists")
@@ -47,13 +48,8 @@ public class UserController extends QueryableController<User, UserResponse> {
     @GetMapping("/{id}/playlists")
     public List<PlaylistResponse> getUserPlaylists(@PathVariable String id) {
         return playlistService.findByUserId(id).stream()
-                .map(playlist -> mapper.map(playlist, PlaylistResponse.class))
+                .map(playlistMapper::map)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public UserResponse toResponse(User user) {
-        return mapper.map(user, UserResponse.class);
     }
 
 }

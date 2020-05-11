@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.util;
 
-import io.jsonwebtoken.lang.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

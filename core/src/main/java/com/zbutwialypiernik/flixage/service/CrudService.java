@@ -4,11 +4,12 @@ import com.zbutwialypiernik.flixage.entity.BaseEntity;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 /**
  * Base class for every service in project, contains common crud methods
@@ -37,15 +38,15 @@ public class CrudService<T extends BaseEntity> {
      *
      * @param entity
      */
-    public void create(T entity) {
+    public T create(T entity) {
         if (entity.getId() != null) {
             throw new BadRequestException("User id should not be set");
         }
 
-        entity.setCreationTime(LocalDateTime.now(clock));
+        entity.setCreationTime(getCurrentInstant());
         entity.setLastUpdateTime(entity.getCreationTime());
 
-        repository.save(entity);
+        return repository.save(entity);
     }
 
     /**
@@ -55,16 +56,20 @@ public class CrudService<T extends BaseEntity> {
      *
      * @param entity
      */
-    public void update(T entity) {
+    @Transactional
+    public T update(T entity) {
         T oldEntity = findById(entity.getId());
 
-        entity.setLastUpdateTime(LocalDateTime.now(clock));
+        System.out.println(oldEntity);
+        System.out.println(entity);
 
-        if (!oldEntity.getLastUpdateTime().isEqual(entity.getCreationTime())) {
+        if (!oldEntity.getCreationTime().equals(entity.getCreationTime())) {
             throw new IllegalStateException("Creation date is other than existing in database");
         }
 
-        repository.save(entity);
+        entity.setLastUpdateTime(getCurrentInstant());
+
+        return repository.save(entity);
     }
 
     /**
@@ -87,6 +92,15 @@ public class CrudService<T extends BaseEntity> {
      */
     public void delete(T entity) {
         this.deleteById(entity.getId());
+    }
+
+    /**
+     * Database does not store nano seconds, we're cutting them to have same precision
+     * in database and entities at same time.
+     * @return current UTC
+     */
+    private Instant getCurrentInstant() {
+        return clock.instant().truncatedTo(ChronoUnit.MILLIS);
     }
 
 }

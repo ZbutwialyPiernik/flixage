@@ -1,41 +1,38 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationResponse;
 import com.zbutwialypiernik.flixage.config.JwtConfig;
+import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationResponse;
 import com.zbutwialypiernik.flixage.entity.RefreshToken;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.repository.TokenRepository;
 import com.zbutwialypiernik.flixage.util.KeyUtil;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.Instant;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
     private final JwtConfig config;
-    private final JwtParser parser;
 
     private final PrivateKey privateKey;
-    private final PublicKey publicKey;
 
     private final TokenRepository tokenRepository;
-    private final UserService userService;
+    private final UserDetailsServiceImpl userService;
 
     private final Clock clock;
 
     @Autowired
     public JwtService(TokenRepository tokenRepository,
-                      UserService userService,
+                      UserDetailsServiceImpl userService,
                       JwtConfig config,
                       Clock clock) {
         this.clock = clock;
@@ -44,11 +41,6 @@ public class JwtService {
         this.userService = userService;
 
         this.privateKey = KeyUtil.getRsaPrivateKey(config.getPrivateKey());
-        this.publicKey = KeyUtil.getRsaPublicKey(config.getPublicKey());
-
-        this.parser = Jwts.parserBuilder()
-                .setSigningKey(publicKey)
-                .build();
     }
 
     public AuthenticationResponse authenticate(String username, String password) {
@@ -62,22 +54,11 @@ public class JwtService {
         return new AuthenticationResponse(createAccessToken(user), refreshToken.getId(), config.getAccessTokenExpireTime());
     }
 
-    public AuthenticationResponse regenerateAuthentication(String refreshToken, String expiredAccessToken) {
+    public AuthenticationResponse regenerateAuthentication(String refreshToken) {
         RefreshToken session = tokenRepository.findById(refreshToken).orElseThrow(() -> new AuthenticationException("Invalid Refresh Token"));
 
         if (session.isExpired(clock)) {
             throw new AuthenticationException("Refresh token is expired");
-        }
-
-        try {
-            String username = parser.parseClaimsJws(expiredAccessToken).getBody().getSubject();
-
-            if (!username.equals(session.getUser().getUsername())) {
-                throw new AuthenticationException("Invalid access token");
-            }
-        } catch (JwtException e) {
-            e.printStackTrace();
-            throw new AuthenticationException("Invalid access token");
         }
 
         checkForAbilityToLogin(session.getUser());
@@ -95,7 +76,7 @@ public class JwtService {
         }
 
         if (user.isExpiredCredentials()) {
-            throw new AuthenticationException("User has expired credentials");
+            throw new AuthenticationException("User has expired credentials, please change your password");
         }
 
         if (!user.isEnabled()) {
@@ -124,8 +105,8 @@ public class JwtService {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setUser(user);
         refreshToken.setExpireTime(config.getRefreshTokenExpireTime());
-        refreshToken.setCreationTime(LocalDateTime.now(clock));
-        refreshToken.setLastUpdateTime(LocalDateTime.now(clock));
+        refreshToken.setCreationTime(Instant.now(clock));
+        refreshToken.setLastUpdateTime(Instant.now(clock));
 
         tokenRepository.save(refreshToken);
 

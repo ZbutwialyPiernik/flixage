@@ -5,11 +5,8 @@ import com.zbutwialypiernik.flixage.service.CrudService;
 import com.zbutwialypiernik.flixage.service.QueryableService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import javax.management.Query;
 
 public class QueryableServiceTest {
 

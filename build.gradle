@@ -38,12 +38,16 @@ subprojects {
         runtime 'io.jsonwebtoken:jjwt-impl:0.11.1',
                 'io.jsonwebtoken:jjwt-jackson:0.11.1'
 
+        implementation 'javax.persistence:javax.persistence-api:2.2'
+
         // RSA
         implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
 
         // Logging
         implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
         implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
+
+        runtimeOnly group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.2.6.RELEASE'
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
@@ -74,20 +78,46 @@ project(':core') {
     }
 
     dependencies {
+        // Validator
+        implementation 'org.passay:passay:1.5.0'
+        implementation "org.hibernate:hibernate-validator:6.1.2.Final"
+
         // Object Mapping
         implementation 'ma.glasnost.orika:orika-core:1.5.4'
 
-        // Validation
-        implementation "org.hibernate:hibernate-validator:6.1.2.Final"
-        implementation 'org.passay:passay:1.5.0'
+        // Managing static content
+        implementation "com.github.paulcwarren:spring-content-fs-boot-starter:1.0.0.M9"
 
-        implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
-        runtime 'io.jsonwebtoken:jjwt-impl:0.11.1',
-                'io.jsonwebtoken:jjwt-jackson:0.11.1'
+        // Database
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+        implementation 'javax.persistence:javax.persistence-api:2.2'
+
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+
+        //Tests
+        testImplementation('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        }
+    }
+}
+
+project(':core-resource') {
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
+    }
+
+    dependencies {
+        implementation project(":core")
+        // Object Mapping
+        implementation 'ma.glasnost.orika:orika-core:1.5.4'
 
         // Managing static content
         implementation "com.github.paulcwarren:spring-content-fs-boot-starter:1.0.0.M9"
-        implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
 
         // Database
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -104,21 +134,55 @@ project(':core') {
     }
 }
 
+project(':core-authentication') {
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
+    }
+
+    dependencies {
+        implementation project(":core")
+
+        implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
+        runtime 'io.jsonwebtoken:jjwt-impl:0.11.1',
+                'io.jsonwebtoken:jjwt-jackson:0.11.1'
+
+        // Database
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+        implementation 'javax.persistence:javax.persistence-api:2.2'
+
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+
+        //Tests
+        testImplementation('org.springframework.boot:spring-boot-starter-test') {
+            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+        }
+    }
+}
+
 project(':gateway') {
     dependencies {
+        implementation project(':core-authentication')
+
         implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+
         runtimeOnly 'mysql:mysql-connector-java'
 
-        // Database
         testRuntimeOnly 'com.h2database:h2'
     }
 }
 
 project(':discovery') {
-
     dependencies {
+        implementation project(':core-authentication')
+
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
         implementation 'org.springframework.boot:spring-boot-starter-security'
 
@@ -131,6 +195,7 @@ project(':discovery') {
 project(':authentication') {
     dependencies {
         implementation project(':core')
+        implementation project(':core-authentication')
 
         // Object Mapping
         implementation 'ma.glasnost.orika:orika-core:1.5.4'
@@ -158,9 +223,9 @@ project(':authentication') {
 }
 
 project(':resource') {
-
     dependencies {
         implementation project(':core')
+        implementation project(':core-resource')
 
         // Object Mapping
         implementation 'ma.glasnost.orika:orika-core:1.5.4'
@@ -188,5 +253,6 @@ project(':resource') {
 project(':admin-panel') {
     dependencies {
         implementation project(':core')
+        implementation project(':core-resource')
     }
 }

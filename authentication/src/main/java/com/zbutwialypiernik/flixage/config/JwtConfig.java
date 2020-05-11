@@ -1,16 +1,10 @@
 package com.zbutwialypiernik.flixage.config;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 @Getter
 @Configuration
@@ -26,10 +20,8 @@ public class JwtConfig {
     @Value("${jwt.refresh-token.max-count:10}")
     private Short maxSessionCount;
 
+    // TODO: refactor configuration and use HashiCorp Vault to manage configuration
     @Value("${jwt.private-key}")
     private String privateKey;
-
-    @Value("${jwt.public-key}")
-    private String publicKey;
 
 }

@@ -1,15 +1,15 @@
 package com.zbutwialypiernik.flixage.entity;
 
-import com.zbutwialypiernik.flixage.entity.BaseEntity;
-import com.zbutwialypiernik.flixage.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @EqualsAndHashCode(callSuper = true)
@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 @Entity
 public class RefreshToken extends BaseEntity {
 
-    @ManyToOne(targetEntity = User.class)
+    @ManyToOne
     private User user;
 
     @Column
@@ -28,12 +28,12 @@ public class RefreshToken extends BaseEntity {
     @Column
     private boolean isBlacklisted = false;
 
-    public LocalDateTime getExpireDate() {
+    public Instant getExpireDate() {
         return getCreationTime().plus(expireTime, ChronoUnit.SECONDS);
     }
 
     public boolean isExpired(Clock clock) {
-        return LocalDateTime.now(clock).isAfter(getExpireDate());
+        return Instant.now(clock).isAfter(getExpireDate());
     }
 
 }

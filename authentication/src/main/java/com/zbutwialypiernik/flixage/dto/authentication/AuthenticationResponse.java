@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class AuthenticationResponse {
 
-    private final String accessToken;
+    private String accessToken;
 
-    private final String refreshToken;
+    private String refreshToken;
 
-    private final long expireTime;
+    private long expireTime;
 
 }

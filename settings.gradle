@@ -1,4 +1,6 @@
 include ':core'
+include ':core-resource'
+include ':core-authentication'
 include ':discovery'
 include ':resource'
 include ':admin-panel'

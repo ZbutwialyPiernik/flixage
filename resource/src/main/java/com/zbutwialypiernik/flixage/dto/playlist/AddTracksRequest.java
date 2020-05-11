@@ -1,12 +1,14 @@
 package com.zbutwialypiernik.flixage.dto.playlist;
 
-import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
 import java.util.List;
 
-@Data
+@Value
+@NoArgsConstructor(force = true)
 public class AddTracksRequest {
 
-    private List<String> ids;
+    List<String> ids;
 
 }

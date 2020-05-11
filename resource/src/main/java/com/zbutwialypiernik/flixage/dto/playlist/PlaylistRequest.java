@@ -1,12 +1,12 @@
 package com.zbutwialypiernik.flixage.dto.playlist;
 
-import com.zbutwialypiernik.flixage.dto.QueryableResponse;
-import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
-@Data
+@Value
+@NoArgsConstructor(force = true)
 public class PlaylistRequest {
 
-    private String name;
+    String name;
 
 }

@@ -2,16 +2,15 @@ package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationRequest;
 import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationResponse;
+import com.zbutwialypiernik.flixage.dto.authentication.InvalidateTokenRequest;
 import com.zbutwialypiernik.flixage.dto.authentication.RenewAuthenticationRequest;
 import com.zbutwialypiernik.flixage.service.JwtService;
-import com.zbutwialypiernik.flixage.validator.password.ValidPassword;
-import lombok.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 @RestController
 @RequestMapping("/authentication")
@@ -30,20 +29,12 @@ public class AuthenticationController {
 
     @PostMapping("/renew")
     public AuthenticationResponse renewToken(@Valid @RequestBody RenewAuthenticationRequest request) {
-        return jwtService.regenerateAuthentication(request.getRefreshToken(), request.getAccessToken());
+        return jwtService.regenerateAuthentication(request.getRefreshToken());
     }
 
     @PostMapping("/invalidate")
     public void invalidateToken(@Valid @RequestBody InvalidateTokenRequest request) {
         jwtService.invalidateToken(request.getRefreshToken());
-    }
-
-    @Value
-    private static class InvalidateTokenRequest {
-
-        @NotNull
-        String refreshToken;
-
     }
 
 }

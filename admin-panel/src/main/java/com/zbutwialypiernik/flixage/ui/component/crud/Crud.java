@@ -16,6 +16,7 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.function.ValueProvider;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.service.CrudService;
+import com.zbutwialypiernik.flixage.service.QueryableService;
 import com.zbutwialypiernik.flixage.ui.component.DeleteDialog;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.BidirectionalMapper;
 import com.zbutwialypiernik.flixage.ui.component.form.Form;
@@ -45,7 +46,7 @@ public abstract class Crud<T extends Queryable> extends Composite<VerticalLayout
     private DtoFormDialog<T, ?> updateForm;
     private DeleteDialog<T> deleteDialog = new DeleteDialog<>("Are you sure you wanna delete?");
 
-    private CrudService<T> dataProvider;
+    private QueryableService<T> dataProvider;
 
     private final PaginatedGrid<T> grid;
 

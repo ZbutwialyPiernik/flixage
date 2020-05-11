@@ -1,17 +1,20 @@
 package com.zbutwialypiernik.flixage.controller;
 
-import com.zbutwialypiernik.flixage.config.GatewayLinkGenerator;
+import com.zbutwialypiernik.flixage.dto.TrackResponse;
 import com.zbutwialypiernik.flixage.dto.playlist.AddTracksRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.Playlist;
+import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.ResourceForbiddenException;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.QueryableService;
 import com.zbutwialypiernik.flixage.service.UserService;
+import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Every controller besides that is read-only.
@@ -37,26 +42,26 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     private final PlaylistService playlistService;
     private final UserService userService;
 
-    private final MapperFacade mapper;
-    private final GatewayLinkGenerator linkGenerator;
+    private final MapperFacade mapperFacade;
+    private final BoundMapperFacade<Track, TrackResponse> trackMapper;
 
     @Autowired
-    public PlaylistController(PlaylistService playlistService, UserService userService, MapperFacade mapper, GatewayLinkGenerator linkGenerator) {
-        super(playlistService);
+    public PlaylistController(PlaylistService playlistService, UserService userService, MapperFactory mapperFactory) {
+        super(playlistService, mapperFactory);
         this.playlistService = playlistService;
         this.userService = userService;
-        this.mapper = mapper;
-        this.linkGenerator = linkGenerator;
+        this.mapperFacade = mapperFactory.getMapperFacade();
+        this.trackMapper = mapperFactory.getMapperFacade(Track.class, TrackResponse.class);
     }
 
     @PostMapping
     public PlaylistResponse create(@Valid @RequestBody PlaylistRequest request, @AuthenticationPrincipal JwtAuthenticationToken principal) {
-        Playlist playlist = mapper.map(request, Playlist.class);
+        Playlist playlist = mapperFacade.map(request, Playlist.class);
         User user = userService.findById(principal.getId());
         playlist.setOwner(user);
         playlistService.create(playlist);
 
-        return toResponse(playlist);
+        return dtoMapper.map(playlist);
     }
 
     @PutMapping("/{id}")
@@ -67,11 +72,11 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
             throw new ResourceForbiddenException();
         }
 
-        mapper.map(request, playlist);
+        mapperFacade.map(request, playlist);
 
         playlistService.update(playlist);
 
-        return toResponse(playlist);
+        return dtoMapper.map(playlist);
     }
 
     @DeleteMapping("/{id}")
@@ -83,6 +88,15 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
         }
 
         playlistService.deleteById(id);
+    }
+
+    @GetMapping("/{id}/tracks")
+    public List<TrackResponse> getTrackByPlaylistId(@PathVariable String id) {
+        Playlist playlist = playlistService.findById(id);
+
+        return playlist.getTracks().stream()
+                .map(trackMapper::map)
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/{id}/thumbnail")
@@ -127,16 +141,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     public boolean isNotOwner(JwtAuthenticationToken principal, Playlist playlist) {
-        // Service should throw exception if playlist is null, we check for null only to be sure.
-        return playlist == null || !playlist.getOwner().getId().equals(principal.getId());
-    }
-
-    @Override
-    public PlaylistResponse toResponse(Playlist playlist) {
-        PlaylistResponse response =  mapper.map(playlist, PlaylistResponse.class);
-        response.setThumbnailUrl(linkGenerator.generateLink("playlists/" + playlist.getId() + "/thumbnail"));
-
-        return response;
+        return !playlist.getOwner().getId().equals(principal.getId());
     }
 
 }

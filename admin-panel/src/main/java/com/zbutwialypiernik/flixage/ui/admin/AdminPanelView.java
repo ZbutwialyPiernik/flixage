@@ -13,8 +13,8 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
 import com.zbutwialypiernik.flixage.config.Routes;
-import com.zbutwialypiernik.flixage.ui.admin.dashboard.DashboardPanel;
 import com.zbutwialypiernik.flixage.ui.admin.artist.ArtistCrud;
+import com.zbutwialypiernik.flixage.ui.admin.dashboard.DashboardPanel;
 import com.zbutwialypiernik.flixage.ui.admin.user.UserCrud;
 import org.springframework.beans.factory.annotation.Autowired;
 

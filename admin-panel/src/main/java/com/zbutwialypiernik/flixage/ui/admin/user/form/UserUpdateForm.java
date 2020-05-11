@@ -3,7 +3,8 @@ package com.zbutwialypiernik.flixage.ui.admin.user.form;
 import com.zbutwialypiernik.flixage.entity.Role;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.validation.constraints.Size;
 
 @Data

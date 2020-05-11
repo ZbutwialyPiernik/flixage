@@ -4,7 +4,7 @@ WORKDIR /usr/app
 
 ENV RESOURCE_SERVICE_PORT 8092
 
-ENV GATEWAY_SERVICE_URL host.docker.internal:8080/api
+ENV GATEWAY_SERVICE_URL http://host.docker.internal:8080/api
 
 ENV DISCOVERY_SERVICE_URL http://host.docker.internal:8090/eureka/
 

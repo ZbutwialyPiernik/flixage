@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage;
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.zbutwialypiernik.flixage.entity.BaseEntity;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
@@ -11,7 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.data.repository.CrudRepository;
 
-import java.time.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Random;
@@ -38,7 +40,7 @@ public class CrudServiceTest {
 
     @Test
     public void entity_without_id_does_get_created() {
-        LocalDateTime creationTime = LocalDateTime.now(clock);
+        Instant creationTime = Instant.now(clock);
         entity.setId(null);
 
         service.create(entity);
@@ -61,8 +63,8 @@ public class CrudServiceTest {
 
     @Test
     public void entity_does_get_updated_when_entity_exists_in_database() {
-        LocalDateTime creationTime = LocalDateTime.now(clock).minus(new Random().nextInt(), ChronoUnit.MINUTES);
-        LocalDateTime updateTime = LocalDateTime.now(clock);
+        Instant creationTime = Instant.now(clock).minus(new Random().nextInt(), ChronoUnit.MINUTES);
+        Instant updateTime = Instant.now(clock);
 
         String entityId = UUID.randomUUID().toString();
 
@@ -87,7 +89,7 @@ public class CrudServiceTest {
 
     @Test
     public void entity_does_not_get_updated_when_entity_does_not_exists_in_database() {
-        LocalDateTime creationTime = LocalDateTime.now(clock).minus(new Random().nextInt(), ChronoUnit.MINUTES);
+        Instant creationTime = Instant.now(clock).minus(new Random().nextInt(), ChronoUnit.MINUTES);
 
         String entityId = UUID.randomUUID().toString();
         entity.setId(entityId);
@@ -108,8 +110,8 @@ public class CrudServiceTest {
 
     @Test
     public void entity_does_not_get_updated_when_entity_has_other_creation_time_than_existing_in_database() {
-        LocalDateTime creationTime = LocalDateTime.now(clock);
-        LocalDateTime newCreationTime = LocalDateTime.now(clock).plus(new Random().nextInt(), ChronoUnit.MINUTES);
+        Instant creationTime = Instant.now(clock);
+        Instant newCreationTime = Instant.now(clock).plus(new Random().nextInt(), ChronoUnit.MINUTES);
 
         String entityId = UUID.randomUUID().toString();
 

@@ -7,7 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.Instant;
 
 /**
  * Superclass of every entity in this project. Id is represented as uuid.
@@ -24,9 +25,9 @@ public abstract class BaseEntity {
     private String id;
 
     @Column
-    private LocalDateTime lastUpdateTime;
+    private Instant lastUpdateTime;
 
     @Column
-    private LocalDateTime creationTime;
+    private Instant creationTime;
 
 }
