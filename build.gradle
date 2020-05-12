@@ -164,7 +164,7 @@ project(':core-authentication') {
     }
 }
 
-project(':gateway') {
+project(':service-gateway') {
     dependencies {
         implementation project(':core-authentication')
 
@@ -179,7 +179,7 @@ project(':gateway') {
     }
 }
 
-project(':discovery') {
+project(':service-discovery') {
     dependencies {
         implementation project(':core-authentication')
 
@@ -192,7 +192,7 @@ project(':discovery') {
     }
 }
 
-project(':authentication') {
+project(':service-authentication') {
     dependencies {
         implementation project(':core')
         implementation project(':core-authentication')
@@ -222,7 +222,7 @@ project(':authentication') {
     }
 }
 
-project(':resource') {
+project(':service-resource') {
     dependencies {
         implementation project(':core')
         implementation project(':core-resource')
@@ -250,7 +250,7 @@ project(':resource') {
     }
 }
 
-project(':admin-panel') {
+project(':service-admin-panel') {
     dependencies {
         implementation project(':core')
         implementation project(':core-resource')

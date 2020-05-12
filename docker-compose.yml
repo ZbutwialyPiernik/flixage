@@ -6,7 +6,7 @@ services:
       - database
       - discovery
     build:
-      context: gateway
+      context: service-gateway
       dockerfile: dockerfile
     ports:
       - "8080:8080"
@@ -14,7 +14,7 @@ services:
     depends_on:
       - database
     build:
-      context: discovery
+      context: service-discovery
       dockerfile: dockerfile
     ports:
       - "8090:8090"
@@ -23,7 +23,7 @@ services:
       - database
       - discovery
     build:
-      context: authentication
+      context: service-authentication
       dockerfile: dockerfile
     ports:
       - "8091:8091"
@@ -32,7 +32,7 @@ services:
       - database
       - discovery
     build:
-      context: resource
+      context: service-resource
       dockerfile: dockerfile
     ports:
       - "8092:8092"
@@ -40,9 +40,11 @@ services:
 # External Dependencies
   database:
     image: mysql
+    volumes:
+      - ./docker-volumes/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: flixage
+      MYSQL_DATABASE: flixage # Default database
       MYSQL_USER: admin
       MYSQL_ROOT_PASSWORD: password
