@@ -1,5 +1,5 @@
 FROM openjdk:12-alpine
-COPY ./build/libs/authentication-0.0.1.jar /usr/app/
+COPY ./build/libs/service-authentication-0.0.1.jar /usr/app/
 WORKDIR /usr/app
 
 ENV AUTHENTICATION_SERVICE_PORT 8091
@@ -13,4 +13,4 @@ ENV DATABASE_USERNAME root
 ENV DATABASE_PASSWORD password
 ENV DATABASE_URL jdbc:mysql://host.docker.internal:3306/flixage
 
-ENTRYPOINT ["java", "-jar", "authentication-0.0.1.jar"]
+ENTRYPOINT ["java", "-jar", "service-authentication-0.0.1.jar"]

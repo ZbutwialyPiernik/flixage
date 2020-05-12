@@ -1,5 +1,5 @@
 FROM openjdk:12-alpine
-COPY ./build/libs/resource-0.0.1.jar /usr/app/
+COPY ./build/libs/service-resource-0.0.1.jar /usr/app/
 WORKDIR /usr/app
 
 ENV RESOURCE_SERVICE_PORT 8092
@@ -14,4 +14,4 @@ ENV DATABASE_URL jdbc:mysql://host.docker.internal:3306/flixage
 
 ENV JWT_PUBLIC_KEY MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiC4e7rbNZa5xLwr5bGDxzpmmjoxPnGpqjtOxpPOQE+OWXIj7T7HYhgHX5Q5ZvCdf9tD0FBLwq3iR7dE4msrev0ENViQK5Ia/wtxKQp8p0tpgzollvThoRULdINZ7ApKDDwmfaEdvQG2VJFzT92kRT9zTPBUE5KlxVUuMBnTjYDAJdw2B/wFrEpr3wg0Frp7RxV4mqBEpUBqr1N68g2tISw6/QGYgBCbwNsjPURnUY/XpJUk7fIc77OWYjprM0MpWYWx5gs24w86TLm6xSgICh3a9D8DVDblHUC2VEAEn/C5DjBFs2NsUxIOanjkxWLHZUJgqcF1pQTxvmgyCY2xuCQIDAQAB
 
-ENTRYPOINT ["java", "-jar", "resource-0.0.1.jar"]
+ENTRYPOINT ["java", "-jar", "service-resource-0.0.1.jar"]

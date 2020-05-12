@@ -1,5 +1,5 @@
 FROM openjdk:12-alpine
-COPY ./build/libs/discovery-0.0.1.jar /usr/app/
+COPY ./build/libs/service-discovery-0.0.1.jar /usr/app/
 WORKDIR /usr/app
 
 ENV DISCOVERY_SERVICE_PORT 8090
@@ -10,4 +10,4 @@ ENV DATABASE_URL jdbc:mysql://host.docker.internal:3306/flixage
 
 EXPOSE 8090
 
-ENTRYPOINT ["java", "-jar", "discovery-0.0.1.jar"]
+ENTRYPOINT ["java", "-jar", "service-discovery-0.0.1.jar"]
