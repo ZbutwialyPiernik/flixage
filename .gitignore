@@ -28,3 +28,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Project ###
+./storage
+*.mp3
