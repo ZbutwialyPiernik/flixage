@@ -1,5 +1,6 @@
 package com.zbutwialypiernik.flixage.entity;
 
+import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,7 +11,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
 /** Every entity that has name and corresponding thumbnail extends this class
- * managed by {@link com.zbutwialypiernik.flixage.repository.ThumbnailStore}.
+ * managed by {@link ThumbnailFileStore}.
 */
 @Data
 @EqualsAndHashCode(callSuper = true)

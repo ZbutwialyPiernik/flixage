@@ -4,7 +4,7 @@ import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.PlaylistRepository;
-import com.zbutwialypiernik.flixage.repository.ThumbnailStore;
+import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +21,7 @@ public class PlaylistService extends QueryableService<Playlist> {
     private final TrackService trackService;
 
     @Autowired
-    public PlaylistService(PlaylistRepository repository, TrackService trackService, ThumbnailStore store, Clock clock) {
+    public PlaylistService(PlaylistRepository repository, TrackService trackService, ThumbnailFileStore store, Clock clock) {
         super(repository, store, clock);
         this.playlistRepository = repository;
         this.trackService = trackService;

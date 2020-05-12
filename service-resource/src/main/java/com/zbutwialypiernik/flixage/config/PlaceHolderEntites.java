@@ -4,6 +4,7 @@ import com.zbutwialypiernik.flixage.entity.Album;
 import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.entity.MusicGenre;
 import com.zbutwialypiernik.flixage.entity.Track;
+import com.zbutwialypiernik.flixage.repository.TrackFileStore;
 import com.zbutwialypiernik.flixage.service.AlbumService;
 import com.zbutwialypiernik.flixage.service.ArtistService;
 import com.zbutwialypiernik.flixage.service.TrackService;
@@ -20,10 +21,13 @@ public class PlaceHolderEntites {
 
     private final AlbumService albumService;
 
-    public PlaceHolderEntites(ArtistService artistService, TrackService trackService, AlbumService albumService) {
+    private final TrackFileStore trackFileStore;
+
+    public PlaceHolderEntites(ArtistService artistService, TrackService trackService, AlbumService albumService, TrackFileStore trackFileStore) {
         this.artistService = artistService;
         this.trackService = trackService;
         this.albumService = albumService;
+        this.trackFileStore = trackFileStore;
 
         Artist asap = new Artist();
         asap.setName("A$AP Rocky");
@@ -50,6 +54,8 @@ public class PlaceHolderEntites {
 
         trackService.create(sundress);
         trackService.create(praiseTheLord);
+
+        trackFileStore.getResource()
 
         Stream.of("Foreword", "Don't Stay", "Somewhere I Belong", "Lying from You",
                 "Hit the Floor", "Easier to Run", "Faint", "Figure.09",

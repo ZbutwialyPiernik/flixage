@@ -1,13 +1,11 @@
 package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Role;
-import com.zbutwialypiernik.flixage.entity.Thumbnail;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.ConflictException;
-import com.zbutwialypiernik.flixage.repository.ThumbnailStore;
+import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
 import com.zbutwialypiernik.flixage.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +21,10 @@ public class UserService extends QueryableService<User> {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
-    private final ThumbnailStore store;
+    private final ThumbnailFileStore store;
 
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder encoder, ThumbnailStore store, Clock clock) throws IOException {
+    public UserService(UserRepository repository, PasswordEncoder encoder, ThumbnailFileStore store, Clock clock) throws IOException {
         super(repository, store, clock);
         this.repository = repository;
         this.encoder = encoder;

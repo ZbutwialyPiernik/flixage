@@ -2,23 +2,20 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.*;
 import com.zbutwialypiernik.flixage.repository.ArtistRepository;
-import com.zbutwialypiernik.flixage.repository.ThumbnailStore;
+import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
 import org.hibernate.Hibernate;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.time.Clock;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 public class ArtistService extends QueryableService<Artist> {
 
     private final ArtistRepository repository;
 
-    public ArtistService(ArtistRepository repository, ThumbnailStore store, Clock clock) {
+    public ArtistService(ArtistRepository repository, ThumbnailFileStore store, Clock clock) {
         super(repository, store, clock);
         this.repository = repository;
     }

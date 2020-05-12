@@ -6,7 +6,7 @@ import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceLoadingException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.QueryableRepository;
-import com.zbutwialypiernik.flixage.repository.ThumbnailStore;
+import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -21,14 +21,14 @@ import java.time.Clock;
 public class QueryableService<T extends Queryable> extends CrudService<T> {
 
     protected final QueryableRepository<T> repository;
-    protected final ThumbnailStore store;
+    protected final ThumbnailFileStore store;
 
     public static final String[] ACCEPTED_EXTENSIONS = {"jpg", "jpeg", "png"};
     public static final String[] ACCEPTED_MIME_TYPES =  {"images/jpeg", "png"};
 
     private static final String OUTPUT_FORMAT = "png";
 
-    public QueryableService(QueryableRepository<T> repository, ThumbnailStore store, Clock clock) {
+    public QueryableService(QueryableRepository<T> repository, ThumbnailFileStore store, Clock clock) {
         super(repository, clock);
         this.repository = repository;
         this.store = store;

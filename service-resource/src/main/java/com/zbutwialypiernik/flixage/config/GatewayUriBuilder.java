@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
  * Class needed to create dynamic links to resources, using gateway host
  * Will be mostly used in links to thumbnails
@@ -16,13 +19,10 @@ public class GatewayUriBuilder {
     public GatewayUriBuilder(@Value("${GATEWAY_SERVICE_URL}") String baseUrl) {
         builder = UriComponentsBuilder.newInstance();
 
-        if (baseUrl.toLowerCase().startsWith("https://")) {
-            baseUrl = baseUrl.replace("https://", "");
-            builder.scheme("https").host(baseUrl);
-        } else if (baseUrl.toLowerCase().startsWith("http://")) {
-            baseUrl = baseUrl.replace("http://", "");
-            builder.scheme("http").host(baseUrl);
-        } else {
+        try {
+            URI uri = new URI(baseUrl);
+            builder.uri(uri);
+        } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Invalid base URL");
         }
     }
