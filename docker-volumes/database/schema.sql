@@ -2,8 +2,8 @@ create table album (id varchar(255) not null, creation_time datetime(6), last_up
 create table artist (id varchar(255) not null, creation_time datetime(6), last_update_time datetime(6), name varchar(255) not null, thumbnail_id varchar(255), primary key (id));
 create table playlist (id varchar(255) not null, creation_time datetime(6), last_update_time datetime(6), name varchar(255) not null, thumbnail_id varchar(255), owner_id varchar(255), primary key (id));
 create table playlist_tracks (playlist_id varchar(255) not null, tracks_id varchar(255) not null);
-create table thumbnail (id varchar(255) not null, file_id varchar(255), size bigint, primary key (id));
-create table track (id varchar(255) not null, creation_time datetime(6), last_update_time datetime(6), name varchar(255) not null, file_id varchar(255), file_size bigint, genre varchar(255), thumbnail_id varchar(255), album_id varchar(255), artist_id varchar(255), album varchar(255), primary key (id));
+create table thumbnail (id varchar(255) not null, file_id varchar(255), mime_type varchar(255), size bigint, primary key (id));
+create table track (id varchar(255) not null, creation_time datetime(6), last_update_time datetime(6), name varchar(255) not null, duration bigint, file_id varchar(255), file_size bigint, genre varchar(255), thumbnail_id varchar(255), album_id varchar(255), artist_id varchar(255), album varchar(255), primary key (id));
 create table user (id varchar(255) not null, creation_time datetime(6), last_update_time datetime(6), name varchar(255) not null, enabled bit, expired bit, expired_credentials bit, locked bit, password varchar(60) not null, role varchar(255), username varchar(32) not null, thumbnail_id varchar(255), primary key (id));
 create table user_playlists (user_id varchar(255) not null, playlists_id varchar(255) not null);
 create table user_saved_tracks (user_id varchar(255) not null, saved_tracks_id varchar(255) not null);

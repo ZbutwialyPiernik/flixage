@@ -8,8 +8,10 @@ import com.zbutwialypiernik.flixage.repository.TrackFileStore;
 import com.zbutwialypiernik.flixage.service.AlbumService;
 import com.zbutwialypiernik.flixage.service.ArtistService;
 import com.zbutwialypiernik.flixage.service.TrackService;
+import org.springframework.content.fs.io.FileSystemResourceLoader;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.stream.Stream;
 
 @Component
@@ -23,11 +25,18 @@ public class PlaceHolderEntites {
 
     private final TrackFileStore trackFileStore;
 
-    public PlaceHolderEntites(ArtistService artistService, TrackService trackService, AlbumService albumService, TrackFileStore trackFileStore) {
+    private final FileSystemResourceLoader resourceLoader;
+
+    public PlaceHolderEntites(ArtistService artistService, TrackService trackService, AlbumService albumService, TrackFileStore trackFileStore, FileSystemResourceLoader resourceLoader) throws IOException {
         this.artistService = artistService;
         this.trackService = trackService;
         this.albumService = albumService;
         this.trackFileStore = trackFileStore;
+        this.resourceLoader = resourceLoader;
+
+        if (!artistService.findByName("rocky", 0, 10).isEmpty()) {
+
+        }
 
         Artist asap = new Artist();
         asap.setName("A$AP Rocky");
@@ -55,7 +64,8 @@ public class PlaceHolderEntites {
         trackService.create(sundress);
         trackService.create(praiseTheLord);
 
-        trackFileStore.getResource()
+        trackService.saveTrackFile(sundress, resourceLoader.getResource("Sundress.mp3").getFile());
+        trackService.saveTrackFile(praiseTheLord, resourceLoader.getResource("Praise The Lord.mp3").getFile());
 
         Stream.of("Foreword", "Don't Stay", "Somewhere I Belong", "Lying from You",
                 "Hit the Floor", "Easier to Run", "Faint", "Figure.09",

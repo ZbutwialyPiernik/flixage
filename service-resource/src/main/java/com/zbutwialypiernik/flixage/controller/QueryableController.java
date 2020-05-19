@@ -4,12 +4,15 @@ import com.zbutwialypiernik.flixage.dto.PageResponse;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
+import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.service.QueryableService;
 import com.zbutwialypiernik.flixage.util.StringUtils;
 import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.metadata.Type;
 import ma.glasnost.orika.metadata.TypeBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +26,7 @@ import java.util.stream.Collectors;
  * @param <E> Entity that extends {@link Queryable}
  * @param <DTO> DTO representing response of {@link Queryable} entity
  */
-public abstract class QueryableController<E extends Queryable, DTO extends QueryableResponse> {
+public class QueryableController<E extends Queryable, DTO extends QueryableResponse> {
 
     private final QueryableService<E> service;
     protected final BoundMapperFacade<E, DTO> dtoMapper;
@@ -32,7 +35,7 @@ public abstract class QueryableController<E extends Queryable, DTO extends Query
     public QueryableController(QueryableService<E> service, MapperFactory mapperFactory) {
         this.service = service;
 
-        var entityType = new TypeBuilder<QueryableController<E, DTO>>() {}.build();
+        Type<QueryableController<E, DTO>> entityType = new TypeBuilder<QueryableController<E, DTO>>() {}.build();
 
         this.dtoMapper = mapperFactory.getMapperFacade(entityType.getNestedType(0), entityType.getNestedType(1));
     }
@@ -43,7 +46,7 @@ public abstract class QueryableController<E extends Queryable, DTO extends Query
             throw new BadRequestException("Param 'query' cannot be blank");
         }
 
-        var page = service.findByName(query, offset, limit);;
+        Page<E> page = service.findByName(query, offset, limit);;
 
         return new PageResponse<>(page.getContent()
                 .stream()
@@ -53,13 +56,12 @@ public abstract class QueryableController<E extends Queryable, DTO extends Query
 
     @GetMapping("/{id}")
     public DTO getById(@PathVariable String id) {
-        return dtoMapper.map(service.findById(id));
+        return dtoMapper.map(service.findById(id).orElseThrow(ResourceNotFoundException::new));
     }
 
     @GetMapping(value = "/{id}/thumbnail", produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] getThumbnail(@PathVariable String id) {
-        return service.getThumbnailById(id);
+        return service.getThumbnailById(id).orElseThrow(() -> new ResourceNotFoundException("Image not found"));
     }
-
 
 }

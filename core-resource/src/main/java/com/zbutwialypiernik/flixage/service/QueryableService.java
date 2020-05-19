@@ -5,33 +5,35 @@ import com.zbutwialypiernik.flixage.entity.Thumbnail;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceLoadingException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
+import com.zbutwialypiernik.flixage.exception.UnsupportedMediaTypeException;
 import com.zbutwialypiernik.flixage.repository.QueryableRepository;
 import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import util.ExtensionUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.Clock;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Log4j2
 public class QueryableService<T extends Queryable> extends CrudService<T> {
 
     protected final QueryableRepository<T> repository;
     protected final ThumbnailFileStore store;
+    protected final ImageProcessingService imageService;
 
-    public static final String[] ACCEPTED_EXTENSIONS = {"jpg", "jpeg", "png"};
-    public static final String[] ACCEPTED_MIME_TYPES =  {"images/jpeg", "png"};
+    public static final int MAX_FILE_SIZE = 5 * 1048576;
 
-    private static final String OUTPUT_FORMAT = "png";
-
-    public QueryableService(QueryableRepository<T> repository, ThumbnailFileStore store, Clock clock) {
+    public QueryableService(QueryableRepository<T> repository, ThumbnailFileStore store, ImageProcessingService imageService, Clock clock) {
         super(repository, clock);
         this.repository = repository;
         this.store = store;
+        this.imageService = imageService;
     }
 
     /**
@@ -57,61 +59,66 @@ public class QueryableService<T extends Queryable> extends CrudService<T> {
         return repository.findByNameContainingIgnoreCase(name, PageRequest.of(offset / limit, limit));
     }
 
-    public void saveThumbnail(T t, File file) {
-        transcodeToOutputFormat(file);
+    public boolean existsByName(String name) {
+        return repository.existsByName(name);
+    }
 
-        if (t.getThumbnail() == null) {
-            t.setThumbnail(new Thumbnail());
+    public int countByName(String name) {
+        return repository.countByNameContainingIgnoreCase(name);
+    }
+
+    public T saveThumbnail(T entity, ImageResource resource) {
+        final String originalExtension = resource.getExtension();
+
+        if (Arrays.stream(ExtensionUtils.ACCEPTED_IMAGE_EXTENSIONS)
+                .noneMatch((type) -> type.equals(originalExtension))) {
+            throw new UnsupportedMediaTypeException("Unsupported file extension: " + resource.getExtension());
         }
 
-        try (InputStream inputStream = new FileInputStream(file)){
-            store.setContent(t.getThumbnail(), inputStream);
+        if (entity.getThumbnail() == null) {
+            entity.setThumbnail(new Thumbnail());
+        }
+
+        resource = imageService.process(resource);
+
+        try (InputStream inputStream = resource.getInputStream()){
+            entity.getThumbnail().setMimeType(ExtensionUtils.getMimeType(resource.getExtension()));
+            store.setContent(entity.getThumbnail(), inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        super.update(t);
+        return super.update(entity);
     }
 
-    public void deleteThumbnail(T t) {
-        store.unsetContent(t.getThumbnail());
-
-        super.update(t);
+    public void deleteThumbnail(T entity) {
+        super.update(entity);
     }
 
-    public byte[] getThumbnailById(String id) {
-        T t = findById(id);
+    public Optional<byte[]> getThumbnailById(String id) {
+        T t = findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (t.getThumbnail() == null) {
-            throw new ResourceNotFoundException();
+            return Optional.empty();
         }
 
         Resource resource = store.getResource(t.getThumbnail());
 
-        if (!resource.exists()) {
-            throw new ResourceNotFoundException();
+        if (resource == null || !resource.exists()) {
+            return Optional.empty();
         }
 
         try (InputStream stream = store.getContent(t.getThumbnail())) {
-            return stream.readAllBytes();
+            return Optional.of(stream.readAllBytes());
         } catch (IOException e) {
             log.error("Error during loading thumbnail: ", e);
             throw new ResourceLoadingException("Unexpected error during loading resource");
         }
     }
 
-    public boolean existsByName(String name) {
-        return repository.existsByName(name);
+    public void deleteAll() {
+        repository.deleteAll();
     }
 
-    // TODO: 100% refactor in future
-    private void transcodeToOutputFormat(File file) {
-        try (FileInputStream inputStream = new FileInputStream(file)){
-            BufferedImage bufferedImage = ImageIO.read(inputStream);
-            ImageIO.write(bufferedImage, OUTPUT_FORMAT, new FileOutputStream(file));
-        } catch (IOException e) {
-            throw new RuntimeException("Problem while transcoding image");
-        }
-    }
-    
+
 }

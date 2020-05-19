@@ -21,8 +21,8 @@ public class PlaylistService extends QueryableService<Playlist> {
     private final TrackService trackService;
 
     @Autowired
-    public PlaylistService(PlaylistRepository repository, TrackService trackService, ThumbnailFileStore store, Clock clock) {
-        super(repository, store, clock);
+    public PlaylistService(PlaylistRepository repository, TrackService trackService, ThumbnailFileStore store, ImageProcessingService imageService, Clock clock) {
+        super(repository, store, imageService, clock);
         this.playlistRepository = repository;
         this.trackService = trackService;
     }
@@ -35,14 +35,9 @@ public class PlaylistService extends QueryableService<Playlist> {
     public void addTrackToPlaylistByIds(Playlist playlist, List<String> trackIds) {
         List<Track> tracks = trackIds
                 .stream()
-                .map((id) -> {
-                    try {
-                        return trackService.findById(id);
-                    } catch (ResourceNotFoundException e) {
-                        // We catch and rethrow a message with more detailed exception
-                        throw new ResourceNotFoundException("Track with id " + id + "does not exists");
-                    }
-                }).collect(Collectors.toList());
+                .map((id) ->
+                     trackService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Track with id " + id + "does not exists"))
+                ).collect(Collectors.toList());
 
         playlist.getTracks().addAll(tracks);
     }

@@ -15,7 +15,7 @@ import java.time.Instant;
 import java.util.Optional;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements org.springframework.security.core.userdetails.UserDetailsService {
 
     private final UserRepository userRepository;
 

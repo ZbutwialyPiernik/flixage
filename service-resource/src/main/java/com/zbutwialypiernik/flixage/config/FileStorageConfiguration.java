@@ -12,7 +12,7 @@ import java.io.File;
 public class FileStorageConfiguration {
 
     File filesystemRoot() {
-        return new File("/storage");
+        return new File("./storage");
     }
 
     @Bean

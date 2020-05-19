@@ -1,0 +1,13 @@
+FROM timbru31/java-node:11-slim
+COPY ./build/libs/service-admin-0.0.1.jar /usr/app/
+WORKDIR /usr/app
+
+ENV ADMIN_PANEL_SERVICE_PORT 8093
+
+ENV DATABASE_USERNAME root
+ENV DATABASE_PASSWORD password
+ENV DATABASE_URL jdbc:mysql://host.docker.internal:3306/flixage
+
+EXPOSE 8093
+
+ENTRYPOINT ["java", "-jar", "service-admin-0.0.1.jar"]

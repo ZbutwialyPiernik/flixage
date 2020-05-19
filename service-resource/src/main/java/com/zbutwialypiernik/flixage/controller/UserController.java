@@ -37,7 +37,7 @@ public class UserController extends QueryableController<User, UserResponse> {
 
     @GetMapping("/me")
     public UserResponse getCurrentUser(@AuthenticationPrincipal JwtAuthenticationToken principal) {
-        return dtoMapper.map(userService.findById(principal.getId()));
+        return dtoMapper.map(userService.findById(principal.getId()).get());
     }
 
     @GetMapping("/me/playlists")

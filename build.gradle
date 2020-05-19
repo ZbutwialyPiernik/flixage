@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.6.RELEASE' apply false
+    id 'org.springframework.boot' version '2.3.0.RELEASE' apply false
     id 'io.spring.dependency-management' version '1.0.9.RELEASE' apply false
 }
 
@@ -38,16 +38,14 @@ subprojects {
         runtime 'io.jsonwebtoken:jjwt-impl:0.11.1',
                 'io.jsonwebtoken:jjwt-jackson:0.11.1'
 
-        implementation 'javax.persistence:javax.persistence-api:2.2'
-
         // RSA
-        implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.58'
+        implementation 'org.bouncycastle:bcpkix-jdk15on:1.58'
 
         // Logging
-        implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
-        implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
+        implementation 'org.apache.logging.log4j:log4j-api:2.13.1'
+        implementation 'org.apache.logging.log4j:log4j-core:2.13.1'
 
-        runtimeOnly group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.2.6.RELEASE'
+        runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.2.6.RELEASE'
 
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
@@ -85,14 +83,8 @@ project(':core') {
         // Object Mapping
         implementation 'ma.glasnost.orika:orika-core:1.5.4'
 
-        // Managing static content
-        implementation "com.github.paulcwarren:spring-content-fs-boot-starter:1.0.0.M9"
-
         // Database
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-        implementation 'javax.persistence:javax.persistence-api:2.2'
-
         implementation 'org.springframework.boot:spring-boot-starter-security'
 
         //Tests
@@ -126,6 +118,9 @@ project(':core-resource') {
 
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-security'
+
+        // Audio Processing
+        implementation 'ws.schild:jave-all-deps:2.7.3'
 
         //Tests
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -233,12 +228,11 @@ project(':service-resource') {
         // Managing static content
         implementation "com.github.paulcwarren:spring-content-fs-boot-starter:1.0.0.M9"
 
-        // Database
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
         // Spring
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
         implementation "org.hibernate:hibernate-validator:6.1.2.Final"
@@ -247,12 +241,5 @@ project(':service-resource') {
 
         // Database
         testRuntimeOnly 'com.h2database:h2'
-    }
-}
-
-project(':service-admin-panel') {
-    dependencies {
-        implementation project(':core')
-        implementation project(':core-resource')
     }
 }

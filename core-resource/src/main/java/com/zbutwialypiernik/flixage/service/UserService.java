@@ -24,8 +24,8 @@ public class UserService extends QueryableService<User> {
     private final ThumbnailFileStore store;
 
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder encoder, ThumbnailFileStore store, Clock clock) throws IOException {
-        super(repository, store, clock);
+    public UserService(UserRepository repository, PasswordEncoder encoder, ImageProcessingService imageService, ThumbnailFileStore store, Clock clock) throws IOException {
+        super(repository, store, imageService, clock);
         this.repository = repository;
         this.encoder = encoder;
         this.store = store;

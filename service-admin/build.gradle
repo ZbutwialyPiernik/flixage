@@ -1,0 +1,50 @@
+repositories {
+    maven {
+        url "https://maven.vaadin.com/vaadin-addons"
+    }
+}
+
+ext {
+    set('vaadinVersion', "14.1.28")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+    }
+}
+
+dependencies {
+    implementation project(':core')
+    implementation project(':core-resource')
+
+    // Object Mapping
+    implementation 'ma.glasnost.orika:orika-core:1.5.4'
+
+    // Case format utils
+    implementation 'com.google.guava:guava:28.2-jre'
+
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    //implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.vaadin:vaadin-spring-boot-starter'
+
+    // Validation
+    implementation "org.hibernate:hibernate-validator:6.1.2.Final"
+
+    //providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    // Database
+    testRuntimeOnly 'com.h2database:h2'
+
+    // Vaadin component plugins
+    implementation "org.vaadin.klaudeta:grid-pagination:2.0.1"
+
+    //Tests
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}

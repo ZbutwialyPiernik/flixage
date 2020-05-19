@@ -31,5 +31,4 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
         response.getOutputStream().write(service.getTrackFile(id));
     }
 
-
 }

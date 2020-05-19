@@ -11,6 +11,8 @@ public interface QueryableRepository<T extends Queryable> extends JpaRepository<
 
     Page<T> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
+    int countByNameContainingIgnoreCase(String name);
+
     boolean existsByName(String name);
 
 }

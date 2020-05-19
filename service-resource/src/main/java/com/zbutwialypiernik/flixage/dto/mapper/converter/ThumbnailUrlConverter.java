@@ -27,6 +27,10 @@ public class ThumbnailUrlConverter<A extends Queryable, B extends QueryableRespo
     public void mapAtoB(A queryable, B queryableResponse, MappingContext context) {
         super.mapAtoB(queryable, queryableResponse, context);
 
+        if (queryable.getThumbnail() == null) {
+            return;
+        }
+
         queryableResponse.setThumbnailUrl(builder.newBuilder()
                 .pathSegment(resourcePath, queryable.getId(), "thumbnail")
                 .build()

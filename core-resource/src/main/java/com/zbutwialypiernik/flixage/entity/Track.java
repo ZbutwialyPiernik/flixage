@@ -6,6 +6,7 @@ import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
 
 import javax.persistence.*;
+import java.time.Duration;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -22,6 +23,9 @@ public class Track extends Queryable {
     @ManyToOne
     private Artist artist;
 
+    // In seconds
+    private long duration;
+
     @ContentId
     @Column
     private String fileId;
@@ -29,5 +33,13 @@ public class Track extends Queryable {
     @ContentLength
     @Column
     private long fileSize;
+
+    public void setDuration(Duration duration) {
+        this.duration = duration.toSeconds();
+    }
+
+    public Duration getDuration() {
+        return Duration.ofSeconds(duration);
+    }
 
 }

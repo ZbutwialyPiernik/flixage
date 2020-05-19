@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 /**
  * Base class for every service in project, contains common crud methods
@@ -28,8 +29,8 @@ public class CrudService<T extends BaseEntity> {
         this.repository = repository;
     }
 
-    public T findById(String id) {
-        return repository.findById(id).orElseThrow(ResourceNotFoundException::new);
+    public Optional<T> findById(String id) {
+        return repository.findById(id);
     }
 
     /**
@@ -58,10 +59,7 @@ public class CrudService<T extends BaseEntity> {
      */
     @Transactional
     public T update(T entity) {
-        T oldEntity = findById(entity.getId());
-
-        System.out.println(oldEntity);
-        System.out.println(entity);
+        T oldEntity = findById(entity.getId()).orElseThrow(ResourceNotFoundException::new);
 
         if (!oldEntity.getCreationTime().equals(entity.getCreationTime())) {
             throw new IllegalStateException("Creation date is other than existing in database");

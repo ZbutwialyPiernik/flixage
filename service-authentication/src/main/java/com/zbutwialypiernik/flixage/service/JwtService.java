@@ -9,12 +9,10 @@ import com.zbutwialypiernik.flixage.repository.TokenRepository;
 import com.zbutwialypiernik.flixage.util.KeyUtil;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
 import java.time.Clock;
-import java.time.Instant;
 import java.time.Instant;
 import java.util.Date;
 

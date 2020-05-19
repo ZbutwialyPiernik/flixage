@@ -18,17 +18,19 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
-        RuleResult result = validator.validate(new PasswordData(password));
+        if (validator != null) {
+            RuleResult result = validator.validate(new PasswordData(password));
 
-        if (result.isValid()) {
-            return true;
+            if (result.isValid()) {
+                return true;
+            }
+
+            String message = String.join(",", validator.getMessages(result));
+
+            context.buildConstraintViolationWithTemplate(message)
+                    .addConstraintViolation()
+                    .disableDefaultConstraintViolation();
         }
-
-        String message = String.join(",", validator.getMessages(result));
-
-        context.buildConstraintViolationWithTemplate(message)
-                .addConstraintViolation()
-                .disableDefaultConstraintViolation();
 
         return false;
     }

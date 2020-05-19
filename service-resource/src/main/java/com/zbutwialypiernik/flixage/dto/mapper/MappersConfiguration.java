@@ -9,9 +9,17 @@ import com.zbutwialypiernik.flixage.dto.mapper.converter.ThumbnailUrlConverter;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.*;
 import ma.glasnost.orika.MapperFactory;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.impl.DefaultMapperFactory;
+import ma.glasnost.orika.metadata.ClassMapBuilder;
+import ma.glasnost.orika.metadata.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.Duration;
+import java.util.Optional;
 
 @Configuration
 public class MappersConfiguration {
@@ -24,17 +32,15 @@ public class MappersConfiguration {
         this.mapperFactory = mapperFactory;
         this.gatewayUriBuilder = gatewayUriBuilder;
 
-        createCustomMapping(Playlist.class, PlaylistResponse.class, "playlists");
-        createCustomMapping(User.class, UserResponse.class, "users");
-        createCustomMapping(Track.class, TrackResponse.class, "tracks");
-        createCustomMapping(Artist.class, ArtistResponse.class, "artists");
+        createCustomMapping(Playlist.class, PlaylistResponse.class, "playlists").register();
+        createCustomMapping(User.class, UserResponse.class, "users").register();
+        createCustomMapping(Track.class, TrackResponse.class, "tracks").register();
+        createCustomMapping(Artist.class, ArtistResponse.class, "artists").register();
     }
-
-    public void createCustomMapping(Class<? extends Queryable> entityClass, Class<? extends QueryableResponse> responseClass, String resourcePath) {
-        mapperFactory.classMap(entityClass, responseClass)
+    public <A extends Queryable, B extends QueryableResponse> ClassMapBuilder<A, B> createCustomMapping(Class<A> entityClass, Class<B> responseClass, String resourcePath) {
+        return mapperFactory.classMap(entityClass, responseClass)
                 .customize(new ThumbnailUrlConverter<>(gatewayUriBuilder, resourcePath))
-                .byDefault()
-                .register();
+                .byDefault();
     }
 
 }
