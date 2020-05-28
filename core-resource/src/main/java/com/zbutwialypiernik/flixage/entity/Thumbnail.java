@@ -21,13 +21,17 @@ public class Thumbnail {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private String id;
 
-    @ContentId
     @Column
-    private String fileId;
+    private String extension;
 
     @MimeType
     @Column
     private String mimeType;
+
+
+    @ContentId
+    @Column
+    private String fileId;
 
     @ContentLength
     @Column

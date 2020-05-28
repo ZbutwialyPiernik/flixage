@@ -3,6 +3,7 @@ package com.zbutwialypiernik.flixage.controller;
 import com.zbutwialypiernik.flixage.dto.TrackResponse;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.service.TrackService;
+import com.zbutwialypiernik.flixage.service.file.resource.AudioResource;
 import ma.glasnost.orika.MapperFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,9 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
 
     @GetMapping("{id}/stream")
     public void streamTrack(@PathVariable String id, HttpServletResponse response) throws IOException {
-        response.getOutputStream().write(service.getTrackFile(id));
+        AudioResource resource = service.getTrackFile(id);
+        response.setContentType(resource.getMimeType());
+        response.getOutputStream().write(resource.getContent());
     }
 
 }

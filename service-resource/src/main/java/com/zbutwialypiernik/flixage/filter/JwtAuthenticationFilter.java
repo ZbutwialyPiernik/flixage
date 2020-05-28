@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.handler.ExceptionResponse;
 import io.jsonwebtoken.*;
+import ma.glasnost.orika.MapperFacade;
+import ma.glasnost.orika.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,15 +28,13 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String TOKEN_HEADER = "Authorization";
 
-    private final ObjectMapper objectMapper;
     private final Clock clock;
 
     private final JwtAuthenticationParser parser;
 
     @Autowired
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtAuthenticationParser parser, ObjectMapper objectMapper, Clock clock) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtAuthenticationParser parser, Clock clock) {
         super(authenticationManager);
-        this.objectMapper = objectMapper;
         this.clock = clock;
         this.parser = parser;
     }
@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         response.setContentType("application/json");
 
         try {
-            objectMapper.writeValue(response.getWriter(), exceptionResponse);
+            response.getWriter().write(exceptionResponse.toString());
             response.getWriter().flush();
         } catch (IOException e) {
             e.printStackTrace();

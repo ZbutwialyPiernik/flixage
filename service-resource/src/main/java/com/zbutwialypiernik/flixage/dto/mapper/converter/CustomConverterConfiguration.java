@@ -10,7 +10,7 @@ import java.time.Duration;
 import java.util.Optional;
 
 @Configuration
-public class ConverterConfiguration {
+public class CustomConverterConfiguration {
 
     @Bean
     public BidirectionalConverter<Duration, Long> durationConverter() {

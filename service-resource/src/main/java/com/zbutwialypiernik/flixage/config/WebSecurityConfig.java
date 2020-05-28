@@ -24,9 +24,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationParser parser;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private Clock clock;
 
     @Override
@@ -39,7 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("api/tracks/**/stream").permitAll() // TODO: remove that after i will resolve problem with authorization headers in Flutter audio player
                         .anyRequest().permitAll()
                 .and()
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager(), parser, objectMapper, clock));
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager(), parser, clock));
     }
 
 }

@@ -3,72 +3,43 @@ package com.zbutwialypiernik.flixage.service;
 import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.ConflictException;
-import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
 import com.zbutwialypiernik.flixage.repository.UserRepository;
+import com.zbutwialypiernik.flixage.service.file.ThumbnailFileService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Clock;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class UserService extends QueryableService<User> {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
-    private final ThumbnailFileStore store;
 
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder encoder, ImageProcessingService imageService, ThumbnailFileStore store, Clock clock) throws IOException {
-        super(repository, store, imageService, clock);
+    public UserService(UserRepository repository, PasswordEncoder encoder, ThumbnailFileService thumbnailService, Clock clock) throws IOException {
+        super(repository, thumbnailService, clock);
         this.repository = repository;
         this.encoder = encoder;
-        this.store = store;
 
-        if (isUsernameTaken("admin")) {
-            return;
+        if (!isUsernameTaken("admin")) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setName("Super Admin");
+            admin.setPassword("Passw0rd");
+            admin.setRole(Role.ADMIN);
+            create(admin);
         }
-
-        User admin = new User();
-        admin.setUsername("admin");
-        admin.setName("John Wick");
-        admin.setPassword("Passw0rd");
-        admin.setRole(Role.ADMIN);
-        create(admin);
-
-        for (int i = 0; i < 100; i++) {
-            int leftLimit = 97; // letter 'a'
-            int rightLimit = 122; // letter 'z'
-            int targetStringLength = 10;
-            Random random = new Random();
-
-            String generatedString = random.ints(leftLimit, rightLimit + 1)
-                    .limit(targetStringLength)
-                    .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                    .toString();
-
-            User newUser = new User();
-            newUser.setRole(Role.USER);
-            newUser.setUsername(generatedString);
-            newUser.setName(generatedString + "name");
-            newUser.setPassword("Passw0rd");
-            create(newUser);
-        }
-    }
-
-    public Page<User> findByUsername(String query, int page, int size) {
-        return repository.findByUsernameContainingIgnoreCase(query, PageRequest.of(page, size));
     }
 
     /**
      * Creates new user, password has to be raw, not encrypted yet.
-     *
-     * @param user user to create.
+     * @throws ConflictException when username is taken by other user
+     * @param user the user to create
+     * @return the created user
      */
     public User create(User user) {
         if (isUsernameTaken(user.getUsername())) {
@@ -80,6 +51,12 @@ public class UserService extends QueryableService<User> {
         return super.create(user);
     }
 
+    /**
+     * Updates user
+     * @throws ConflictException when username is taken by other user
+     * @param user the user to get updated
+     * @return the updated user
+     */
     public User update(User user) {
         if (isUsernameTakenByOtherUser(user.getId(), user.getUsername())) {
             throw new ConflictException("Username is already taken by other user");

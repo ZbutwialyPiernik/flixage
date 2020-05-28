@@ -4,9 +4,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.content.commons.annotations.ContentId;
 import org.springframework.content.commons.annotations.ContentLength;
+import org.springframework.content.commons.annotations.MimeType;
 
 import javax.persistence.*;
 import java.time.Duration;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -25,6 +27,13 @@ public class Track extends Queryable {
 
     // In seconds
     private long duration;
+
+    @Column
+    private String extension;
+
+    @MimeType
+    @Column
+    private String mimeType;
 
     @ContentId
     @Column

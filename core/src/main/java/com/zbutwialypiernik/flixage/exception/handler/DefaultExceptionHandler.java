@@ -22,8 +22,8 @@ import java.time.Instant;
  * will have malformed message to "Internal Server Error" without any details
  */
 @Log4j2
-//@ControllerAdvice
-//@Order(Ordered.HIGHEST_PRECEDENCE)
+@ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class DefaultExceptionHandler {
 
     private final Clock clock;
@@ -33,7 +33,7 @@ public class DefaultExceptionHandler {
         this.clock = clock;
     }
 
-    //@ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exception.class)
     protected ResponseEntity<ExceptionResponse> handle(Exception exception) {
         if (exception instanceof ApiException) {
             HttpStatus httpStatus = ((ApiException) exception).getStatus();

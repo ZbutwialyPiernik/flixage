@@ -11,10 +11,8 @@ import com.zbutwialypiernik.flixage.entity.*;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.ClassMapBuilder;
 import ma.glasnost.orika.metadata.Type;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,13 +20,13 @@ import java.time.Duration;
 import java.util.Optional;
 
 @Configuration
-public class MappersConfiguration {
+public class DtoMappersConfiguration {
 
     private final MapperFactory mapperFactory;
 
     private final GatewayUriBuilder gatewayUriBuilder;
 
-    public MappersConfiguration(MapperFactory mapperFactory, GatewayUriBuilder gatewayUriBuilder) {
+    public DtoMappersConfiguration(MapperFactory mapperFactory, GatewayUriBuilder gatewayUriBuilder) {
         this.mapperFactory = mapperFactory;
         this.gatewayUriBuilder = gatewayUriBuilder;
 

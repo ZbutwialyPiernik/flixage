@@ -1,48 +1,25 @@
 package com.zbutwialypiernik.flixage.service;
 
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.stereotype.Service;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
+import net.coobird.thumbnailator.Thumbnails;
+import org.springframework.stereotype.Component;
+
 import java.io.*;
 
-@Service
+@Component
 public class ImageProcessingService {
 
-    private static final int IMAGE_SIZE = 256;
+    private static final int SIZE = 256;
 
     public ImageResource process(ImageResource imageResource) {
-        try (InputStream inputStream = imageResource.getInputStream(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
-            BufferedImage bufferedImage = ImageIO.read(inputStream);
-            Graphics2D g2d = bufferedImage.createGraphics();
-            g2d.drawImage(bufferedImage, 0, 0, IMAGE_SIZE, IMAGE_SIZE, null);
-            g2d.dispose();
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()){
+            Thumbnails.of(imageResource.getInputStream())
+                    .size(SIZE, SIZE)
+                    .outputFormat(imageResource.getExtension())
+                    .toOutputStream(outputStream);
 
-            ImageIO.write(bufferedImage, imageResource.getExtension(), outputStream);
-
-            return new ImageResource() {
-                @Override
-                public InputStream getInputStream() {
-                    return new ByteArrayInputStream(outputStream.toByteArray());
-                }
-
-                @Override
-                public String getName() {
-                    return imageResource.getName();
-                }
-
-                @Override
-                public String getExtension() {
-                    return imageResource.getExtension();
-                }
-
-                @Override
-                public String getMimeType() {
-                    return imageResource.getMimeType();
-                }
-            };
+            return new ImageResource(outputStream.toByteArray(), imageResource.getName(), imageResource.getExtension(), imageResource.getMimeType());
         } catch (IOException e) {
             e.printStackTrace();
 

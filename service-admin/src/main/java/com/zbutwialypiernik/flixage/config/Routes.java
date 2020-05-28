@@ -12,4 +12,5 @@ public class Routes {
 
     public static final String NOT_FOUND = "404";
 
+    public static final String ARTISTS = "artists";
 }

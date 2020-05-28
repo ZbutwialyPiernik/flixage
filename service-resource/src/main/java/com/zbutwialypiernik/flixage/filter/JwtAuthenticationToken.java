@@ -1,6 +1,7 @@
 package com.zbutwialypiernik.flixage.filter;
 
 import com.zbutwialypiernik.flixage.entity.Role;
+import com.zbutwialypiernik.flixage.security.AbstractAuthentication;
 import lombok.Data;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Data
-public class JwtAuthenticationToken implements Authentication {
+public class JwtAuthenticationToken implements AbstractAuthentication {
 
     private final String id;
 

@@ -16,7 +16,7 @@ public class GatewayUriBuilder {
 
     private final UriComponentsBuilder builder;
 
-    public GatewayUriBuilder(@Value("${GATEWAY_SERVICE_URL}") String baseUrl) {
+    public GatewayUriBuilder(@Value("${gateway.url}") String baseUrl) {
         builder = UriComponentsBuilder.newInstance();
 
         try {

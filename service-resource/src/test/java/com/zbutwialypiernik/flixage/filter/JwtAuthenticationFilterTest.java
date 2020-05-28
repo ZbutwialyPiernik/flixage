@@ -1,13 +1,9 @@
-package flixage;
+package com.zbutwialypiernik.flixage.filter;
 
 import com.zbutwialypiernik.flixage.entity.Role;
-import com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter;
-import com.zbutwialypiernik.flixage.filter.JwtAuthenticationParser;
-import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Clock;
 
 public class JwtAuthenticationFilterTest {
 
@@ -43,7 +40,7 @@ public class JwtAuthenticationFilterTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        filter = new JwtAuthenticationFilter(authenticationManager, parser, )
+        filter = new JwtAuthenticationFilter(authenticationManager, parser, Clock.systemUTC());
     }
 
     /**

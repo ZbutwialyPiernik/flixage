@@ -5,13 +5,14 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.shared.Registration;
 import com.zbutwialypiernik.flixage.entity.Queryable;
+import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
 import com.zbutwialypiernik.flixage.ui.component.ConfirmDialog;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.BidirectionalMapper;
 import com.zbutwialypiernik.flixage.ui.component.form.Form;
 import com.zbutwialypiernik.flixage.ui.component.form.dto.QueryableFormDTO;
+import lombok.Getter;
 import org.springframework.data.util.ReflectionUtils;
 
-import java.io.File;
 import java.util.Objects;
 
 /**
@@ -20,23 +21,16 @@ import java.util.Objects;
  */
 public class DtoFormDialog<T extends Queryable, DTO extends QueryableFormDTO> extends Composite<ConfirmDialog> {
 
+    @Getter
     public class SubmitEvent extends ComponentEvent<DtoFormDialog<T, ?>> {
 
         private final T entity;
-        private final DTO dto;
+        private final ImageResource imageResource;
 
-        public SubmitEvent(DtoFormDialog<T, ?> source, T entity, DTO dto) {
+        public SubmitEvent(DtoFormDialog<T, ?> source, T entity, ImageResource imageResource) {
             super(source, false);
             this.entity = entity;
-            this.dto = dto;
-        }
-
-        public T getEntity() {
-            return entity;
-        }
-
-        public DTO getDto() {
-            return dto;
+            this.imageResource = imageResource;
         }
 
     }
@@ -61,7 +55,7 @@ public class DtoFormDialog<T extends Queryable, DTO extends QueryableFormDTO> ex
 
         form.getContent().setPadding(false);
         // Wrapping DTO form event with domain type
-        form.addSubmitListener(event -> fireEvent(new SubmitEvent(this, mapper.mapFrom(event.getEntity(), entity), form.getDTO())));
+        form.addSubmitListener(event -> fireEvent(new SubmitEvent(this, mapper.mapFrom(event.getEntity(), entity), form.getDTO().getThumbnailResource())));
     }
 
     public void clear() {
@@ -79,10 +73,6 @@ public class DtoFormDialog<T extends Queryable, DTO extends QueryableFormDTO> ex
         //}
         
         form.setDTO(dto);
-    }
-
-    public T getEntity() {
-        return entity;
     }
 
     public Registration addSubmitListener(ComponentEventListener<SubmitEvent> listener) {

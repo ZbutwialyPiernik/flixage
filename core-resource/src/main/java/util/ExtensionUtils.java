@@ -7,11 +7,10 @@ public class ExtensionUtils {
     private static final Map<String, String> types = Map.of(
             "jpg", "image/jpeg",
             "jpeg", "image/jpeg",
-            "png", "image/png");
+            "png", "image/png",
+            "mp3", "audio/mp3",
+            "wav", "audio/wav");
 
-    public static String[] ACCEPTED_IMAGE_TYPES = new String[]{"image/jpeg", "image/png"};
-
-    public static String[] ACCEPTED_IMAGE_EXTENSIONS = new String[]{"jpg", "png", "jpeg"};
 
     /**
      * @param extension the extension of file without dot

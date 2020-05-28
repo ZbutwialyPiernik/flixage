@@ -2,8 +2,6 @@ package com.zbutwialypiernik.flixage.dto.mapper;
 
 import com.zbutwialypiernik.flixage.config.GatewayUriBuilder;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
-import com.zbutwialypiernik.flixage.dto.mapper.MappersConfiguration;
-import com.zbutwialypiernik.flixage.dto.mapper.converter.ThumbnailUrlConverter;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.entity.Thumbnail;
 import ma.glasnost.orika.*;
@@ -55,7 +53,7 @@ public class QueryableResponseMapperTest {
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();
 
-        MappersConfiguration mappersConfiguration = new MappersConfiguration(mapperFactory, new GatewayUriBuilder(BASE_URL));
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriBuilder(BASE_URL));
         mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
 
         MapperFacade mapperFacade = mapperFactory.getMapperFacade();

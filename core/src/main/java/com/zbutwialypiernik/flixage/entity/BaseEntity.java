@@ -27,7 +27,7 @@ public abstract class BaseEntity {
     @Column
     private Instant lastUpdateTime;
 
-    @Column
+    @Column(updatable = false)
     private Instant creationTime;
 
 }

@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -15,8 +16,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.function.ValueProvider;
 import com.zbutwialypiernik.flixage.entity.Queryable;
-import com.zbutwialypiernik.flixage.service.CrudService;
 import com.zbutwialypiernik.flixage.service.QueryableService;
+import com.zbutwialypiernik.flixage.ui.component.ComponentUtils;
 import com.zbutwialypiernik.flixage.ui.component.DeleteDialog;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.BidirectionalMapper;
 import com.zbutwialypiernik.flixage.ui.component.form.Form;
@@ -25,6 +26,7 @@ import org.vaadin.klaudeta.PaginatedGrid;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 /**
  * Class representing generic, same looking cruds in admin panel.
@@ -66,10 +68,12 @@ public abstract class Crud<T extends Queryable> extends Composite<VerticalLayout
             createForm.clear();
             createForm.open();
         });
+
         updateButton.addClickListener(event -> {
             updateForm.setEntity(grid.asSingleSelect().getValue());
             updateForm.open();
         });
+
         deleteButton.addClickListener(event -> {
             deleteDialog.setEntity(grid.asSingleSelect().getValue());
             deleteDialog.open();
@@ -84,6 +88,17 @@ public abstract class Crud<T extends Queryable> extends Composite<VerticalLayout
             updateButton.setEnabled(event.getValue() != null);
             deleteButton.setEnabled(event.getValue() != null);
         });
+
+        addComponentColumn(queryable -> {
+            Image image = new Image();
+            service.getThumbnailById(queryable.getId()).ifPresentOrElse(
+                    (resource) -> image.setSrc(ComponentUtils.imageFromByteArray(resource)),
+                    () -> image.setSrc("img/placeholder.jpg"));
+            image.setHeight("64px");
+            image.setWidth("64px");
+
+            return image;
+        }).setHeader("Thumbnail");
 
         getContent().add(createButtonBar(), grid);
     }
@@ -133,12 +148,12 @@ public abstract class Crud<T extends Queryable> extends Composite<VerticalLayout
 
     public <DTO extends QueryableFormDTO> void setCreationForm(Form<DTO> form, BidirectionalMapper<T, DTO> converter) {
         createForm = new DtoFormDialog<>(domainType, form, converter);
-        createForm.addSubmitListener(event -> onCreate(event.getEntity(), form.getDTO()));
+        createForm.addSubmitListener(this::onCreate);
     }
 
     public <DTO extends QueryableFormDTO> void setUpdateForm(Form<DTO> form, BidirectionalMapper<T, DTO> converter) {
         updateForm = new DtoFormDialog<>(domainType, form, converter);
-        updateForm.addSubmitListener(event -> onUpdate(event.getEntity(), form.getDTO()));
+        updateForm.addSubmitListener(this::onUpdate);
     }
 
     public void setService(QueryableService<T> service) {
@@ -146,7 +161,7 @@ public abstract class Crud<T extends Queryable> extends Composite<VerticalLayout
         this.grid.setDataProvider(createDataProvider());
     }
 
-    public CrudService<T> getService() {
+    public QueryableService<T> getService() {
         return service;
     }
 
@@ -156,24 +171,20 @@ public abstract class Crud<T extends Queryable> extends Composite<VerticalLayout
                 query -> service.countByName(searchField.getValue()));
     }
 
-    private void onCreate(T bean, QueryableFormDTO dto) {
-        T entity = service.create(bean);
-
-        if (dto.getThumbnailResource() != null) {
-            service.saveThumbnail(entity, dto.getThumbnailResource());
-        }
+    private void onCreate(DtoFormDialog<T, ?>.SubmitEvent event) {
+        T entity = event.getImageResource() != null ?
+                service.create(event.getEntity(), event.getImageResource()) :
+                service.create(event.getEntity());
 
         grid.getDataProvider().refreshItem(entity);
         grid.refreshPaginator();
         createForm.close();
     }
 
-    private void onUpdate(T bean, QueryableFormDTO dto) {
-        T entity = service.update(bean);
-
-        if (dto.getThumbnailResource() != null) {
-            service.saveThumbnail(entity, dto.getThumbnailResource());
-        }
+    private void onUpdate(DtoFormDialog<T, ?>.SubmitEvent event) {
+        T entity = event.getImageResource() != null ?
+                service.update(event.getEntity(), event.getImageResource()) :
+                service.update(event.getEntity());
 
         grid.getDataProvider().refreshItem(entity);
         grid.refreshPaginator();

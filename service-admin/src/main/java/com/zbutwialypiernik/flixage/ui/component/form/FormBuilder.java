@@ -9,16 +9,13 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
-import com.zbutwialypiernik.flixage.service.ImageResource;
-import com.zbutwialypiernik.flixage.service.QueryableService;
+import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
 import com.zbutwialypiernik.flixage.ui.component.form.dto.QueryableFormDTO;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
-import util.ExtensionUtils;
 
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,12 +47,12 @@ public class FormBuilder<T extends QueryableFormDTO> {
     public FormBuilder(Class<T> entityClass) {
         this.entityClass = entityClass;
 
-        classToField.put(String.class, (type, field) -> new TextField(field.getLabel()));
-        classToField.put(Number.class, (type, field) -> new NumberField(field.getLabel()));
-        classToField.put(Boolean.class, (type, field) -> new Checkbox(field.getLabel()));
+        classToField.put(String.class, (type, field) -> new TextField());
+        classToField.put(Number.class, (type, field) -> new NumberField());
+        classToField.put(Boolean.class, (type, field) -> new Checkbox());
         classToField.put(Enum.class, (type, field) -> {
             Select select = new Select<>(type.getEnumConstants());
-            select.setLabel(field.getLabel());
+            //select.setLabel(field.getLabel());
             select.setValue(type.getEnumConstants()[0]);
             return select;
         });
@@ -85,8 +82,6 @@ public class FormBuilder<T extends QueryableFormDTO> {
             );
         }
 
-        addThumbnailUpload(form);
-
         for (FormField formField : formFields) {
             Field beanField = ReflectionUtils.findField(entityClass, formField.getName());
 
@@ -109,7 +104,7 @@ public class FormBuilder<T extends QueryableFormDTO> {
                         .bind(formField.getName());
 
                 if (fieldInstance instanceof Component) {
-                    form.getBody().add((Component) fieldInstance);
+                    form.getBody().addFormItem((Component) fieldInstance, formField.getLabel());
                 }
             } else {
                 throw new IllegalStateException("Field type not found for property: " + formField);
@@ -123,39 +118,25 @@ public class FormBuilder<T extends QueryableFormDTO> {
             form.getHeader().add();
         }
 
+        addThumbnailUpload(form);
+
         return form;
     }
 
     private void addThumbnailUpload(Form<T> form) {
         MemoryBuffer buffer = new MemoryBuffer();
         Upload upload = new Upload(buffer);
-        upload.setAcceptedFileTypes(ExtensionUtils.ACCEPTED_IMAGE_TYPES);
+        upload.setAcceptedFileTypes(ImageResource.ACCEPTED_TYPES);
         upload.setMaxFiles(1);
-        upload.setMaxFileSize(QueryableService.MAX_FILE_SIZE);
-        upload.addFinishedListener(event -> {
-            form.getDTO().setThumbnailResource(new ImageResource() {
-                @Override
-                public InputStream getInputStream() {
-                    return buffer.getInputStream();
-                }
+        upload.setMaxFileSize((int) ImageResource.MAX_FILE_SIZE);
+        upload.addFinishedListener(event ->
+            form.getDTO().setThumbnailResource(
+                    new ImageResource(buffer.getInputStream(),
+                            buffer.getFileName(),
+                            FilenameUtils.getExtension(buffer.getFileName()),
+                            buffer.getFileData().getMimeType())));
 
-                @Override
-                public String getName() {
-                    return buffer.getFileData().getFileName();
-                }
-
-                @Override
-                public String getExtension() {
-                    return FilenameUtils.getExtension(buffer.getFileData().getFileName());
-                }
-
-                @Override
-                public String getMimeType() {
-                    return buffer.getFileData().getMimeType();
-                }
-            });
-        });
-        form.getBody().add(upload);
+        form.getBody().addFormItem(upload, "Thumbnail");
     }
 
 }

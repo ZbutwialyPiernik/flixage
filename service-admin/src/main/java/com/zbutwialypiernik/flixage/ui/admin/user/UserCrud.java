@@ -1,6 +1,7 @@
 package com.zbutwialypiernik.flixage.ui.admin.user;
 
 import com.google.common.base.CaseFormat;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.zbutwialypiernik.flixage.entity.User;
@@ -13,6 +14,10 @@ import com.zbutwialypiernik.flixage.ui.component.form.Form;
 import com.zbutwialypiernik.flixage.ui.component.form.FormBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 @Component
 @UIScope
@@ -56,6 +61,8 @@ public class UserCrud extends Crud<User> {
         setCreationForm(creationForm, factory.createConverter());
         setUpdateForm(updateForm, factory.createConverter());
 
+        addColumn(User::getName)
+                .setHeader("Name");
         addColumn(User::getUsername)
                 .setHeader("Username");
         addColumn(user -> CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, user.getRole().name()))
@@ -68,8 +75,11 @@ public class UserCrud extends Crud<User> {
                 .setHeader("Locked");
         addColumn(User::isExpiredCredentials)
                 .setHeader("Expired Credentials");
-        addColumn(user -> DATE_FORMAT.format(user.getCreationTime()))
-                .setHeader("Creation Time");
+        addColumn(user -> DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                .localizedBy(getLocale())
+                .withZone(ZoneId.of("UTC"))
+                .format(user.getCreationTime()))
+                .setHeader("Creation Time [UTC]");
     }
 
 }

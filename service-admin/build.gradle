@@ -39,7 +39,6 @@ dependencies {
 
     // Database
     testRuntimeOnly 'com.h2database:h2'
-
     // Vaadin component plugins
     implementation "org.vaadin.klaudeta:grid-pagination:2.0.1"
 

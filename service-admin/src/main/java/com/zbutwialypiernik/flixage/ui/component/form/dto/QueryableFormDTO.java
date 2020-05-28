@@ -1,14 +1,12 @@
 package com.zbutwialypiernik.flixage.ui.component.form.dto;
 
-import com.zbutwialypiernik.flixage.service.ImageResource;
+import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
 import lombok.Data;
-import lombok.Value;
 
 import javax.validation.constraints.Size;
-import java.io.File;
 
 @Data
-public class QueryableFormDTO {
+public abstract class QueryableFormDTO {
 
     private String id;
 

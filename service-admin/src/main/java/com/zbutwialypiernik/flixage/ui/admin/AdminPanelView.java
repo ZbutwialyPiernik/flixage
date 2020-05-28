@@ -12,6 +12,9 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLayout;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
 import com.zbutwialypiernik.flixage.config.Routes;
 import com.zbutwialypiernik.flixage.ui.admin.artist.ArtistCrud;
 import com.zbutwialypiernik.flixage.ui.admin.dashboard.DashboardPanel;
@@ -21,7 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.HashMap;
 
 @Route(Routes.ADMIN)
-public class AdminPanelView extends AppLayout {
+@Theme(value = Lumo.class, variant = Lumo.DARK)
+public class AdminPanelView extends AppLayout implements RouterLayout {
 
     /**
      * Linking tab label with corresponding admin panel.

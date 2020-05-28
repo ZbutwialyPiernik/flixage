@@ -2,25 +2,24 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Album;
 import com.zbutwialypiernik.flixage.repository.AlbumRepository;
-import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.zbutwialypiernik.flixage.service.file.ThumbnailFileService;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.util.List;
 
 @Service
 public class AlbumService extends QueryableService<Album> {
 
     private final AlbumRepository repository;
 
-    public AlbumService(AlbumRepository repository, ThumbnailFileStore store, ImageProcessingService imageService, Clock clock) {
-        super(repository, store, imageService, clock);
+    public AlbumService(AlbumRepository repository, ThumbnailFileService thumbnailService, Clock clock) {
+        super(repository, thumbnailService, clock);
         this.repository = repository;
     }
 
-    public Page<Album> findByArtistId(String artistId, int offset, int size) {
-        return repository.findAlbumsByArtistId(artistId, PageRequest.of(offset * size, size));
+    public List<Album> getByArtistId(String artistId) {
+        return repository.findByArtistId(artistId);
     }
 
 }
