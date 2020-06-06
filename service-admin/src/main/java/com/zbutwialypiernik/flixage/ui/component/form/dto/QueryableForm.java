@@ -3,7 +3,6 @@ package com.zbutwialypiernik.flixage.ui.component.form.dto;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
