@@ -7,7 +7,7 @@ import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 
 /**
- * Custom Orika mapper implementation to map {@link Queryable#getThumbnail()} to {@link QueryableResponse#getThumbnailUrl()}.
+ * Custom Orika mapper implementation to map {@link Queryable#getThumbnail()} ()} to {@link QueryableResponse#getThumbnailUrl()}.
  * For simplicity CDN server will be not used, static content will be served from REST API.
  */
 public class ThumbnailUrlConverter<A extends Queryable, B extends QueryableResponse> extends CustomMapper<A, B> {

@@ -1,33 +1,37 @@
 package com.zbutwialypiernik.flixage.entity;
 
-import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.time.Instant;
-import java.time.Instant;
+import java.util.UUID;
 
 /**
  * Superclass of every entity in this project. Id is represented as uuid.
  * Class is named as BaseEntity to avoid name conflicts with JPA
  */
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(of = "id")
 @MappedSuperclass
 public abstract class BaseEntity {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name =  "UUID", strategy =  "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private String id;
 
+    @UpdateTimestamp
     @Column
     private Instant lastUpdateTime;
 
-    @Column(updatable = false)
+    @CreationTimestamp
+    @Column(updatable = false, nullable = false)
     private Instant creationTime;
 
 }

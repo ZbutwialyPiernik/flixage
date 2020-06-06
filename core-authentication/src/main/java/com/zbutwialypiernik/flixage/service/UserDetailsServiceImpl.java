@@ -1,11 +1,11 @@
 package com.zbutwialypiernik.flixage.service;
 
+import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserDetailsServiceImpl implements org.springframework.security.core.userdetails.UserDetailsService {
@@ -28,10 +29,21 @@ public class UserDetailsServiceImpl implements org.springframework.security.core
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.clock = clock;
+
+        if (!userRepository.existsByUsernameIgnoreCase("admin")) {
+            User user = new User();
+            user.setId(UUID.randomUUID().toString());
+            user.setRole(Role.ADMIN);
+            user.setName("Head Admin");
+            user.setUsername("admin");
+            user.setPassword("Passw0rd");
+
+            registerUser(user);
+        }
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
        return userRepository.findByUsernameIgnoreCase(username).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
     }
 
@@ -47,7 +59,6 @@ public class UserDetailsServiceImpl implements org.springframework.security.core
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setCreationTime(Instant.now(clock));
-        user.setLastUpdateTime(user.getCreationTime());
 
         userRepository.save(user);
     }

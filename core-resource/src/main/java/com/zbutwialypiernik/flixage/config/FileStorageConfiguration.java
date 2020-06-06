@@ -1,7 +1,7 @@
 package com.zbutwialypiernik.flixage.config;
 
-import com.zbutwialypiernik.flixage.entity.Thumbnail;
-import com.zbutwialypiernik.flixage.entity.Track;
+import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
+import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import org.springframework.content.fs.config.EnableFilesystemStores;
 import org.springframework.content.fs.config.FilesystemStoreConfigurer;
 import org.springframework.content.fs.io.FileSystemResourceLoader;
@@ -23,9 +23,9 @@ public class FileStorageConfiguration {
     @Bean
     public FilesystemStoreConfigurer configurer() {
         return registry -> {
-            registry.addConverter(new Converter<Track, String>() {
+            registry.addConverter(new Converter<AudioFileEntity, String>() {
                 @Override
-                public String convert(Track source) {
+                public String convert(AudioFileEntity source) {
                     if (source.getFileId() == null) {
                         source.setFileId(UUID.randomUUID().toString());
                     }
@@ -34,9 +34,9 @@ public class FileStorageConfiguration {
                 }
             });
 
-            registry.addConverter(new Converter<Thumbnail, String>() {
+            registry.addConverter(new Converter<ImageFileEntity, String>() {
                 @Override
-                public String convert(Thumbnail source) {
+                public String convert(ImageFileEntity source) {
                     if (source.getFileId() == null) {
                         source.setFileId(UUID.randomUUID().toString());
                     }

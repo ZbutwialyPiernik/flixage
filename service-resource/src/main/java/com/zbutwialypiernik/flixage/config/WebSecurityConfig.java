@@ -1,19 +1,14 @@
 package com.zbutwialypiernik.flixage.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.discovery.converters.Auto;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationParser;
-import io.jsonwebtoken.JwtParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import javax.servlet.http.HttpServletResponse;
 import java.time.Clock;
 
 @Configuration

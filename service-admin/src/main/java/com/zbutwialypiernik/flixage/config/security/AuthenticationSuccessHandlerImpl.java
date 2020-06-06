@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,9 +42,9 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
         for (GrantedAuthority grantedAuthority : authorities) {
-            if (grantedAuthority.getAuthority().equals("ROLE_ARTIST")) {
+            if (grantedAuthority.equals(Role.USER.toAuthority())) {
                 return Routes.HOME;
-            } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+            } else if (grantedAuthority.equals(Role.ADMIN.toAuthority())) {
                 return Routes.ADMIN;
             }
         }

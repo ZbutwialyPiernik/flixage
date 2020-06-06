@@ -12,7 +12,7 @@ public class OrikaMapperFactory implements MapperFactory {
         this.facade = facade;
     }
 
-    public <T, D> BidirectionalMapper<T, D> createConverter() {
+    public <T, D> BidirectionalMapper<T, D> createMapper() {
         return new BidirectionalMapper<>() {
             @Override
             public D mapTo(T t, D d) {

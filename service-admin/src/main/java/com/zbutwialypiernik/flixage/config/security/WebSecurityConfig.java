@@ -1,7 +1,6 @@
 package com.zbutwialypiernik.flixage.config.security;
 
 import com.zbutwialypiernik.flixage.config.Routes;
-import com.zbutwialypiernik.flixage.config.security.filter.LoggedUserFilter;
 import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import javax.servlet.Filter;
 
 @Configuration
 @EnableWebSecurity

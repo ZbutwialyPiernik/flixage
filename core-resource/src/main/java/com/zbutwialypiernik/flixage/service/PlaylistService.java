@@ -2,16 +2,17 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.Track;
+import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.PlaylistRepository;
-import com.zbutwialypiernik.flixage.service.file.ThumbnailFileService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.Clock;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,8 +23,8 @@ public class PlaylistService extends QueryableService<Playlist> {
     private final TrackService trackService;
 
     @Autowired
-    public PlaylistService(PlaylistRepository repository, TrackService trackService, ThumbnailFileService thumbnailService, Clock clock) {
-        super(repository, thumbnailService, clock);
+    public PlaylistService(PlaylistRepository repository, TrackService trackService, ImageFileService thumbnailService) {
+        super(repository, thumbnailService);
         this.playlistRepository = repository;
         this.trackService = trackService;
     }
@@ -33,7 +34,7 @@ public class PlaylistService extends QueryableService<Playlist> {
     }
 
     @Transactional
-    public List<Track> getTracksByPlaylistId(String playlistId) {
+    public List<Track> getTracks(String playlistId) {
         Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
 
         Hibernate.initialize(playlist.getTracks());
@@ -42,7 +43,7 @@ public class PlaylistService extends QueryableService<Playlist> {
     }
 
     @Transactional
-    public void addTrackToPlaylistByIds(Playlist playlist, List<String> trackIds) {
+    public void addTracks(Playlist playlist, Set<String> trackIds) {
         List<Track> tracks = trackIds
                 .stream()
                 .map((id) ->
@@ -54,11 +55,24 @@ public class PlaylistService extends QueryableService<Playlist> {
         playlist.getTracks().addAll(tracks);
     }
 
-    /*
-    public void removeTrackFromPlaylistByIds(Playlist playlist, List<Track> tracks) {
+    /**
+     * Removes tracks from playlist by id
+     *
+     * @throws BadRequestException when playlist does not contain given track
+     * @throws ResourceNotFoundException when playlist with given id doesn't exists
+     *
+     * @param playlist playlist to remove tracks
+     * @param trackIds the ids of tracks to remove
+     */
+    @Transactional
+    public void removeTracks(Playlist playlist, Set<String> trackIds) {
+        Hibernate.initialize(playlist.getTracks());
 
-    }*/
-
-
+        for (var id : trackIds) {
+            if (!playlist.getTracks().removeIf(track -> track.getId().equals(id))) {
+                throw new BadRequestException("Playlist does not contain track with id: " + id);
+            }
+        }
+    }
 
 }

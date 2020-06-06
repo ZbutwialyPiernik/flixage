@@ -5,7 +5,7 @@ import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.exception.ResourceLoadingException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.service.QueryableService;
-import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;

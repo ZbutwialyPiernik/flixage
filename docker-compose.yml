@@ -56,6 +56,6 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: com.zbutwialypiernik.flixage # Default database
+      MYSQL_DATABASE: flixage # Default database
       MYSQL_USER: admin
       MYSQL_ROOT_PASSWORD: password

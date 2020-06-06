@@ -93,6 +93,12 @@ project(':core') {
 }
 
 project(':core-resource') {
+    repositories {
+        maven {
+            url "http://dl.bintray.com/ijabz/maven"
+        }
+    }
+
     bootJar {
         enabled = false
     }
@@ -120,8 +126,7 @@ project(':core-resource') {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-security'
 
-        // Audio Processing
-        implementation 'ws.schild:jave-all-deps:2.7.3'
+        implementation 'net.jthink:jaudiotagger:2.2.3'
 
         //Tests
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -219,6 +224,12 @@ project(':service-authentication') {
 }
 
 project(':service-resource') {
+    repositories {
+        maven {
+            url "http://dl.bintray.com/ijabz/maven"
+        }
+    }
+
     ext {
         restAssuredVersion = '4.0.0'
     }

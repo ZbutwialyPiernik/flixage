@@ -1,11 +1,7 @@
 package com.zbutwialypiernik.flixage.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.handler.ExceptionResponse;
-import io.jsonwebtoken.*;
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -3,7 +3,6 @@ package com.zbutwialypiernik.flixage.filter;
 import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.security.AbstractAuthentication;
 import lombok.Data;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;

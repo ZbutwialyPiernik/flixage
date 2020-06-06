@@ -2,11 +2,10 @@ package com.zbutwialypiernik.flixage.dto.mapper;
 
 import com.zbutwialypiernik.flixage.config.GatewayUriBuilder;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
+import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import com.zbutwialypiernik.flixage.entity.Queryable;
-import com.zbutwialypiernik.flixage.entity.Thumbnail;
-import ma.glasnost.orika.*;
+import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +47,7 @@ public class QueryableResponseMapperTest {
         entityStub.setId("1234-1234-1234-1234");
         entityStub.setName("Test name");
         entityStub.setTestField("Test field");
-        entityStub.setThumbnail(new Thumbnail());
+        entityStub.setThumbnail(new ImageFileEntity());
 
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();

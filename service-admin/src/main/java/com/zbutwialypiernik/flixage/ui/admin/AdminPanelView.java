@@ -12,7 +12,6 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouterLayout;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.zbutwialypiernik.flixage.config.Routes;
@@ -25,7 +24,7 @@ import java.util.HashMap;
 
 @Route(Routes.ADMIN)
 @Theme(value = Lumo.class, variant = Lumo.DARK)
-public class AdminPanelView extends AppLayout implements RouterLayout {
+public class AdminPanelView extends AppLayout {
 
     /**
      * Linking tab label with corresponding admin panel.
@@ -67,6 +66,5 @@ public class AdminPanelView extends AppLayout implements RouterLayout {
     private Tab createTab(VaadinIcon icon, String label) {
         return new Tab(new Icon(icon), new Text(label));
     }
-
 
 }

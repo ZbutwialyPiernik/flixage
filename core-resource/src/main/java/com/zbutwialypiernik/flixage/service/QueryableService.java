@@ -1,20 +1,19 @@
 package com.zbutwialypiernik.flixage.service;
 
+import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import com.zbutwialypiernik.flixage.entity.Queryable;
-import com.zbutwialypiernik.flixage.entity.Thumbnail;
-import com.zbutwialypiernik.flixage.exception.*;
+import com.zbutwialypiernik.flixage.exception.BadRequestException;
+import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.QueryableRepository;
-import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
-import com.zbutwialypiernik.flixage.service.file.ThumbnailFileService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Base class for every service in project, contains common crud methods
@@ -24,13 +23,10 @@ public class QueryableService<T extends Queryable>{
 
     protected final QueryableRepository<T> repository;
 
-    protected final ThumbnailFileService thumbnailService;
+    protected final ImageFileService thumbnailService;
 
-    private final Clock clock;
-
-    public QueryableService(QueryableRepository<T> repository, ThumbnailFileService thumbnailService, Clock clock) {
+    public QueryableService(QueryableRepository<T> repository, ImageFileService thumbnailService) {
         this.thumbnailService = thumbnailService;
-        this.clock = clock;
         this.repository = repository;
     }
 
@@ -40,48 +36,42 @@ public class QueryableService<T extends Queryable>{
 
     /**
      * Creates new entity
-     * @throws BadRequestException when entity has set explicit id
-     * @throws IllegalArgumentException when thumbnail is explicitly set
-     * @param entity the entity without id and thumbnail
+     *
+     * @throws IllegalArgumentException when entity has set explicit thumbnail
+     *
+     * @param entity the entity without thumbnail
      */
     public T create(T entity) {
-        if (entity.getId() != null) {
-            throw new BadRequestException("User id should not be set");
-        }
-
         if (entity.getThumbnail() != null) {
             throw new IllegalArgumentException("Thumbnail cannot be explicitly set during entity creation");
         }
 
-        entity.setCreationTime(getCurrentInstant());
-        entity.setLastUpdateTime(entity.getCreationTime());
+        entity.setId(UUID.randomUUID().toString());
 
         return repository.save(entity);
     }
 
     /**
      * Updates existing entity
+     *
      * @throws ResourceNotFoundException when entity doesn't exists in database
-     * @throws IllegalStateException when creation date is other than existing in database
      *
      * @param entity
      */
     @Transactional
     public T update(T entity) {
-        T oldEntity = findById(entity.getId()).orElseThrow(ResourceNotFoundException::new);
-
-        // Thumbnail cannot be changed without calling saveThumbnail(),
-        // because is tied with file, without that we would have oprhan files
-        entity.setThumbnail(oldEntity.getThumbnail());
-        entity.setLastUpdateTime(getCurrentInstant());
-        entity.setCreationTime(oldEntity.getCreationTime());
+        if (!repository.existsById(entity.getId())) {
+            throw new ResourceNotFoundException();
+        }
 
         return repository.save(entity);
     }
 
     /**
      * Deletes entity by given id
+     *
      * @throws ResourceNotFoundException when entity does not exists in database
+     *
      * @param id id of entity to be deleted
      */
     @Transactional
@@ -97,7 +87,9 @@ public class QueryableService<T extends Queryable>{
 
     /**
      * Deletes given entity
+     *
      * @throws ResourceNotFoundException when entity does not exists in database
+     *
      * @param entity entity to be deleted
      */
     @Transactional
@@ -117,13 +109,14 @@ public class QueryableService<T extends Queryable>{
     /**
      * Finds page of entities with username containing provided query, ignoring case.
      *
+     * @throws BadRequestException when offset is negative
+     * @throws BadRequestException when limit is non positive
+     *
      * @param name the query to find similar entities by name
      * @param offset the first index of page
      * @param limit the limit of entities per page
-     * @return the page of entities containing query string in their name
      *
-     * @throws BadRequestException when offset is negative
-     * @throws BadRequestException when limit is non positive
+     * @return the page of entities containing query string in their name
      */
     public Page<T> findByName(String name, int offset, int limit) {
         return repository.findByNameContainingIgnoreCase(name, PageRequest.of(offset / limit, limit));
@@ -145,14 +138,19 @@ public class QueryableService<T extends Queryable>{
      * @return
      */
     @Transactional
-    public T saveThumbnail(T entity, ImageResource resource) {
+    public void saveThumbnail(T entity, ImageResource resource) {
+        if (!repository.existsById(entity.getId())) {
+            throw new ResourceNotFoundException();
+        }
+
         if (entity.getThumbnail() == null) {
-            entity.setThumbnail(new Thumbnail());
+            entity.setThumbnail(new ImageFileEntity());
+            entity.getThumbnail().setId(UUID.randomUUID().toString());
         }
 
         thumbnailService.save(entity.getThumbnail(), resource);
 
-        return update(entity);
+        repository.save(entity);
     }
 
     /**
@@ -168,7 +166,7 @@ public class QueryableService<T extends Queryable>{
         thumbnailService.delete(entity.getThumbnail());
         entity.setThumbnail(null);
 
-        update(entity);
+        repository.save(entity);
     }
 
     /**
@@ -177,18 +175,9 @@ public class QueryableService<T extends Queryable>{
      * @return the optional of byte[] containing thumbnail
      */
     public Optional<ImageResource> getThumbnailById(String id) {
-        T t = findById(id).orElseThrow(ResourceNotFoundException::new);
+        T entity = findById(id).orElseThrow(ResourceNotFoundException::new);
 
-        return thumbnailService.get(t.getThumbnail());
-    }
-
-    /**
-     * Database does not store nano seconds, we're cutting them to have same precision
-     * in database and entities at same time.
-     * @return current UTC
-     */
-    private Instant getCurrentInstant() {
-        return clock.instant().truncatedTo(ChronoUnit.MILLIS);
+        return thumbnailService.get(entity.getThumbnail());
     }
 
 }

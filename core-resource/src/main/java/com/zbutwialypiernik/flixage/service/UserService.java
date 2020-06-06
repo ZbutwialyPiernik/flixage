@@ -1,16 +1,14 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.ConflictException;
+import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.UserRepository;
-import com.zbutwialypiernik.flixage.service.file.ThumbnailFileService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.time.Clock;
 import java.util.Optional;
 
 @Service
@@ -20,27 +18,24 @@ public class UserService extends QueryableService<User> {
     private final PasswordEncoder encoder;
 
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder encoder, ThumbnailFileService thumbnailService, Clock clock) throws IOException {
-        super(repository, thumbnailService, clock);
+    public UserService(UserRepository repository, PasswordEncoder encoder, ImageFileService imageService) {
+        super(repository, imageService);
         this.repository = repository;
         this.encoder = encoder;
-
-        if (!isUsernameTaken("admin")) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setName("Super Admin");
-            admin.setPassword("Passw0rd");
-            admin.setRole(Role.ADMIN);
-            create(admin);
-        }
     }
 
     /**
      * Creates new user, password has to be raw, not encrypted yet.
-     * @throws ConflictException when username is taken by other user
+     *
      * @param user the user to create
+     *
+     * @throws ConflictException when username is taken by other user
+     * @throws IllegalArgumentException when entity has set explicit id
+     * @throws IllegalArgumentException when entity has set explicit thumbnail
+     *
      * @return the created user
      */
+    @Override
     public User create(User user) {
         if (isUsernameTaken(user.getUsername())) {
             throw new ConflictException("Username is already taken by other user");
@@ -53,13 +48,25 @@ public class UserService extends QueryableService<User> {
 
     /**
      * Updates user
-     * @throws ConflictException when username is taken by other user
+     *
      * @param user the user to get updated
+     *
+     * @throws ConflictException when username is taken by other user
+     * @throws ResourceNotFoundException when entity doesn't exists in database
+     * @throws IllegalStateException when creation date is other than existing in database
+     *
      * @return the updated user
      */
+    @Override
     public User update(User user) {
         if (isUsernameTakenByOtherUser(user.getId(), user.getUsername())) {
             throw new ConflictException("Username is already taken by other user");
+        }
+
+        User oldUser = repository.findById(user.getId()).orElseThrow(ResourceNotFoundException::new);
+
+        if (!oldUser.getPassword().equals(user.getPassword())) {
+            user.setPassword(encoder.encode(user.getPassword()));
         }
 
         return super.update(user);
@@ -76,6 +83,9 @@ public class UserService extends QueryableService<User> {
 
     /**
      * Checks if username is not taken by other user, ignoring case.
+     *
+     * This method is mainly used during update of user entity. Unlike name, username
+     * has to be unique, so we have to exclude user during update.
      *
      * @param excludedUserId user id to exclude from checking
      * @param username username to check

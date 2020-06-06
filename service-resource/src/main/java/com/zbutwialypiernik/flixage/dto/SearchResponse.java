@@ -2,7 +2,6 @@ package com.zbutwialypiernik.flixage.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
-import com.zbutwialypiernik.flixage.entity.Album;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

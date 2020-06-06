@@ -1,12 +1,10 @@
 package com.zbutwialypiernik.flixage.config;
 
-import lombok.extern.log4j.Log4j2;
 import org.passay.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 

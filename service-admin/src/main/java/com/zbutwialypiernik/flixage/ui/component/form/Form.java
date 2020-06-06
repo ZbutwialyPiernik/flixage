@@ -11,7 +11,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.shared.Registration;
 import com.zbutwialypiernik.flixage.ui.component.crud.Crud;
-import com.zbutwialypiernik.flixage.ui.component.form.dto.QueryableFormDTO;
+import com.zbutwialypiernik.flixage.ui.component.form.dto.QueryableForm;
 import org.springframework.data.util.ReflectionUtils;
 
 /**
@@ -20,9 +20,9 @@ import org.springframework.data.util.ReflectionUtils;
  *
  * @param <DTO>
  */
-public class Form<DTO extends QueryableFormDTO> extends Composite<VerticalLayout> implements HasSize {
+public class Form<DTO extends QueryableForm> extends Composite<VerticalLayout> implements HasSize  {
 
-    public static class SubmitEvent<DTO extends QueryableFormDTO> extends ComponentEvent<Form<DTO>> {
+    public static class SubmitEvent<DTO extends QueryableForm> extends ComponentEvent<Form<DTO>> {
 
         private final DTO entity;
 
@@ -54,7 +54,6 @@ public class Form<DTO extends QueryableFormDTO> extends Composite<VerticalLayout
     private final FlexLayout footer;
 
     /**
-     *
      * @param entityClass class of bean used in form, should have public non arg constructor
      */
     protected Form(Class<DTO> entityClass) {
@@ -81,7 +80,7 @@ public class Form<DTO extends QueryableFormDTO> extends Composite<VerticalLayout
     public Registration addSubmitListener(ComponentEventListener<SubmitEvent<DTO>> listener) {
         /* We need to downcast, because we can't get class from generic type */
         ComponentEventListener componentListener = event -> {
-            SubmitEvent<DTO> valueChangeEvent = (SubmitEvent<DTO>) event;
+            SubmitEvent valueChangeEvent = (SubmitEvent) event;
             listener.onComponentEvent(valueChangeEvent);
         };
 
@@ -97,8 +96,8 @@ public class Form<DTO extends QueryableFormDTO> extends Composite<VerticalLayout
     }
 
     public void submit() {
-        if (binder.isValid()) {
-            fireEvent(new SubmitEvent<>(this, getDTO()));
+        if (binder.validate().isOk()) {
+            fireEvent(new SubmitEvent(this, getDTO()));
         }
     }
 

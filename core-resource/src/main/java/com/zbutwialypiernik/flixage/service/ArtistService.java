@@ -1,16 +1,15 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.entity.*;
+import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.repository.QueryableRepository;
-import com.zbutwialypiernik.flixage.service.file.ThumbnailFileService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
 import org.springframework.stereotype.Service;
-
-import java.time.Clock;
 
 @Service
 public class ArtistService extends QueryableService<Artist> {
 
-    public ArtistService(QueryableRepository<Artist> repository, ThumbnailFileService thumbnailService, Clock clock) {
-        super(repository, thumbnailService, clock);
+    public ArtistService(QueryableRepository<Artist> repository, ImageFileService thumbnailService) {
+        super(repository, thumbnailService);
     }
+
 }

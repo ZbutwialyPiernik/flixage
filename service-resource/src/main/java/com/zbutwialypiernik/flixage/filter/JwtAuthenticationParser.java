@@ -3,7 +3,6 @@ package com.zbutwialypiernik.flixage.filter;
 import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

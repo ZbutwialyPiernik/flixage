@@ -30,7 +30,7 @@ public class RegisterController {
         }
 
         User user = mapper.map(request, User.class);
-        user.setUsername(user.getUsername());
+        user.setName(user.getUsername());
 
         userService.registerUser(user);
     }

@@ -9,15 +9,8 @@ import com.zbutwialypiernik.flixage.dto.mapper.converter.ThumbnailUrlConverter;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.*;
 import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.ClassMapBuilder;
-import ma.glasnost.orika.metadata.Type;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.time.Duration;
-import java.util.Optional;
 
 @Configuration
 public class DtoMappersConfiguration {

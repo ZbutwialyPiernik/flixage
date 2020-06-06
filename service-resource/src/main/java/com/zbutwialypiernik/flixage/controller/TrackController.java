@@ -3,7 +3,7 @@ package com.zbutwialypiernik.flixage.controller;
 import com.zbutwialypiernik.flixage.dto.TrackResponse;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.service.TrackService;
-import com.zbutwialypiernik.flixage.service.file.resource.AudioResource;
+import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import ma.glasnost.orika.MapperFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +32,11 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
         AudioResource resource = service.getTrackFile(id);
         response.setContentType(resource.getMimeType());
         response.getOutputStream().write(resource.getContent());
+    }
+
+    @GetMapping("{id}/playCount")
+    public void increasePlayCount() {
+
     }
 
 }

@@ -4,23 +4,25 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
-import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
-import com.zbutwialypiernik.flixage.ui.component.form.dto.QueryableFormDTO;
+import com.vaadin.flow.component.upload.receivers.FileData;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
+import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
+import com.zbutwialypiernik.flixage.ui.component.form.dto.QueryableForm;
 import lombok.Value;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FormBuilder<T extends QueryableFormDTO> {
+public class FormBuilder<T extends QueryableForm> {
 
     @FunctionalInterface
     public interface FieldGenerator {
@@ -52,11 +54,34 @@ public class FormBuilder<T extends QueryableFormDTO> {
         classToField.put(Boolean.class, (type, field) -> new Checkbox());
         classToField.put(Enum.class, (type, field) -> {
             Select select = new Select<>(type.getEnumConstants());
-            //select.setLabel(field.getLabel());
             select.setValue(type.getEnumConstants()[0]);
             return select;
         });
-        //classToField.put(File.class, (type, label) -> { return new TextField(); });
+        classToField.put(ImageResource.class, (type, field) ->
+            new FormUpload<ImageResource>(ImageResource.MAX_FILE_SIZE, ImageResource.ACCEPTED_TYPES) {
+                @Override
+                protected ImageResource transform(InputStream inputStream, FileData fileData) throws IOException {
+                    return new ImageResource(inputStream.readAllBytes(),
+                            fileData.getFileName(),
+                            fileData.getMimeType());
+                }
+            }
+        );
+        classToField.put(AudioResource.class, (type, field) ->
+            new FormUpload<AudioResource>(AudioResource.MAX_FILE_SIZE, AudioResource.ACCEPTED_TYPES) {
+                @Override
+                protected AudioResource transform(InputStream inputStream, FileData fileData) throws IOException {
+                    return new AudioResource(inputStream.readAllBytes(),
+                            fileData.getFileName(),
+                            fileData.getMimeType());
+                }
+            }
+        );
+
+        addFields(
+                new FormField("thumbnailResource", "Thumbnail"),
+                new FormField("name", "Name")
+        );
     }
 
     public void setHeader(String header) {
@@ -77,22 +102,26 @@ public class FormBuilder<T extends QueryableFormDTO> {
         // If user didn't provide any field, we're taking every single one by default.
         if (formFields.isEmpty()) {
             formFields.addAll(Arrays.stream(entityClass.getDeclaredFields())
-                    .map((field) -> new FormField(field.getName(), field.getName()))
+                    .map(field -> new FormField(field.getName(), field.getName()))
                     .collect(Collectors.toList())
             );
         }
 
         for (FormField formField : formFields) {
+            if (formField.getName().equalsIgnoreCase("id")) {
+                throw new IllegalStateException("Id is not editable");
+            }
+
             Field beanField = ReflectionUtils.findField(entityClass, formField.getName());
 
             if (beanField == null) {
-                throw new IllegalArgumentException("Property " + formField.getName() + " not found");
+                throw new IllegalStateException("Property " + formField.getName() + " not found");
             }
 
             HasValue<?, ?> fieldInstance = null;
 
             for (Map.Entry<Class<?>, FieldGenerator> entry : classToField.entrySet()) {
-                //Using spring utils class to autobox primitive types
+                // Using spring utils class to autobox primitive types
                 if (ClassUtils.isAssignable(entry.getKey(), beanField.getType())) {
                     fieldInstance = entry.getValue().generate(beanField.getType(), formField);
                     break;
@@ -100,12 +129,23 @@ public class FormBuilder<T extends QueryableFormDTO> {
             }
 
             if (fieldInstance != null) {
-                form.binder.forField(fieldInstance)
-                        .bind(formField.getName());
+                var fieldBinder = form.binder.forField(fieldInstance);
 
                 if (fieldInstance instanceof Component) {
-                    form.getBody().addFormItem((Component) fieldInstance, formField.getLabel());
+                    var column = new VerticalLayout();
+                    column.setPadding(false);
+                    var label = new Label();
+                    column.add((Component) fieldInstance, label);
+
+                    fieldBinder.withValidationStatusHandler(statusChange -> {
+                        label.setVisible(statusChange.isError());
+                        label.setText(statusChange.getMessage().orElse("Error"));
+                    });
+
+                    form.getBody().addFormItem(column, formField.getLabel());
                 }
+
+                fieldBinder.bind(formField.getName());
             } else {
                 throw new IllegalStateException("Field type not found for property: " + formField);
             }
@@ -118,25 +158,7 @@ public class FormBuilder<T extends QueryableFormDTO> {
             form.getHeader().add();
         }
 
-        addThumbnailUpload(form);
-
         return form;
-    }
-
-    private void addThumbnailUpload(Form<T> form) {
-        MemoryBuffer buffer = new MemoryBuffer();
-        Upload upload = new Upload(buffer);
-        upload.setAcceptedFileTypes(ImageResource.ACCEPTED_TYPES);
-        upload.setMaxFiles(1);
-        upload.setMaxFileSize((int) ImageResource.MAX_FILE_SIZE);
-        upload.addFinishedListener(event ->
-            form.getDTO().setThumbnailResource(
-                    new ImageResource(buffer.getInputStream(),
-                            buffer.getFileName(),
-                            FilenameUtils.getExtension(buffer.getFileName()),
-                            buffer.getFileData().getMimeType())));
-
-        form.getBody().addFormItem(upload, "Thumbnail");
     }
 
 }

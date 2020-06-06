@@ -3,7 +3,6 @@ package com.zbutwialypiernik.flixage.config.security.filter;
 import com.zbutwialypiernik.flixage.config.Routes;
 import com.zbutwialypiernik.flixage.util.SecurityUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

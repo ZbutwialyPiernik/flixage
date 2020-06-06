@@ -1,7 +1,6 @@
 package com.zbutwialypiernik.flixage.exception.handler;
 
 import com.zbutwialypiernik.flixage.exception.ApiException;
-import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.core.config.Order;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.Clock;
 import java.time.Instant;

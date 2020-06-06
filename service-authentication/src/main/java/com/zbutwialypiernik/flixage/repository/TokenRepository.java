@@ -8,7 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface TokenRepository extends JpaRepository<RefreshToken, String> {
 
     long countByUserId(String id);
-
-    void deleteById(String id);
-
 }

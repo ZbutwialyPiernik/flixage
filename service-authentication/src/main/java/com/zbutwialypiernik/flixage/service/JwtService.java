@@ -15,6 +15,7 @@ import java.security.PrivateKey;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -101,10 +102,9 @@ public class JwtService {
         }
 
         RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setId(UUID.randomUUID().toString());
         refreshToken.setUser(user);
-        refreshToken.setExpireTime(config.getRefreshTokenExpireTime());
         refreshToken.setCreationTime(Instant.now(clock));
-        refreshToken.setLastUpdateTime(Instant.now(clock));
 
         tokenRepository.save(refreshToken);
 

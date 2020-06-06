@@ -5,14 +5,14 @@ import com.zbutwialypiernik.flixage.dto.playlist.AddTracksRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.Playlist;
-import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.*;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.security.AbstractAuthentication;
-import com.zbutwialypiernik.flixage.service.*;
-import com.zbutwialypiernik.flixage.service.file.resource.ImageResource;
+import com.zbutwialypiernik.flixage.service.PlaylistService;
+import com.zbutwialypiernik.flixage.service.UserService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +73,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @PutMapping("/{id}")
-    public PlaylistResponse updatePlaylist(@PathVariable String id, @Valid @RequestBody PlaylistRequest request, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+    public PlaylistResponse update(@PathVariable String id, @Valid @RequestBody PlaylistRequest request, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
         Playlist oldPlaylist = playlistService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
 
         if (isNotOwner(authentication, oldPlaylist)) {
@@ -90,7 +90,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePlaylistById(@PathVariable String id, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+    public void delete(@PathVariable String id, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
         Playlist oldPlaylist = playlistService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
 
         if (isNotOwner(authentication, oldPlaylist)) {
@@ -101,14 +101,15 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @GetMapping("/{id}/tracks")
-    public List<TrackResponse> getTrackByPlaylistId(@PathVariable String id) {
-        return playlistService.getTracksByPlaylistId(id).stream()
+    public List<TrackResponse> getTracks(@PathVariable String id) {
+        return playlistService.getTracks(id).stream()
                 .map(trackMapper::map)
                 .collect(Collectors.toList());
     }
 
-    @PutMapping(value = "/{id}/thumbnail")
-    public void uploadThumbnail(@PathVariable String id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal JwtAuthenticationToken principal) {
+    @PostMapping(value = "/{id}/thumbnail")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void uploadThumbnail(@PathVariable String id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
         Playlist playlist = playlistService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
 
         if (file.isEmpty()) {
@@ -119,6 +120,10 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
             throw new PayloadTooLargeException("File is too big, limit is " + ImageResource.MAX_FILE_SIZE / FileUtils.ONE_MB + " mb");
         }
 
+        if (isNotOwner(authentication, playlist)) {
+            throw new ResourceForbiddenException();
+        }
+
         try {
             playlistService.saveThumbnail(playlist, new ImageResource(file.getBytes(), file.getOriginalFilename(), FilenameUtils.getExtension(file.getOriginalFilename()), file.getContentType()));
         } catch (IOException e) {
@@ -127,18 +132,22 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @PutMapping("/{id}/tracks")
-    public void addTracksToPlaylist(@PathVariable String id, @RequestBody AddTracksRequest addTracksRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+    public void addTracks(@PathVariable String id, @RequestBody AddTracksRequest addTracksRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+        if (addTracksRequest.getIds().isEmpty()) {
+            throw new BadRequestException("Missing required track ids");
+        }
+
         Playlist playlist = playlistService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
 
         if (isNotOwner(authentication, playlist)) {
             throw new ResourceForbiddenException();
         }
 
-        playlistService.addTrackToPlaylistByIds(playlist, addTracksRequest.getIds());
+        playlistService.addTracks(playlist, addTracksRequest.getIds());
     }
 
     private boolean isNotOwner(AbstractAuthentication authentication, Playlist playlist) {
-        return !playlist.getOwner().getId().equals(authentication.getId()) || authentication.getRole() != Role.ADMIN;
+        return !playlist.getOwner().getId().equals(authentication.getId());
     }
 
 }

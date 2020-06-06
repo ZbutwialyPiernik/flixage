@@ -1,9 +1,9 @@
 package com.zbutwialypiernik.flixage.entity;
 
-import com.zbutwialypiernik.flixage.repository.ThumbnailFileStore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
+import com.zbutwialypiernik.flixage.repository.ImageFileStore;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,11 +11,10 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
 /** Every entity that has name and corresponding thumbnail extends this class
- * managed by {@link ThumbnailFileStore}.
+ * managed by {@link ImageFileStore}.
 */
-@Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class Queryable extends BaseEntity {
 
@@ -23,6 +22,6 @@ public abstract class Queryable extends BaseEntity {
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Thumbnail thumbnail;
+    private ImageFileEntity thumbnail;
 
 }
