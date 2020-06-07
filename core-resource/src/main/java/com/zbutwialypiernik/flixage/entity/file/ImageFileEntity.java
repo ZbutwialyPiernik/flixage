@@ -15,10 +15,10 @@ import javax.persistence.Entity;
 @Entity
 public class ImageFileEntity extends FileEntity {
 
-    @Column
+    @Column(nullable = false)
     private long width;
 
-    @Column
+    @Column(nullable = false)
     private long height;
 
 }

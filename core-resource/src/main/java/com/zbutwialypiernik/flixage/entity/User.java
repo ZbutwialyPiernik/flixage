@@ -33,16 +33,16 @@ public class User extends Queryable implements UserDetails {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Track> savedTracks = new ArrayList<>();
 
-    @Column
+    @Column(nullable = false)
     private boolean enabled = true;
 
-    @Column
+    @Column(nullable = false)
     private boolean expired = false;
 
-    @Column
+    @Column(nullable = false)
     private boolean locked = false;
 
-    @Column
+    @Column(nullable = false)
     private boolean expiredCredentials = false;
 
     @Enumerated(value = EnumType.STRING)

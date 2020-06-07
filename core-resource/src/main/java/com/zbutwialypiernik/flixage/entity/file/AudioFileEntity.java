@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Getter
@@ -14,6 +15,7 @@ import javax.persistence.Entity;
 @Entity
 public class AudioFileEntity extends FileEntity {
 
-    public long duration;
+    @Column(nullable = false)
+    private long duration;
 
 }

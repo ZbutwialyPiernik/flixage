@@ -19,19 +19,19 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class FileEntity extends BaseEntity {
 
-    @Column
+    @Column(nullable = false)
     private String extension;
 
     @MimeType
-    @Column
+    @Column(nullable = false)
     private String mimeType;
 
     @ContentId
-    @Column
+    @Column(nullable = false)
     private String fileId;
 
     @ContentLength
-    @Column
+    @Column(nullable = false)
     private long size;
 
 }
