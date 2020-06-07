@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.ui.admin.dashboard;
+package com.zbutwialypiernik.flixage.ui.page.dashboard;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.spring.annotation.UIScope;
@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @UIScope
-public class DashboardPanel extends VerticalLayout {
+public class DashboardPage extends VerticalLayout {
 
     private final UserService userService;
 
     @Autowired
-    public DashboardPanel(UserService userService) {
+    public DashboardPage(UserService userService) {
         this.userService = userService;
     }
 

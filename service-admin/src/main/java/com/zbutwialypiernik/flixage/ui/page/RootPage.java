@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.ui.admin;
+package com.zbutwialypiernik.flixage.ui.page;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
@@ -15,16 +15,16 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.zbutwialypiernik.flixage.config.Routes;
-import com.zbutwialypiernik.flixage.ui.admin.artist.ArtistCrud;
-import com.zbutwialypiernik.flixage.ui.admin.dashboard.DashboardPanel;
-import com.zbutwialypiernik.flixage.ui.admin.user.UserCrud;
+import com.zbutwialypiernik.flixage.ui.component.crud.impl.ArtistCrud;
+import com.zbutwialypiernik.flixage.ui.page.dashboard.DashboardPage;
+import com.zbutwialypiernik.flixage.ui.component.crud.impl.UserCrud;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 
 @Route(Routes.ADMIN)
 @Theme(value = Lumo.class, variant = Lumo.DARK)
-public class AdminPanelView extends AppLayout {
+public class RootPage extends AppLayout {
 
     /**
      * Linking tab label with corresponding admin panel.
@@ -32,8 +32,8 @@ public class AdminPanelView extends AppLayout {
     private final HashMap<String, Component> labelToPanelMap = new HashMap<>();
 
     @Autowired
-    public AdminPanelView(DashboardPanel dashboardPanel, UserCrud userCrudPanel, ArtistCrud artistCrudPanel) {
-        labelToPanelMap.put("Dashboard", dashboardPanel);
+    public RootPage(DashboardPage dashboardPage, UserCrud userCrudPanel, ArtistCrud artistCrudPanel) {
+        labelToPanelMap.put("Dashboard", dashboardPage);
         labelToPanelMap.put("Users", userCrudPanel);
         labelToPanelMap.put("Library", artistCrudPanel);
 
@@ -55,7 +55,7 @@ public class AdminPanelView extends AppLayout {
         Anchor logoutButton = new Anchor(Routes.LOGOUT, createTab(VaadinIcon.EXIT, "Logout"));
 
         addToNavbar(false, logo, tabsCenter, logoutButton);
-        setContent(dashboardPanel);
+        setContent(dashboardPage);
     }
 
     private void setContentByTab(Tab tab) {

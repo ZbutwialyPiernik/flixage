@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.ui.admin.user;
+package com.zbutwialypiernik.flixage.ui.component.crud.impl;
 
 import com.google.common.base.CaseFormat;
 import com.vaadin.flow.data.binder.Validator;

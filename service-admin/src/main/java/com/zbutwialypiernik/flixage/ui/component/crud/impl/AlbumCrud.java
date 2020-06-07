@@ -1,10 +1,10 @@
-package com.zbutwialypiernik.flixage.ui.admin.artist;
+package com.zbutwialypiernik.flixage.ui.component.crud.impl;
 
 import com.vaadin.flow.router.RouterLink;
 import com.zbutwialypiernik.flixage.entity.Album;
 import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.service.AlbumService;
-import com.zbutwialypiernik.flixage.ui.admin.AlbumPage;
+import com.zbutwialypiernik.flixage.ui.page.AlbumPage;
 import com.zbutwialypiernik.flixage.ui.component.crud.Crud;
 import com.zbutwialypiernik.flixage.ui.component.crud.DtoFormDialog;
 import com.zbutwialypiernik.flixage.ui.component.crud.SingleCallbackDataProvider;
@@ -17,7 +17,7 @@ public class AlbumCrud extends Crud<Album, AlbumForm> {
     // Null if track is Single
     private Artist artist;
 
-    protected AlbumCrud(AlbumService albumService, Artist artist, MapperFactory factory) {
+    public AlbumCrud(AlbumService albumService, Artist artist, MapperFactory factory) {
         super(Album.class);
         this.artist = artist;
 

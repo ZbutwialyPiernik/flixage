@@ -45,7 +45,7 @@ public abstract class Crud<T extends Queryable, DTO extends QueryableForm> exten
     protected final Class<T> domainType;
     protected QueryableService<T> service;
 
-    protected Crud(Class<T> domainType) {
+    public Crud(Class<T> domainType) {
         this.domainType = domainType;
 
         grid = setupGrid();

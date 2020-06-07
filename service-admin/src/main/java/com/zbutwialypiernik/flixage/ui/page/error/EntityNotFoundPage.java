@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.ui.admin;
+package com.zbutwialypiernik.flixage.ui.page.error;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;

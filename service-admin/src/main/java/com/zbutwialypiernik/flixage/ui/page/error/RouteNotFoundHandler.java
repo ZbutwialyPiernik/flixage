@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.ui.error;
+package com.zbutwialypiernik.flixage.ui.page.error;
 
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.ErrorParameter;

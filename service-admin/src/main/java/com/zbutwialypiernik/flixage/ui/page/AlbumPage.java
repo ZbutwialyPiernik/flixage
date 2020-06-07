@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.ui.admin;
+package com.zbutwialypiernik.flixage.ui.page;
 
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -12,13 +12,13 @@ import com.zbutwialypiernik.flixage.config.Routes;
 import com.zbutwialypiernik.flixage.entity.Album;
 import com.zbutwialypiernik.flixage.service.AlbumService;
 import com.zbutwialypiernik.flixage.service.TrackService;
-import com.zbutwialypiernik.flixage.ui.admin.artist.TrackCrud;
+import com.zbutwialypiernik.flixage.ui.component.crud.impl.TrackCrud;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.MapperFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
-@Route(value = Routes.ALBUM, layout = AdminPanelView.class)
+@Route(value = Routes.ALBUM, layout = RootPage.class)
 public class AlbumPage extends VerticalLayout implements HasUrlParameter<String> {
 
     // Services

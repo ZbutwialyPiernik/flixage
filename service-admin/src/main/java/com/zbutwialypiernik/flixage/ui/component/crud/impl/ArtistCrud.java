@@ -1,9 +1,10 @@
-package com.zbutwialypiernik.flixage.ui.admin.artist;
+package com.zbutwialypiernik.flixage.ui.component.crud.impl;
 
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.service.ArtistService;
+import com.zbutwialypiernik.flixage.ui.page.artist.ArtistEditorPage;
 import com.zbutwialypiernik.flixage.ui.component.crud.PaginatedCrud;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.MapperFactory;
 import com.zbutwialypiernik.flixage.ui.component.form.Form;

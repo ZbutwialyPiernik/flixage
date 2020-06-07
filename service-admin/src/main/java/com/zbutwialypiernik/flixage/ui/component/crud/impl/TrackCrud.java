@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage.ui.admin.artist;
+package com.zbutwialypiernik.flixage.ui.component.crud.impl;
 
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.zbutwialypiernik.flixage.entity.Album;
