@@ -6,7 +6,6 @@ import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.*;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.service.*;
-import com.zbutwialypiernik.flixage.util.StringUtils;
 import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import org.springframework.data.domain.Page;
@@ -20,6 +19,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 // TODO: elastic search or something similar
+
+/**
+ * The controller to search multiple types of entities at same time by name and other filters
+ */
 @RestController
 public class SearchController {
 
@@ -51,7 +54,7 @@ public class SearchController {
 
     @GetMapping("/search")
     public SearchResponse searchByName(@RequestParam String query, @RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "20") int limit, @RequestParam Set<QueryableType> type) {
-        if (StringUtils.isBlank(query)) {
+        if (query.isBlank()) {
             throw new BadRequestException("Param 'query' cannot be blank");
         }
 
@@ -117,6 +120,7 @@ public class SearchController {
         return searchResponse;
     }
 
+    // Binder that accepts case-insensitive enums
     @InitBinder
     public void binder(WebDataBinder binder) {
         binder.registerCustomEditor(QueryableType.class, new CaseInsensitiveEnumEditor<>(QueryableType.class));

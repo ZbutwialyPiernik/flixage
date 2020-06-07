@@ -6,7 +6,6 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Set;
 
 public class AudioResource implements AbstractResource {
@@ -59,11 +58,6 @@ public class AudioResource implements AbstractResource {
     @Override
     public String getMimeType() {
         return mimeType;
-    }
-
-    @Override
-    public Collection<String> getAcceptedExtensions() {
-        return ACCEPTED_EXTENSIONS;
     }
 
 }

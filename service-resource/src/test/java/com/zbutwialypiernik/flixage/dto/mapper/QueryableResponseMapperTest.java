@@ -2,8 +2,8 @@ package com.zbutwialypiernik.flixage.dto.mapper;
 
 import com.zbutwialypiernik.flixage.config.GatewayUriBuilder;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
-import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import com.zbutwialypiernik.flixage.entity.Queryable;
+import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.jupiter.api.Assertions;

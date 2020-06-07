@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Set;
 
 public class ImageResource implements AbstractResource {
@@ -64,11 +63,6 @@ public class ImageResource implements AbstractResource {
     @Override
     public String getMimeType() {
         return mimeType;
-    }
-
-    @Override
-    public Collection<String> getAcceptedExtensions() {
-        return ImageResource.ACCEPTED_EXTENSIONS;
     }
 
     public int getWidth() {

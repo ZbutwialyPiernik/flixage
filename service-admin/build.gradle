@@ -20,6 +20,7 @@ dependencyManagement {
 dependencies {
     implementation project(':core')
     implementation project(':core-resource')
+    implementation project(':core-authentication')
 
     // Object Mapping
     implementation 'ma.glasnost.orika:orika-core:1.5.4'

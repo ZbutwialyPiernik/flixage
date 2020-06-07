@@ -23,6 +23,7 @@ public class FileStorageConfiguration {
     @Bean
     public FilesystemStoreConfigurer configurer() {
         return registry -> {
+            // Don't change it to lambda, otherwise java will lose generic type info
             registry.addConverter(new Converter<AudioFileEntity, String>() {
                 @Override
                 public String convert(AudioFileEntity source) {
@@ -30,10 +31,11 @@ public class FileStorageConfiguration {
                         source.setFileId(UUID.randomUUID().toString());
                     }
 
-                    return "./storage/track/" + source.getFileId();
+                    return "./storage/track/" + source.getFileId() + "." + source.getExtension();
                 }
             });
 
+            // Don't change it to lambda, otherwise java will lose generic type info
             registry.addConverter(new Converter<ImageFileEntity, String>() {
                 @Override
                 public String convert(ImageFileEntity source) {
@@ -41,7 +43,7 @@ public class FileStorageConfiguration {
                         source.setFileId(UUID.randomUUID().toString());
                     }
 
-                    return "./storage/image/" + source.getFileId();
+                    return "./storage/image/" + source.getFileId() + "." + source.getExtension();
                 }
             });
         };

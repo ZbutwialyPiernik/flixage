@@ -1,7 +1,7 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import com.zbutwialypiernik.flixage.entity.Queryable;
+import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.QueryableRepository;
@@ -16,14 +16,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Base class for every service in project, contains common crud methods
+ * Base class for every service with queryable superclass in project
+ * contains common crud methods and methods to set/delete thumbnail of entity
  */
 @Log4j2
 public class QueryableService<T extends Queryable>{
 
-    protected final QueryableRepository<T> repository;
+    private final QueryableRepository<T> repository;
 
-    protected final ImageFileService thumbnailService;
+    private final ImageFileService thumbnailService;
 
     public QueryableService(QueryableRepository<T> repository, ImageFileService thumbnailService) {
         this.thumbnailService = thumbnailService;
@@ -56,7 +57,8 @@ public class QueryableService<T extends Queryable>{
      *
      * @throws ResourceNotFoundException when entity doesn't exists in database
      *
-     * @param entity
+     * @param entity the entity to update
+     * @return the updated entity
      */
     @Transactional
     public T update(T entity) {
@@ -133,9 +135,8 @@ public class QueryableService<T extends Queryable>{
 
     /**
      * Associates thumbnail to entity
-     * @param entity
-     * @param resource
-     * @return
+     * @param entity the entity to associate with thumbnail
+     * @param resource the image resource to associate with entity
      */
     @Transactional
     public void saveThumbnail(T entity, ImageResource resource) {
@@ -155,7 +156,7 @@ public class QueryableService<T extends Queryable>{
 
     /**
      * Deletes thumbnail associated with entity
-     * @param entity
+     * @param entity the entity with thumbnail to delete
      */
     @Transactional
     public void deleteThumbnail(T entity) {
@@ -180,4 +181,7 @@ public class QueryableService<T extends Queryable>{
         return thumbnailService.get(entity.getThumbnail());
     }
 
+    protected QueryableRepository<T> getRepository() {
+        return repository;
+    }
 }

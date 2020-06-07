@@ -6,7 +6,6 @@ import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
-import com.zbutwialypiernik.flixage.repository.ImageFileStore;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.UserService;
 import ma.glasnost.orika.BoundMapperFacade;
@@ -29,7 +28,7 @@ public class UserController extends QueryableController<User, UserResponse> {
 
     private final BoundMapperFacade<Playlist, PlaylistResponse> playlistMapper;
 
-    public UserController(UserService userService, PlaylistService playlistService, ImageFileStore imageFileStore, MapperFactory mapperFactory) {
+    public UserController(UserService userService, PlaylistService playlistService, MapperFactory mapperFactory) {
         super(userService, mapperFactory);
         this.playlistService = playlistService;
         this.userService = userService;

@@ -5,8 +5,6 @@ import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotNull;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class TrackForm extends QueryableForm {

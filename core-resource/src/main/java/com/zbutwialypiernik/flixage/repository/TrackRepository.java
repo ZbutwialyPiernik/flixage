@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.repository;
 
-import com.zbutwialypiernik.flixage.entity.Album;
 import com.zbutwialypiernik.flixage.entity.Track;
 
 import java.util.List;

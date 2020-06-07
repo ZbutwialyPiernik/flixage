@@ -1,7 +1,6 @@
 package com.zbutwialypiernik.flixage.service.resource;
 
 import java.io.InputStream;
-import java.util.Collection;
 
 public interface AbstractResource {
 
@@ -14,7 +13,5 @@ public interface AbstractResource {
     String getExtension();
 
     String getMimeType();
-
-    Collection<String> getAcceptedExtensions();
 
 }

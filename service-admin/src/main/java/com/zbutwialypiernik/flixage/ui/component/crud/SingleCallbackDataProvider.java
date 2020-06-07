@@ -3,12 +3,8 @@ package com.zbutwialypiernik.flixage.ui.component.crud;
 import com.vaadin.flow.data.provider.AbstractDataProvider;
 import com.vaadin.flow.data.provider.Query;
 
-import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 public class SingleCallbackDataProvider<T, F> extends AbstractDataProvider<T, F> {

@@ -6,29 +6,25 @@ import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserDetailsServiceImpl implements org.springframework.security.core.userdetails.UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    private final Clock clock;
-
     @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, Clock clock) {
+    public UserDetailsServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.clock = clock;
 
         if (!userRepository.existsByUsernameIgnoreCase("admin")) {
             User user = new User();
@@ -58,7 +54,6 @@ public class UserDetailsServiceImpl implements org.springframework.security.core
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCreationTime(Instant.now(clock));
 
         userRepository.save(user);
     }

@@ -10,7 +10,6 @@ import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Superclass of every entity in this project. Id is represented as uuid.

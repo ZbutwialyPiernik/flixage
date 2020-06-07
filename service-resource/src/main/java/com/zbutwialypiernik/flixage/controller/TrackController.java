@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * In early version audio will be exposed as stream, in later version ill try to make things like DRM etc.
- */
 @RestController
 @RequestMapping("/tracks")
 public class TrackController extends QueryableController<Track, TrackResponse>{
@@ -30,12 +27,13 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
     @GetMapping("{id}/stream")
     public void streamTrack(@PathVariable String id, HttpServletResponse response) throws IOException {
         AudioResource resource = service.getTrackFile(id);
+
         response.setContentType(resource.getMimeType());
         response.getOutputStream().write(resource.getContent());
     }
 
     @GetMapping("{id}/playCount")
-    public void increasePlayCount() {
+    public void increasePlayCount(@PathVariable String id) {
 
     }
 

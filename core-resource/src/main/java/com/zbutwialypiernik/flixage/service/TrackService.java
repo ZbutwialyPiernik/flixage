@@ -2,8 +2,8 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
-import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
+import com.zbutwialypiernik.flixage.repository.QueryableRepository;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
 import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
@@ -12,18 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class TrackService extends QueryableService<Track> {
 
     private final TrackFileService trackFileService;
-    private final TrackRepository repository;
 
     public TrackService(TrackRepository repository, ImageFileService thumbnailService, TrackFileService trackFileService)  {
         super(repository, thumbnailService);
         this.trackFileService = trackFileService;
-        this.repository = repository;
     }
 
     public AudioResource getTrackFile(String id) {
@@ -34,7 +33,7 @@ public class TrackService extends QueryableService<Track> {
 
     @Transactional
     public void saveTrackFile(Track track, AudioResource resource) {
-        if (!repository.existsById(track.getId())) {
+        if (!getRepository().existsById(track.getId())) {
             throw new ResourceNotFoundException();
         }
 
@@ -45,19 +44,30 @@ public class TrackService extends QueryableService<Track> {
 
         trackFileService.save(track.getAudioFile(), resource);
 
-        repository.save(track);
+        getRepository().save(track);
+    }
+
+    @Transactional
+    public void increasePlayCount(String trackId) {
+        Track track = getRepository().findById(trackId).orElseThrow(ResourceNotFoundException::new);
+
+        track.setPlayCount(track.getPlayCount() + 1);
     }
 
     public List<Track> getArtistSingles(String artistId) {
-        return repository.findByArtistIdAndAlbumIsNull(artistId);
+        return getRepository().findByArtistIdAndAlbumIsNull(artistId);
     }
 
     public List<Track> getTracksByArtistId(String artistId) {
-        return repository.findByArtistId(artistId);
+        return getRepository().findByArtistId(artistId);
     }
 
     public List<Track> getTracksByAlbumId(String albumId) {
-        return repository.findByAlbumId(albumId);
+        return getRepository().findByAlbumId(albumId);
     }
 
+    @Override
+    protected TrackRepository getRepository() {
+        return (TrackRepository) super.getRepository();
+    }
 }

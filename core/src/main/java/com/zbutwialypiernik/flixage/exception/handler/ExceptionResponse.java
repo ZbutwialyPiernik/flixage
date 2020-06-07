@@ -1,15 +1,17 @@
 package com.zbutwialypiernik.flixage.exception.handler;
 
-import lombok.Value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;
 
-@Value
+@Getter
+@RequiredArgsConstructor
 public class ExceptionResponse {
-    String message;
+    private final String message;
 
-    int status;
+    private final int status;
 
-    Instant timestamp;
+    private final Instant timestamp;
 
 }

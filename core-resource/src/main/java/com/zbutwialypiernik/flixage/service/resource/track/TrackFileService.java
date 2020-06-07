@@ -22,7 +22,7 @@ import java.io.InputStream;
 public class TrackFileService extends AbstractResourceService<AudioFileEntity, AudioResource> {
 
     public TrackFileService(TrackFileStore store) {
-        super(store);
+        super(store, AudioResource.ACCEPTED_TYPES);
     }
 
     @Override
