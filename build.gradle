@@ -126,7 +126,7 @@ project(':core-resource') {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-security'
 
-        implementation 'net.jthink:jaudiotagger:3.3.3'
+        implementation 'net.jthink:jaudiotagger:2.2.5'
 
         //Tests
         testImplementation('org.springframework.boot:spring-boot-starter-test') {
