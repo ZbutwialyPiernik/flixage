@@ -7,12 +7,14 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "audio_file")
 public class AudioFileEntity extends FileEntity {
 
     @Column(nullable = false)
