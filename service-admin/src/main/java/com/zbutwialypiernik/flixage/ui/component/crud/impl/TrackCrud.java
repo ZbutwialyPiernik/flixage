@@ -40,7 +40,7 @@ public class TrackCrud extends Crud<Track, TrackForm> {
             } else {
                 return trackService.getTracksByAlbumId(parentAlbum.getId());
             }
-        } ));
+        }));
 
         FormBuilder<TrackForm> formBuilder = new FormBuilder<>(TrackForm.class);
         formBuilder.setHeader("Add song to album!");

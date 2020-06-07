@@ -28,6 +28,7 @@ public class Track extends Queryable {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private AudioFileEntity audioFile;
 
+    @Column
     private long playCount;
 
 }
