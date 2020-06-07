@@ -14,7 +14,7 @@ public class ImageFileService extends AbstractResourceService<ImageFileEntity, I
     private final ImageProcessingService processingService;
 
     public ImageFileService(ImageFileStore store, ImageProcessingService processingService) {
-        super(store, ImageResource.ACCEPTED_TYPES);
+        super(store, ImageResource.ACCEPTED_EXTENSIONS);
         this.processingService = processingService;
     }
 

@@ -16,13 +16,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-
 @Log4j2
 @Service
 public class TrackFileService extends AbstractResourceService<AudioFileEntity, AudioResource> {
 
     public TrackFileService(TrackFileStore store) {
-        super(store, AudioResource.ACCEPTED_TYPES);
+        super(store, AudioResource.ACCEPTED_EXTENSIONS);
     }
 
     @Override

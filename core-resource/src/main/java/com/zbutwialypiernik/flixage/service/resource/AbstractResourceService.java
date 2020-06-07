@@ -23,17 +23,17 @@ public abstract class AbstractResourceService<E extends FileEntity, T extends Ab
 
     protected final ContentStore<E, String> store;
 
-    private final Set<String> acceptedMimeTypes;
+    private final Set<String> acceptedExtension;
 
-    public AbstractResourceService(ContentStore<E, String> store, Set<String> acceptedMimeTypes) {
+    public AbstractResourceService(ContentStore<E, String> store, Set<String> acceptedExtension) {
         this.store = store;
-        this.acceptedMimeTypes = acceptedMimeTypes;
+        this.acceptedExtension = acceptedExtension;
     }
 
     public void save(E entity, T resource) {
         final String originalExtension = resource.getExtension();
 
-        if (acceptedMimeTypes.stream()
+        if (acceptedExtension.stream()
                 .noneMatch(type -> type.equals(originalExtension))) {
             throw new UnsupportedMediaTypeException("Unsupported file extension: " + resource.getExtension());
         }
