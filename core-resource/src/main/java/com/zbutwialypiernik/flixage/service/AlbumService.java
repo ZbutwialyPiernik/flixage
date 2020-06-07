@@ -22,4 +22,5 @@ public class AlbumService extends QueryableService<Album> {
     protected AlbumRepository getRepository() {
         return (AlbumRepository) super.getRepository();
     }
+
 }
