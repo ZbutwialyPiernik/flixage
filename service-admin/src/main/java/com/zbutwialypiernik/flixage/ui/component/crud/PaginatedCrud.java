@@ -14,14 +14,13 @@ import org.vaadin.klaudeta.PaginatedGrid;
 /**
  * Class representing generic, same looking CRUDs in admin panel with pagination.
  *
- * @param <T> Domain type
+ * @param <T> Queryable type
+ * @param <F> Form type
  */
-public class PaginatedCrud<T extends Queryable, DTO extends QueryableForm> extends Crud<T, DTO> {
+public class PaginatedCrud<T extends Queryable, F extends QueryableForm> extends Crud<T, F> {
 
     protected static final Integer[] PAGE_SIZES = {10, 25, 50, 100};
 
-    // Top Bar
-    private Select<Integer> pageSizeSelect;
     private TextField searchField;
 
     protected PaginatedCrud(Class<T> domainType) {
@@ -46,13 +45,14 @@ public class PaginatedCrud<T extends Queryable, DTO extends QueryableForm> exten
         buttonBar.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
         // Aligned to right
-        pageSizeSelect = new Select<>(PAGE_SIZES);
+        // Top Bar
+        Select<Integer> pageSizeSelect = new Select<>(PAGE_SIZES);
         pageSizeSelect.setLabel("Page Size");
         pageSizeSelect.setValue(PAGE_SIZES[0]);
         pageSizeSelect.addValueChangeListener(event -> getGrid().setPageSize(event.getValue()));
 
         searchField = new TextField("Search");
-        searchField.addValueChangeListener((event) -> getGrid().refreshPaginator());
+        searchField.addValueChangeListener(event -> getGrid().refreshPaginator());
 
         HorizontalLayout leftButtons = new HorizontalLayout(
                 searchField);

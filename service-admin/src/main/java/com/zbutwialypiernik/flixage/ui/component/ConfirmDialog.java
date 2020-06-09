@@ -16,6 +16,7 @@ public class ConfirmDialog extends Dialog {
         public ConfirmEvent(ConfirmDialog source) {
             super(source, false);
         }
+
     }
 
     public static class CloseEvent extends ComponentEvent<ConfirmDialog> {

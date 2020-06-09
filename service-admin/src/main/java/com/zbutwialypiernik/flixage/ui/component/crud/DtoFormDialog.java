@@ -53,7 +53,7 @@ public class DtoFormDialog<T extends Queryable, DTO extends QueryableForm> exten
         clear();
 
         form.getContent().setPadding(false);
-        form.addSubmitListener(event -> fireEvent(new SubmitEvent(this, mapper.mapFrom(event.getEntity(), entity), form.getDTO())));
+        form.addSubmitListener(event -> fireEvent(new SubmitEvent(this, mapper.mapFrom(event.getForm(), entity), form.getDTO())));
     }
 
     public void clear() {

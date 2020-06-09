@@ -117,7 +117,7 @@ public class QueryableServiceTest {
         service.saveThumbnail(entity, resource);
 
         verify(thumbnailService, times(1)).save(any(), eq(resource));
-        assertNotNull(entity.getImageFile());
+        assertNotNull(entity.getThumbnail());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class QueryableServiceTest {
                 () -> service.saveThumbnail(entity, resource));
 
         verify(thumbnailService, times(0)).save(any(), eq(resource));
-        assertNull(entity.getImageFile());
+        assertNull(entity.getThumbnail());
     }
 
 }

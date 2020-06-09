@@ -43,9 +43,9 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
 
         for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.equals(Role.USER.toAuthority())) {
-                return Routes.HOME;
+                return Routes.NOT_FOUND;
             } else if (grantedAuthority.equals(Role.ADMIN.toAuthority())) {
-                return Routes.ADMIN;
+                return Routes.DASHBOARD;
             }
         }
 

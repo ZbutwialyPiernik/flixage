@@ -13,6 +13,7 @@ import javax.persistence.Table;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "image_file")
 public class ImageFileEntity extends FileEntity {
 

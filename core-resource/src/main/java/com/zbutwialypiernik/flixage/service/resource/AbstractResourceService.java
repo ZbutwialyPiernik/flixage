@@ -55,6 +55,11 @@ public abstract class AbstractResourceService<E extends FileEntity, T extends Ab
         store.unsetContent(entity);
     }
 
+    /**
+     *
+     * @param entity the entity
+     * @return the optional of resource or empty when resource entity exists but file is not found
+     */
     public Optional<T> get(E entity) {
         if (entity == null) {
             return Optional.empty();

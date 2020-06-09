@@ -28,5 +28,4 @@ public class OrikaMapperFactory implements MapperFactory {
         };
     }
 
-
 }

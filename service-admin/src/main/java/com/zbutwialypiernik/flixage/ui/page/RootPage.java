@@ -2,6 +2,7 @@ package com.zbutwialypiernik.flixage.ui.page;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
@@ -11,38 +12,45 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import com.zbutwialypiernik.flixage.config.Routes;
-import com.zbutwialypiernik.flixage.ui.component.crud.impl.ArtistCrud;
-import com.zbutwialypiernik.flixage.ui.page.dashboard.DashboardPage;
-import com.zbutwialypiernik.flixage.ui.component.crud.impl.UserCrud;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 @Route(Routes.ADMIN)
 @Theme(value = Lumo.class, variant = Lumo.DARK)
-public class RootPage extends AppLayout {
+public class RootPage extends AppLayout implements AfterNavigationObserver {
 
-    /**
-     * Linking tab label with corresponding admin panel.
-     */
-    private final HashMap<String, Component> labelToPanelMap = new HashMap<>();
+    private final HashMap<String, Class<? extends Component>> routes = new HashMap<>();
+
+    private final HashMap<String, Tab> routeToTab = new LinkedHashMap<>();
+
+    private final Tabs tabs;
 
     @Autowired
-    public RootPage(DashboardPage dashboardPage, UserCrud userCrudPanel, ArtistCrud artistCrudPanel) {
-        labelToPanelMap.put("Dashboard", dashboardPage);
-        labelToPanelMap.put("Users", userCrudPanel);
-        labelToPanelMap.put("Library", artistCrudPanel);
+    public RootPage() {
+        tabs = new Tabs();
 
-        Tabs tabs = new Tabs(
-                createTab(VaadinIcon.DASHBOARD, "Dashboard"),
-                createTab(VaadinIcon.USERS, "Users"),
-                createTab(VaadinIcon.MUSIC, "Library"));
+        routes.put(Routes.DASHBOARD.toLowerCase(), DashboardPage.class);
+        routes.put(Routes.USERS.toLowerCase(), UsersPage.class);
+        routes.put(Routes.LIBRARY.toLowerCase(), LibraryPage.class);
 
-        tabs.addSelectedChangeListener(event -> setContentByTab(event.getSelectedTab()));
+        routeToTab.put(Routes.DASHBOARD.toLowerCase(), createTab(VaadinIcon.DASHBOARD, "Dashboard"));
+        routeToTab.put(Routes.USERS.toLowerCase(), createTab(VaadinIcon.USERS, "Users"));
+        routeToTab.put(Routes.LIBRARY.toLowerCase(), createTab(VaadinIcon.MUSIC, "Library"));
+
+        routeToTab.values().forEach(tabs::add);
+
+        tabs.addSelectedChangeListener(event -> {
+            var routeClass = routes.get(event.getSelectedTab().getLabel().toLowerCase());
+            UI.getCurrent().navigate(routeClass);
+        });
 
         FlexLayout tabsCenter = new FlexLayout();
         tabsCenter.setWidthFull();
@@ -55,16 +63,17 @@ public class RootPage extends AppLayout {
         Anchor logoutButton = new Anchor(Routes.LOGOUT, createTab(VaadinIcon.EXIT, "Logout"));
 
         addToNavbar(false, logo, tabsCenter, logoutButton);
-        setContent(dashboardPage);
-    }
-
-    private void setContentByTab(Tab tab) {
-        Component selectedContent = labelToPanelMap.get(tab.getLabel());
-        setContent(selectedContent);
     }
 
     private Tab createTab(VaadinIcon icon, String label) {
         return new Tab(new Icon(icon), new Text(label));
+    }
+
+    @Override
+    public void afterNavigation(AfterNavigationEvent event) {
+        System.out.println(event.getLocation().getFirstSegment());
+
+        tabs.setSelectedTab(routeToTab.get(event.getLocation().getFirstSegment().toLowerCase()));
     }
 
 }

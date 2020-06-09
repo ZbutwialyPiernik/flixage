@@ -18,18 +18,13 @@ import com.zbutwialypiernik.flixage.ui.component.crud.mapper.BidirectionalMapper
 import com.zbutwialypiernik.flixage.ui.component.form.Form;
 import com.zbutwialypiernik.flixage.ui.component.form.dto.QueryableForm;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-
 /**
- * Class representing generic, same looking cruds in admin panel.
+ * Class representing generic, same looking CRUDs in admin panel.
  *
- * @param <T>   the domain type
- * @param <DTO> the DTO type representing form
+ * @param <T> the queryable type
+ * @param <F> the DTO type representing form
  */
-public abstract class Crud<T extends Queryable, DTO extends QueryableForm> extends VerticalLayout {
-
-    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("UTC"));
+public abstract class Crud<T extends Queryable, F extends QueryableForm> extends VerticalLayout {
 
     // Top bar crud operations
     private final Button createButton = new Button("Create", new Icon(VaadinIcon.PLUS));
@@ -37,7 +32,7 @@ public abstract class Crud<T extends Queryable, DTO extends QueryableForm> exten
     private final Button deleteButton = new Button("Delete", new Icon(VaadinIcon.TRASH));
 
     // Forms
-    protected DtoFormDialog<T, DTO> formDialog;
+    protected DtoFormDialog<T, F> formDialog;
     protected DeleteDialog<T> deleteDialog = new DeleteDialog<>("Are you sure you wanna delete?");
 
     private final Grid<T> grid;
@@ -78,7 +73,7 @@ public abstract class Crud<T extends Queryable, DTO extends QueryableForm> exten
         addComponentColumn(queryable -> {
             Image image = new Image();
             service.getThumbnailById(queryable.getId()).ifPresentOrElse(
-                    (resource) -> image.setSrc(ComponentUtils.imageFromByteArray(resource)),
+                    resource -> image.setSrc(ComponentUtils.imageFromByteArray(resource)),
                     () -> image.setSrc("img/placeholder.jpg"));
             image.setHeight("64px");
             image.setWidth("64px");
@@ -115,7 +110,7 @@ public abstract class Crud<T extends Queryable, DTO extends QueryableForm> exten
         return service;
     }
 
-    protected void onCreate(DtoFormDialog<T, DTO>.SubmitEvent event) {
+    protected void onCreate(DtoFormDialog<T, F>.SubmitEvent event) {
         T entity = service.create(event.getEntity());
 
         if (event.getDto().getThumbnailResource() != null) {
@@ -126,7 +121,7 @@ public abstract class Crud<T extends Queryable, DTO extends QueryableForm> exten
         refresh();
     }
 
-    protected void onUpdate(DtoFormDialog<T, DTO>.SubmitEvent event) {
+    protected void onUpdate(DtoFormDialog<T, F>.SubmitEvent event) {
         T entity = service.update(event.getEntity());
 
         if (event.getDto().getThumbnailResource() != null) {
@@ -160,7 +155,7 @@ public abstract class Crud<T extends Queryable, DTO extends QueryableForm> exten
         return grid.addComponentColumn(componentProvider);
     }
 
-    public void setForm(Form<DTO> form, BidirectionalMapper<T, DTO> converter) {
+    public void setForm(Form<F> form, BidirectionalMapper<T, F> converter) {
         formDialog = new DtoFormDialog<>(domainType, form, converter);
         formDialog.addSubmitListener(event -> {
             if (event.getEntity().getId() == null) {

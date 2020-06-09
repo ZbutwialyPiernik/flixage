@@ -1,7 +1,10 @@
 package com.zbutwialypiernik.flixage.ui.page;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
@@ -27,8 +30,6 @@ public class AlbumPage extends VerticalLayout implements HasUrlParameter<String>
 
     private final MapperFactory factory;
 
-    private Album album;
-
     @Autowired
     public AlbumPage(TrackService trackService, AlbumService albumService, MapperFactory factory) {
         this.factory = factory;
@@ -36,7 +37,8 @@ public class AlbumPage extends VerticalLayout implements HasUrlParameter<String>
         this.albumService = albumService;
     }
 
-    private void init() {
+    private void init(Album album) {
+        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> UI.getCurrent().navigate(ArtistPage.class, album.getArtist().getId()));
         var artistName = new Label(album.getName());
         var artistAvatar = new Image();
 
@@ -53,7 +55,7 @@ public class AlbumPage extends VerticalLayout implements HasUrlParameter<String>
         var artistLabel = new HorizontalLayout(artistAvatar, artistName);
         artistLabel.setWidthFull();
 
-        add(artistLabel, trackCrud);
+        add(backButton, artistLabel, trackCrud);
 
         trackCrud.refresh();
     }
@@ -63,8 +65,7 @@ public class AlbumPage extends VerticalLayout implements HasUrlParameter<String>
         Optional<Album> albumArtist = albumService.findById(parameter);
 
         if (albumArtist.isPresent()) {
-            album = albumArtist.get();
-            init();
+            init(albumArtist.get());
         } else {
             event.rerouteTo(Routes.NOT_FOUND);
         }

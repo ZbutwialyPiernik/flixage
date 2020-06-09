@@ -18,21 +18,21 @@ import org.springframework.data.util.ReflectionUtils;
  * /**
  *  * Layer of abstraction over Vaadin Form, to work with {@link Crud} includes headers and footers.
  *
- * @param <DTO>
+ * @param <F> the form type
  */
-public class Form<DTO extends QueryableForm> extends Composite<VerticalLayout> implements HasSize  {
+public class Form<F extends QueryableForm> extends Composite<VerticalLayout> implements HasSize  {
 
-    public static class SubmitEvent<DTO extends QueryableForm> extends ComponentEvent<Form<DTO>> {
+    public static class SubmitEvent<F extends QueryableForm> extends ComponentEvent<Form<F>> {
 
-        private final DTO entity;
+        private final F form;
 
-        public SubmitEvent(Form<DTO> source, DTO entity) {
+        public SubmitEvent(Form<F> source, F form) {
             super(source, false);
-            this.entity = entity;
+            this.form = form;
         }
 
-        public DTO getEntity() {
-            return entity;
+        public F getForm() {
+            return form;
         }
 
     }
@@ -45,9 +45,9 @@ public class Form<DTO extends QueryableForm> extends Composite<VerticalLayout> i
 
     }
 
-    protected final BeanValidationBinder<DTO> binder;
+    protected final BeanValidationBinder<F> binder;
 
-    private final Class<DTO> entityClass;
+    private final Class<F> entityClass;
 
     private final FlexLayout header;
     private final FormLayout body;
@@ -56,7 +56,7 @@ public class Form<DTO extends QueryableForm> extends Composite<VerticalLayout> i
     /**
      * @param entityClass class of bean used in form, should have public non arg constructor
      */
-    protected Form(Class<DTO> entityClass) {
+    protected Form(Class<F> entityClass) {
         this.entityClass = entityClass;
         this.binder = new BeanValidationBinder<>(entityClass);
         this.header = new FlexLayout();
@@ -77,7 +77,7 @@ public class Form<DTO extends QueryableForm> extends Composite<VerticalLayout> i
         return addListener(ClearEvent.class, listener);
     }
 
-    public Registration addSubmitListener(ComponentEventListener<SubmitEvent<DTO>> listener) {
+    public Registration addSubmitListener(ComponentEventListener<SubmitEvent<F>> listener) {
         /* We need to downcast, because we can't get class from generic type */
         ComponentEventListener componentListener = event -> {
             SubmitEvent valueChangeEvent = (SubmitEvent) event;
@@ -87,11 +87,11 @@ public class Form<DTO extends QueryableForm> extends Composite<VerticalLayout> i
         return addListener(SubmitEvent.class, componentListener);
     }
 
-    public void setDTO(DTO entity) {
+    public void setDTO(F entity) {
         binder.setBean(entity);
     }
 
-    public DTO getDTO() {
+    public F getDTO() {
         return binder.getBean();
     }
 
@@ -117,7 +117,7 @@ public class Form<DTO extends QueryableForm> extends Composite<VerticalLayout> i
         return footer;
     }
 
-    public BeanValidationBinder<DTO> getBinder() {
+    public BeanValidationBinder<F> getBinder() {
         return binder;
     }
 

@@ -6,6 +6,8 @@ import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 
 public class ComponentUtils {
 
+    private ComponentUtils() { }
+
     public static AbstractStreamResource imageFromByteArray(ImageResource resource) {
         return new StreamResource(resource.getFileName() + "." + resource.getExtension(), resource::getInputStream);
     }

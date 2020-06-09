@@ -29,7 +29,7 @@ public class LoggedUserFilter implements Filter  {
 
         if (SecurityUtils.isUserLoggedIn() && httpRequest.getRequestURI().equals(httpRequest.getContextPath() + "/" + Routes.LOGIN)) {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/" + Routes.HOME);
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/" + Routes.DASHBOARD);
         } else {
             chain.doFilter(httpRequest, response);
         }

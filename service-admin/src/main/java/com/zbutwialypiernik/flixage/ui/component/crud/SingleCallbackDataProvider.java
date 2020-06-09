@@ -45,5 +45,4 @@ public class SingleCallbackDataProvider<T, F> extends AbstractDataProvider<T, F>
         return cachedItems.size();
     }
 
-
 }

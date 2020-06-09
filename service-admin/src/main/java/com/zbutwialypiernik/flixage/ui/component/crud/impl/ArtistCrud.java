@@ -4,7 +4,7 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.spring.annotation.UIScope;
 import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.service.ArtistService;
-import com.zbutwialypiernik.flixage.ui.page.artist.ArtistEditorPage;
+import com.zbutwialypiernik.flixage.ui.page.ArtistPage;
 import com.zbutwialypiernik.flixage.ui.component.crud.PaginatedCrud;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.MapperFactory;
 import com.zbutwialypiernik.flixage.ui.component.form.Form;
@@ -25,7 +25,7 @@ public class ArtistCrud extends PaginatedCrud<Artist, ArtistForm> {
         setForm(createForm("Artist"), factory.createMapper());
 
         addColumn(Artist::getName).setHeader("Name");
-        addComponentColumn(artist -> new RouterLink("Editor", ArtistEditorPage.class, artist.getId())).setHeader("Artist Library");
+        addComponentColumn(artist -> new RouterLink("Editor", ArtistPage.class, artist.getId())).setHeader("Artist Library");
     }
 
     public Form<ArtistForm> createForm(String header) {
