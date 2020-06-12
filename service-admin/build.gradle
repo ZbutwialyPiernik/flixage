@@ -36,7 +36,6 @@ dependencies {
     // Validation
     implementation "org.hibernate:hibernate-validator:6.1.2.Final"
 
-
     runtimeOnly 'mysql:mysql-connector-java'
 
     // Database
