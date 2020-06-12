@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
 
 @Log4j2
 @Service
@@ -30,7 +31,7 @@ public class TrackFileService extends AbstractResourceService<AudioFileEntity, A
             File file = store.getResource(entity).getFile();
 
             AudioFile audioFile = AudioFileIO.read(file);
-            entity.setDuration(audioFile.getAudioHeader().getTrackLength());
+            entity.setDuration(Duration.ofSeconds(audioFile.getAudioHeader().getTrackLength()));
         } catch (CannotReadException | InvalidAudioFrameException | ReadOnlyFileException | TagException | IOException e) {
             log.error("Error during metadata save: ", e);
         }

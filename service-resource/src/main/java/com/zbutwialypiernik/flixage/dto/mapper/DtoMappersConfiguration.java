@@ -25,8 +25,10 @@ public class DtoMappersConfiguration {
         createCustomMapping(Playlist.class, PlaylistResponse.class, "playlists").register();
         createCustomMapping(Album.class, AlbumResponse.class, "albums").register();
         createCustomMapping(User.class, UserResponse.class, "users").register();
-        createCustomMapping(Track.class, TrackResponse.class, "tracks").register();
         createCustomMapping(Artist.class, ArtistResponse.class, "artists").register();
+        createCustomMapping(Track.class, TrackResponse.class, "tracks")
+                .fieldMap("audioFile.duration", "duration").add()
+                .register();
     }
     
     protected <A extends Queryable, B extends QueryableResponse> ClassMapBuilder<A, B> createCustomMapping(Class<A> entityClass, Class<B> responseClass, String resourcePath) {

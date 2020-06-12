@@ -26,7 +26,7 @@ public interface TrackRepository extends QueryableRepository<Track> {
     List<Track> findByArtistIdAndAlbumIsNull(String artistId);
 
     //
-    List<Track> findByAlbumIdAndAudioFileAndIsNotNull(String albumId);
+    List<Track> findByAlbumIdAndAudioFileIsNotNull(String albumId);
 
     List<Track> findByAlbumId(String albumId);
 

@@ -2,8 +2,6 @@ package com.zbutwialypiernik.flixage.filter;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.zbutwialypiernik.flixage.entity.Role;
-import com.zbutwialypiernik.flixage.exception.AuthenticationException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

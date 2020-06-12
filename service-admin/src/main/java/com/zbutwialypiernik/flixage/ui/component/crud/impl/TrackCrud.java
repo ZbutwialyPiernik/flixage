@@ -36,9 +36,9 @@ public class TrackCrud extends Crud<Track, TrackForm> {
 
         getGrid().setDataProvider(new SingleCallbackDataProvider<>(() -> {
             if (parentAlbum == null) {
-                return trackService.getArtistSingles(artist.getId());
+                return trackService.getArtistSingles(artist.getId(), false);
             } else {
-                return trackService.getTracksByAlbumId(parentAlbum.getId());
+                return trackService.getTracksByAlbumId(parentAlbum.getId(), false);
             }
         }));
 

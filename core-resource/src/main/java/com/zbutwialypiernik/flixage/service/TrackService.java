@@ -74,7 +74,7 @@ public class TrackService extends QueryableService<Track> {
 
     public List<Track> getTracksByAlbumId(String albumId, boolean mustHaveAudioFile) {
         return mustHaveAudioFile
-                ? getRepository().findByAlbumIdAndAudioFileAndIsNotNull(albumId)
+                ? getRepository().findByAlbumIdAndAudioFileIsNotNull(albumId)
                 : getRepository().findByAlbumId(albumId);
     }
 
