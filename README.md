@@ -1,6 +1,6 @@
 # Flixage
-Music service project using Spring Boot, heavily inspired by Spotify. This is my first try to create microservice architecture. 
-Project contains 8 modules, frontend done in Flutter, docker-compose for ready local development, database schema.
+Music service project using Spring Boot, heavily inspired by Spotify. This is my first attempt to use microservice architecture. 
+Project contains 8 modules, the frontend made in Flutter, docker-compose ready for local development and a database schema.
 
  1. **core** - domain exceptions, common configurations for every sub project. 
  2. **core-authentication** - contains classes that are needed to provide authentication to microservice
