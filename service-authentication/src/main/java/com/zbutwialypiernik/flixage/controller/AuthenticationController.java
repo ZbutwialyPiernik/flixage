@@ -29,7 +29,7 @@ public class AuthenticationController {
 
     @PostMapping("/renew")
     public AuthenticationResponse renewToken(@Valid @RequestBody RenewAuthenticationRequest request) {
-        return jwtService.regenerateAuthentication(request.getRefreshToken());
+        return jwtService.refreshAuthentication(request.getRefreshToken());
     }
 
     @PostMapping("/invalidate")

@@ -3,6 +3,14 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.9.RELEASE' apply false
 }
 
+task fullBuild {
+
+}
+
+task deployDocker {
+
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: "org.springframework.boot"

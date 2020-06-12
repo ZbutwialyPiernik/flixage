@@ -6,6 +6,7 @@ import com.vaadin.flow.spring.annotation.UIScope;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.service.UserService;
 import com.zbutwialypiernik.flixage.ui.component.crud.PaginatedCrud;
+import com.zbutwialypiernik.flixage.ui.component.crud.mapper.MapperFactory;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.OrikaMapperFactory;
 import com.zbutwialypiernik.flixage.ui.component.form.Form;
 import com.zbutwialypiernik.flixage.ui.component.form.FormBuilder;
@@ -22,7 +23,7 @@ import java.time.format.FormatStyle;
 public class UserCrud extends PaginatedCrud<User, UserForm> {
 
     @Autowired
-    public UserCrud(UserService service, OrikaMapperFactory factory) {
+    public UserCrud(UserService service, MapperFactory factory) {
         super(User.class);
 
         setService(service);

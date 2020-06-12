@@ -42,7 +42,7 @@ public class QueryableResponseMapperTest {
     private final static String BASE_URL = "http://host.com/api/v1";
 
     @Test
-    public void entity_gets_mapped_properly() {
+    public void entity_gets_mapped_properly_when_thumbnail_is_not_null() {
         var entityStub = new QueryableStub();
         entityStub.setId("1234-1234-1234-1234");
         entityStub.setName("Test name");
@@ -62,6 +62,29 @@ public class QueryableResponseMapperTest {
         Assertions.assertEquals(entityStub.getName(), responseStub.getName());
         Assertions.assertEquals(entityStub.getTestField(), responseStub.getTestField());
         Assertions.assertEquals(BASE_URL + "/stubs/" + entityStub.getId() + "/thumbnail", responseStub.getThumbnailUrl());
+    }
+
+    @Test
+    public void entity_gets_mapped_properly_when_thumbnail_is_null() {
+        var entityStub = new QueryableStub();
+        entityStub.setId("1234-1234-1234-1234");
+        entityStub.setName("Test name");
+        entityStub.setTestField("Test field");
+        entityStub.setThumbnail(null);
+
+        var mapperFactory = new DefaultMapperFactory.Builder()
+                .build();
+
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriBuilder(BASE_URL));
+        mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
+
+        MapperFacade mapperFacade = mapperFactory.getMapperFacade();
+        QueryableResponseStub responseStub = mapperFacade.map(entityStub, QueryableResponseStub.class);
+
+        Assertions.assertEquals(entityStub.getId(), responseStub.getId());
+        Assertions.assertEquals(entityStub.getName(), responseStub.getName());
+        Assertions.assertEquals(entityStub.getTestField(), responseStub.getTestField());
+        Assertions.assertNull(responseStub.getThumbnailUrl());
     }
 
 }

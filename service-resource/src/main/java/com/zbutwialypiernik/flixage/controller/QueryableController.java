@@ -21,26 +21,26 @@ import java.io.IOException;
 
 /**
  * Base controller for entities extending {@link Queryable}, contains only read-only methods
- * @param <E> Entity that extends {@link Queryable}
- * @param <DTO> DTO representing response of {@link Queryable} entity
+ * @param <E> the entity that extends {@link Queryable}
+ * @param <R> the dto response of {@link Queryable} entity
  */
 @Log4j2
-public class QueryableController<E extends Queryable, DTO extends QueryableResponse> {
+public class QueryableController<E extends Queryable, R extends QueryableResponse> {
 
     private final QueryableService<E> service;
-    protected final BoundMapperFacade<E, DTO> dtoMapper;
+    protected final BoundMapperFacade<E, R> dtoMapper;
 
     @Autowired
     public QueryableController(QueryableService<E> service, MapperFactory mapperFactory) {
         this.service = service;
 
-        Type<QueryableController<E, DTO>> entityType = new TypeBuilder<QueryableController<E, DTO>>() {}.build();
+        Type<QueryableController<E, R>> entityType = new TypeBuilder<QueryableController<E, R>>() {}.build();
 
         this.dtoMapper = mapperFactory.getMapperFacade(entityType.getNestedType(0), entityType.getNestedType(1));
     }
 
     @GetMapping("/{id}")
-    public DTO getById(@PathVariable String id) {
+    public R getById(@PathVariable String id) {
         return dtoMapper.map(service.findById(id).orElseThrow(ResourceNotFoundException::new));
     }
 

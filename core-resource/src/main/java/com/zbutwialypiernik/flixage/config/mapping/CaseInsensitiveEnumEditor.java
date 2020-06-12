@@ -9,21 +9,25 @@ public class CaseInsensitiveEnumEditor<T extends Enum<T>> extends PropertyEditor
     public CaseInsensitiveEnumEditor(Class<T> type) {
         this.type = type;
         var values = type.getEnumConstants();
+
         if (values == null) {
             throw new IllegalArgumentException("Unsupported " + type);
         }
+
         this.enumNames = new String[values.length];
+
         for (int i = 0; i < values.length; i++) {
             this.enumNames[i] = values[i].name();
         }
     }
 
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
+    public void setAsText(String text) {
         if (text == null || text.isEmpty()) {
             setValue(null);
             return;
         }
+
         for (String n : enumNames) {
             if (n.equalsIgnoreCase(text)) {
                 var newValue = Enum.valueOf(type, n);
@@ -31,6 +35,7 @@ public class CaseInsensitiveEnumEditor<T extends Enum<T>> extends PropertyEditor
                 return;
             }
         }
+
         throw new IllegalArgumentException("No enum constant " + type.getCanonicalName() + " equals ignore case " + text);
     }
 

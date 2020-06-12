@@ -2,7 +2,7 @@ package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
-import com.zbutwialypiernik.flixage.service.UserDetailsServiceImpl;
+import com.zbutwialypiernik.flixage.service.DatabaseUserDetails;
 import com.zbutwialypiernik.flixage.validator.ValidPassword;
 import lombok.Value;
 import ma.glasnost.orika.MapperFacade;
@@ -14,11 +14,11 @@ import javax.validation.Valid;
 @RestController
 public class RegisterController {
 
-    private final UserDetailsServiceImpl userService;
+    private final DatabaseUserDetails userService;
 
     private final MapperFacade mapper;
 
-    public RegisterController(UserDetailsServiceImpl userService, MapperFacade mapper) {
+    public RegisterController(DatabaseUserDetails userService, MapperFacade mapper) {
         this.userService = userService;
         this.mapper = mapper;
     }

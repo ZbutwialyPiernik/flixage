@@ -3,16 +3,16 @@ package com.zbutwialypiernik.flixage.service;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
-import com.zbutwialypiernik.flixage.repository.QueryableRepository;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
 import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import com.zbutwialypiernik.flixage.service.resource.track.TrackFileService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,12 +23,6 @@ public class TrackService extends QueryableService<Track> {
     public TrackService(TrackRepository repository, ImageFileService thumbnailService, TrackFileService trackFileService)  {
         super(repository, thumbnailService);
         this.trackFileService = trackFileService;
-    }
-
-    public AudioResource getTrackFile(String id) {
-        Track track = findById(id).orElseThrow(ResourceNotFoundException::new);
-
-        return trackFileService.get(track.getAudioFile()).orElseThrow(ResourceNotFoundException::new);
     }
 
     @Transactional
@@ -54,16 +48,34 @@ public class TrackService extends QueryableService<Track> {
         track.setPlayCount(track.getPlayCount() + 1);
     }
 
-    public List<Track> getArtistSingles(String artistId) {
-        return getRepository().findByArtistIdAndAlbumIsNull(artistId);
+    public AudioResource getTrackFile(String id) {
+        Track track = findById(id).orElseThrow(ResourceNotFoundException::new);
+
+        return trackFileService.get(track.getAudioFile()).orElseThrow(ResourceNotFoundException::new);
     }
 
-    public List<Track> getTracksByArtistId(String artistId) {
-        return getRepository().findByArtistId(artistId);
+    public Page<Track> findByName(String name, int offset, int limit, boolean mustHaveAudioFile) {
+        return mustHaveAudioFile
+                ? getRepository().findByNameContainingIgnoreCaseAndAudioFileIsNotNull(name, PageRequest.of(offset / limit, limit))
+                : super.findByName(name, offset, limit);
     }
 
-    public List<Track> getTracksByAlbumId(String albumId) {
-        return getRepository().findByAlbumId(albumId);
+    public List<Track> getArtistSingles(String artistId, boolean mustHaveAudioFile) {
+        return mustHaveAudioFile
+                ? getRepository().findByArtistIdAndAlbumIsNullAndAudioFileIsNotNull(artistId)
+                : getRepository().findByArtistIdAndAlbumIsNull(artistId);
+    }
+
+    public List<Track> getTracksByArtistId(String artistId, boolean mustHaveAudioFile) {
+        return mustHaveAudioFile
+                ? getRepository().findByArtistIdAndAudioFileIsNotNull(artistId)
+                : getRepository().findByArtistId(artistId);
+    }
+
+    public List<Track> getTracksByAlbumId(String albumId, boolean mustHaveAudioFile) {
+        return mustHaveAudioFile
+                ? getRepository().findByAlbumIdAndAudioFileAndIsNotNull(albumId)
+                : getRepository().findByAlbumId(albumId);
     }
 
     @Override

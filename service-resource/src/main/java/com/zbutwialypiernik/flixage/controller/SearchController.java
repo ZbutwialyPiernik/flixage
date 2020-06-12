@@ -73,7 +73,7 @@ public class SearchController {
         SearchResponse searchResponse = new SearchResponse();
 
         if (type.contains(QueryableType.TRACK)) {
-            Page<Track> page = trackService.findByName(query, offset, limit);
+            Page<Track> page = trackService.findByName(query, offset, limit, true);
 
             searchResponse.setTracks(new PageResponse<>(page.getContent()
                     .stream()

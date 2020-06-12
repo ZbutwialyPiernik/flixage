@@ -1,6 +1,6 @@
 package com.zbutwialypiernik.flixage.config;
 
-import com.zbutwialypiernik.flixage.service.UserDetailsServiceImpl;
+import com.zbutwialypiernik.flixage.service.DatabaseUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private DatabaseUserDetails userDetailsService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

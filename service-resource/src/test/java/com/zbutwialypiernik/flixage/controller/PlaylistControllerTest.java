@@ -29,6 +29,7 @@ import java.util.Set;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -70,6 +71,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
                 .then()
                 .log().all()
                 .status(HttpStatus.CREATED)
+                .body("id", notNull())
                 .body("name", equalTo("My Playlist"));
     }
 
@@ -114,6 +116,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
                 .put("/playlists/" + playlistId)
                 .then()
                 .status(HttpStatus.OK)
+                .body("id", equalTo(playlistId))
                 .body("name", equalTo("My New Playlist Name"));
     }
 

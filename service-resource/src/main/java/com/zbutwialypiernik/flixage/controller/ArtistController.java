@@ -40,7 +40,7 @@ public class ArtistController extends QueryableController<Artist, ArtistResponse
 
     @GetMapping("{id}/singles")
     public List<TrackResponse> getSingles(@PathVariable String id) {
-        return trackService.getArtistSingles(id).stream()
+        return trackService.getArtistSingles(id, true).stream()
                 .map(trackMapper::map)
                 .collect(Collectors.toList());
     }

@@ -15,14 +15,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class DatabaseUserDetails implements UserDetailsService {
 
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserDetailsServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DatabaseUserDetails(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
 
@@ -46,7 +46,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     /**
      * Creates new user, password has to be raw, not encrypted yet.
      *
-     * @param user user to create.
+     * @param user the user to create.
      */
     public void registerUser(User user) {
         if (userRepository.existsByUsernameIgnoreCase(user.getUsername())) {
@@ -58,6 +58,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userRepository.save(user);
     }
 
+    /**
+     * Finds user that matches credentials
+     *
+     * @param username the username of user
+     * @param rawPassword the unencrypted password
+     * @return the optional of user
+     */
     public Optional<User> getUserByCredentials(String username, String rawPassword) {
         Optional<User> user = userRepository.findByUsernameIgnoreCase(username);
 

@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 public class RootPage extends AppLayout implements AfterNavigationObserver {
 
     private final HashMap<String, Class<? extends Component>> routes = new HashMap<>();
-
     private final HashMap<String, Tab> routeToTab = new LinkedHashMap<>();
 
     private final Tabs tabs;
@@ -44,7 +43,6 @@ public class RootPage extends AppLayout implements AfterNavigationObserver {
         routeToTab.put(Routes.DASHBOARD.toLowerCase(), createTab(VaadinIcon.DASHBOARD, "Dashboard"));
         routeToTab.put(Routes.USERS.toLowerCase(), createTab(VaadinIcon.USERS, "Users"));
         routeToTab.put(Routes.LIBRARY.toLowerCase(), createTab(VaadinIcon.MUSIC, "Library"));
-
         routeToTab.values().forEach(tabs::add);
 
         tabs.addSelectedChangeListener(event -> {
@@ -52,17 +50,17 @@ public class RootPage extends AppLayout implements AfterNavigationObserver {
             UI.getCurrent().navigate(routeClass);
         });
 
-        FlexLayout tabsCenter = new FlexLayout();
-        tabsCenter.setWidthFull();
-        tabsCenter.add(tabs);
-        tabsCenter.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        var centeredTabs = new FlexLayout();
+        centeredTabs.setWidthFull();
+        centeredTabs.add(tabs);
+        centeredTabs.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-        Image logo = new Image("img/logo.png", "logo");
+        var logo = new Image("img/logo.png", "logo");
         logo.setHeight("48px");
 
-        Anchor logoutButton = new Anchor(Routes.LOGOUT, createTab(VaadinIcon.EXIT, "Logout"));
+        var logoutButton = new Anchor(Routes.LOGOUT, createTab(VaadinIcon.EXIT, "Logout"));
 
-        addToNavbar(false, logo, tabsCenter, logoutButton);
+        addToNavbar(false, logo, centeredTabs, logoutButton);
     }
 
     private Tab createTab(VaadinIcon icon, String label) {
@@ -71,8 +69,6 @@ public class RootPage extends AppLayout implements AfterNavigationObserver {
 
     @Override
     public void afterNavigation(AfterNavigationEvent event) {
-        System.out.println(event.getLocation().getFirstSegment());
-
         tabs.setSelectedTab(routeToTab.get(event.getLocation().getFirstSegment().toLowerCase()));
     }
 
