@@ -60,7 +60,6 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
         Playlist playlist = requestMapper.map(request);
 
         User user = userService.findById(authentication.getId()).orElseThrow(() -> {
-            // TODO: investigate how to make app more secure.
             log.warn("User: " + authentication.getName() + "#" + authentication.getId() + " is deleted/has fake JWT token");
 
             return new AuthenticationException("Invalid JWT Token");

@@ -15,18 +15,22 @@ public class RouteConfig {
         return builder.routes()
                 .route(r -> r.path("/api/authentication/**")
                     .uri("lb://authentication/api/authentication")
-                    .id("authentication"))
+                    .id("authentication-service"))
                 .route(r -> r.path("/api/**").and().path("/api/authentication/**").negate()
                      .uri("lb://resource/api")
-                     .id("resource"))
+                     .id("resource-service"))
+                .route(r -> r.path("/admin/**")
+                    .uri("lb://admin/admin")
+                    .id("admin-service"))
                 .build();
     }
 
     @Bean
-    SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) throws Exception {
+    SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf().disable().authorizeExchange()
-                .pathMatchers("/api/**").permitAll()
+                .pathMatchers("/api/**", "/admin/**")
+                .permitAll()
                 .anyExchange().denyAll()
                 .and()
                 .build();

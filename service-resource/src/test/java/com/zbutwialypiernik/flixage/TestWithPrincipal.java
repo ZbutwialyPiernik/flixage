@@ -18,7 +18,8 @@ import java.time.Clock;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
-@Import({/* Security */ WebSecurityConfig.class,
+@Import({
+        /* Security */ WebSecurityConfig.class,
         /* Mapper */ DtoMappersConfiguration.class, GatewayUriBuilder.class, MapperConfiguration.class, CustomConverterConfiguration.class})
 public abstract class TestWithPrincipal {
 

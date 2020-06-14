@@ -39,8 +39,6 @@ public class ThumbnailUrlConverter<A extends Queryable, B extends QueryableRespo
 
     @Override
     public void mapBtoA(B queryableResponse, A queryable, MappingContext context) {
-        super.mapBtoA(queryableResponse, queryable, context);
-
         throw new IllegalStateException("This class is response, not request");
     }
 

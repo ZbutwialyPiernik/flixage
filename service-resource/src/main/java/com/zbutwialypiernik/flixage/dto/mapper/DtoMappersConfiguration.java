@@ -17,7 +17,6 @@ public class DtoMappersConfiguration {
     private final GatewayUriBuilder gatewayUriBuilder;
 
     // TODO: make this process fully automatic and more flexible
-    // Little startup overhead over hardcoding is fine
     public DtoMappersConfiguration(MapperFactory mapperFactory, GatewayUriBuilder gatewayUriBuilder) {
         this.mapperFactory = mapperFactory;
         this.gatewayUriBuilder = gatewayUriBuilder;

@@ -2,6 +2,7 @@ package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.dto.TrackResponse;
 import com.zbutwialypiernik.flixage.entity.Track;
+import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.service.TrackService;
 import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import ma.glasnost.orika.MapperFactory;
@@ -34,7 +35,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
 
     @GetMapping("{id}/playCount")
     public void increasePlayCount(@PathVariable String id) {
-
+        service.increasePlayCount(id);
     }
 
 }
