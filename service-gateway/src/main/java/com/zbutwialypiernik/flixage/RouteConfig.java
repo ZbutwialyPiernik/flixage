@@ -14,13 +14,13 @@ public class RouteConfig {
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(r -> r.path("/api/authentication/**")
-                    .uri("lb://authentication/api/authentication")
+                    .uri("lb://authentication-service/api/authentication")
                     .id("authentication-service"))
                 .route(r -> r.path("/api/**").and().path("/api/authentication/**").negate()
-                     .uri("lb://resource/api")
+                     .uri("lb://resource-service/api")
                      .id("resource-service"))
                 .route(r -> r.path("/admin/**")
-                    .uri("lb://admin/admin")
+                    .uri("lb://admin-service/admin")
                     .id("admin-service"))
                 .build();
     }

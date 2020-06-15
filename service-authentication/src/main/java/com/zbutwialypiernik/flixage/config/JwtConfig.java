@@ -19,10 +19,10 @@ import java.time.Duration;
 @PropertySource("classpath:application.properties")
 public class JwtConfig {
 
-    @Value("${jwt.access-token.expire-time:15min}")
+    @Value("${jwt.access-token.expire-time:15M}")
     private Duration accessTokenExpireTime;
 
-    @Value("${jwt.refresh-token.expire-time:360000}")
+    @Value("${jwt.refresh-token.expire-time:7D}")
     private Duration refreshTokenExpireTime;
 
     @Positive
