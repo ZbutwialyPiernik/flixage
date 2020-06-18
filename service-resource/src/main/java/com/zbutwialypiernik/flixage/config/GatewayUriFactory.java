@@ -1,6 +1,9 @@
 package com.zbutwialypiernik.flixage.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -12,15 +15,15 @@ import java.net.URISyntaxException;
  * Will be mostly used in links to thumbnails
  */
 @Component
-public class GatewayUriBuilder {
+public class GatewayUriFactory {
 
     private final UriComponentsBuilder builder;
 
-    public GatewayUriBuilder(@Value("${gateway.url}") String baseUrl) {
+    public GatewayUriFactory(@Value("${gateway.url}") String baseUrl, @Value("${server.servlet.context-path:}") String contextPath) {
         builder = UriComponentsBuilder.newInstance();
 
         try {
-            URI uri = new URI(baseUrl);
+            URI uri = new URI(baseUrl + contextPath);
             builder.uri(uri);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Invalid base URL");

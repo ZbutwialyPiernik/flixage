@@ -35,14 +35,17 @@ public class ArtistPage extends VerticalLayout implements HasUrlParameter<String
 
     @Autowired
     public ArtistPage(ArtistService artistService, TrackService trackService, AlbumService albumService, MapperFactory factory) {
-        this.factory = factory;
         this.artistService = artistService;
         this.trackService = trackService;
         this.albumService = albumService;
+        this.factory = factory;
     }
 
     private void init(Artist artist) {
-        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> UI.getCurrent().navigate(LibraryPage.class));
+        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> {
+            //var path = uriFactory.newBuilder().pathSegment(Routes.LIBRARY).toUriString();
+            UI.getCurrent().navigate(Routes.ARTISTS);
+        });
         var artistName = new Label(artist.getName());
         var artistAvatar = new Image();
         artistAvatar.setAlt("artist avatar#" + artist.getId());

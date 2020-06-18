@@ -31,6 +31,12 @@ subprojects {
     }
 
     dependencies {
+        // Only services should have spring boot tools
+        if (project.name.contains("service")) {
+            implementation "org.springframework.boot:spring-boot-starter-actuator"
+            runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.2.6.RELEASE'
+        }
+
         compileOnly 'org.projectlombok:lombok:1.18.12'
         annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
@@ -45,12 +51,10 @@ subprojects {
         implementation 'org.apache.logging.log4j:log4j-api:2.13.1'
         implementation 'org.apache.logging.log4j:log4j-core:2.13.1'
 
-        runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.2.6.RELEASE'
-
+        // Tests
         testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
         testImplementation "org.mockito:mockito-core:$mockitoVersion"
-
     }
 
     dependencyManagement {

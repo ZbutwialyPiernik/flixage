@@ -38,7 +38,7 @@ public class AlbumPage extends VerticalLayout implements HasUrlParameter<String>
     }
 
     private void init(Album album) {
-        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> UI.getCurrent().navigate(ArtistPage.class, album.getArtist().getId()));
+        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> UI.getCurrent().getPage().getHistory().back());
         var artistName = new Label(album.getName());
         var artistAvatar = new Image();
 

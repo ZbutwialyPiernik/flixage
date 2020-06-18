@@ -1,6 +1,6 @@
 package com.zbutwialypiernik.flixage.dto.mapper;
 
-import com.zbutwialypiernik.flixage.config.GatewayUriBuilder;
+import com.zbutwialypiernik.flixage.config.GatewayUriFactory;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
@@ -52,7 +52,7 @@ public class QueryableResponseMapperTest {
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();
 
-        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriBuilder(BASE_URL));
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory(BASE_URL, "/api"));
         mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
 
         MapperFacade mapperFacade = mapperFactory.getMapperFacade();
@@ -75,7 +75,7 @@ public class QueryableResponseMapperTest {
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();
 
-        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriBuilder(BASE_URL));
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory(BASE_URL, "/api"));
         mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
 
         MapperFacade mapperFacade = mapperFactory.getMapperFacade();

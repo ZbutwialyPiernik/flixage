@@ -1,6 +1,6 @@
 package com.zbutwialypiernik.flixage.dto.mapper.converter;
 
-import com.zbutwialypiernik.flixage.config.GatewayUriBuilder;
+import com.zbutwialypiernik.flixage.config.GatewayUriFactory;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import ma.glasnost.orika.CustomMapper;
@@ -12,13 +12,13 @@ import ma.glasnost.orika.MappingContext;
  */
 public class ThumbnailUrlConverter<A extends Queryable, B extends QueryableResponse> extends CustomMapper<A, B> {
 
-    private final GatewayUriBuilder builder;
+    private final GatewayUriFactory builder;
     private final String resourcePath;
 
     /**
      * @param resourcePath the api path to resource example: gateway.com/api/v1/{resourcePath}/1324-1234-1234-1234/thumbnail
      */
-    public ThumbnailUrlConverter(GatewayUriBuilder builder, String resourcePath) {
+    public ThumbnailUrlConverter(GatewayUriFactory builder, String resourcePath) {
         this.builder = builder;
         this.resourcePath = resourcePath;
     }

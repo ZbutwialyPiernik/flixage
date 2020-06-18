@@ -83,7 +83,7 @@ public class UserServiceTest {
     @Test
     public void user_password_does_not_get_encrypted_during_update_when_is_same_as_in_database() {
         when(userRepository.findByUsernameIgnoreCase(user.getUsername())).thenReturn(Optional.of(user));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.existsById(user.getId())).thenReturn(true);
 
         var newUser = new User();
 
@@ -101,7 +101,7 @@ public class UserServiceTest {
     @Test
     public void user_password_does_get_encrypted_during_update_when_is_other_than_in_database() {
         when(userRepository.findByUsernameIgnoreCase(user.getUsername())).thenReturn(Optional.of(user));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.existsById(user.getId())).thenReturn(true);
 
         var newUser = new User();
 

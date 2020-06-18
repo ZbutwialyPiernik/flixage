@@ -173,7 +173,7 @@ public class PlaylistServiceTest {
 
         when(playlistRepository.findById(any())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class,
+        assertThrows(BadRequestException.class,
                 () -> playlistService.removeTracks(playlist, Set.of(trackId1, trackId2)));
     }
 

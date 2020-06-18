@@ -35,7 +35,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
             return;
         }
 
-        redirectStrategy.sendRedirect(request, response, targetUrl);
+        redirectStrategy.sendRedirect(request, response, "/" + targetUrl);
     }
 
     protected String determineTargetUrl(Authentication authentication) {
