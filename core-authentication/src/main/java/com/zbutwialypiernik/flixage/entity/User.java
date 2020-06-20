@@ -30,9 +30,6 @@ public class User extends BaseEntity implements UserDetails {
     private boolean enabled = true;
 
     @Column
-    private boolean expired = false;
-
-    @Column
     private boolean locked = false;
 
     @Column
@@ -48,7 +45,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return !expired;
+        return false;
     }
 
     @Override

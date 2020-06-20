@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.config;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.Duration;
 
+// TODO: refactor configuration and use HashiCorp Vault to manage configuration
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,9 +27,8 @@ public class JwtConfig {
 
     @Positive
     @Value("${jwt.refresh-token.max-count:10}")
-    private Short maxSessionCount;
+    private int maxSessionCount;
 
-    // TODO: refactor configuration and use HashiCorp Vault to manage configuration
     @NotNull
     @Value("${jwt.private-key}")
     private String privateKey;

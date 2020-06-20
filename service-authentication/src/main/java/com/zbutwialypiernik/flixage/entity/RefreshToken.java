@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -28,12 +29,16 @@ public class RefreshToken extends BaseEntity {
     @Column
     private boolean isBlacklisted = false;
 
-    public Instant getExpireDate() {
-        return getCreationTime().plus(expireTime, ChronoUnit.SECONDS);
+    public void setExpireTime(Duration expireTime) {
+        this.expireTime = expireTime.toSeconds();
     }
 
-    public boolean isExpired(Clock clock) {
-        return Instant.now(clock).isAfter(getExpireDate());
+    public Duration getExpireTime() {
+        return Duration.ofSeconds(expireTime);
+    }
+
+    public Instant getExpireDate() {
+        return getCreationTime().plus(getExpireTime());
     }
 
 }
