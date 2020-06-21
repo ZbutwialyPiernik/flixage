@@ -23,7 +23,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class JwtServiceTest {
+public class AuthenticationServiceTest {
 
     @Mock
     private TokenService tokenService;

@@ -7,6 +7,7 @@ import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.repository.TokenRepository;
 import com.zbutwialypiernik.flixage.util.KeyUtil;
 import io.jsonwebtoken.Jwts;
+import org.springframework.stereotype.Component;
 
 import java.security.PrivateKey;
 import java.time.Clock;
@@ -15,16 +16,16 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+@Component
 public class TokenService {
 
     private final PrivateKey privateKey;
 
     private final JwtConfig config;
     private final TokenRepository tokenRepository;
-
     private final Clock clock;
 
-    private TokenService(TokenRepository tokenRepository, JwtConfig config, Clock clock) {
+    public TokenService(TokenRepository tokenRepository, JwtConfig config, Clock clock) {
         this.privateKey = KeyUtil.getRsaPrivateKey(config.getPrivateKey());
         this.tokenRepository = tokenRepository;
 
