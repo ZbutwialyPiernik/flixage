@@ -15,6 +15,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.desktop.SystemSleepEvent;
 import java.io.IOException;
 import java.time.Clock;
 
@@ -47,6 +48,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         String token = request.getHeader(TOKEN_HEADER);
 
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -56,6 +58,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             logger.debug("Request issued with token: " + token);
 
             JwtAuthenticationToken authenticationToken = parser.parseToken(token);
+
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
         } catch (AuthenticationException e) {

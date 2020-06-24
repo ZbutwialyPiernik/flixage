@@ -1,7 +1,7 @@
 package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.dto.TrackResponse;
-import com.zbutwialypiernik.flixage.dto.playlist.AddTracksRequest;
+import com.zbutwialypiernik.flixage.dto.playlist.IdsRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
 import com.zbutwialypiernik.flixage.entity.Playlist;
@@ -131,8 +131,9 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @PutMapping("/{id}/tracks")
-    public void addTracks(@PathVariable String id, @RequestBody AddTracksRequest addTracksRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
-        if (addTracksRequest.getIds().isEmpty()) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addTracks(@PathVariable String id, @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+        if (idsRequest.getIds().isEmpty()) {
             throw new BadRequestException("Missing required track ids");
         }
 
@@ -142,7 +143,23 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
             throw new ResourceForbiddenException();
         }
 
-        playlistService.addTracks(playlist, addTracksRequest.getIds());
+        playlistService.addTracks(playlist, idsRequest.getIds());
+    }
+
+    @DeleteMapping("/{id}/tracks")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeTracks(@PathVariable String id, @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+        if (idsRequest.getIds().isEmpty()) {
+            throw new BadRequestException("Missing required track ids");
+        }
+
+        Playlist playlist = playlistService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
+
+        if (isNotOwner(authentication, playlist)) {
+            throw new ResourceForbiddenException();
+        }
+
+        playlistService.removeTracks(playlist, idsRequest.getIds());
     }
 
     private boolean isNotOwner(AbstractAuthentication authentication, Playlist playlist) {

@@ -26,9 +26,6 @@ public abstract class TestWithPrincipal {
     @MockBean
     public JwtAuthenticationParser parser;
 
-    @MockBean
-    public Clock clock;
-
     public final User user = new User();
 
     public final User otherUser = new User();

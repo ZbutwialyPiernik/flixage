@@ -53,8 +53,6 @@ public class QueryableControllerTest extends TestWithPrincipal {
 
         public StubController(QueryableService<QueryableStub> service, MapperFactory mapperFactory) {
             super(service, mapperFactory);
-
-            System.out.println("JESTEM ELUWINA");
         }
 
     }
@@ -65,13 +63,6 @@ public class QueryableControllerTest extends TestWithPrincipal {
     @BeforeEach
     public void setup() {
         mockMvc(mockMvc);
-        System.out.println("XDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDQWerqwerqwerqwe");
-        mockMvc.getDispatcherServlet().getWebApplicationContext()
-                .getBeansWithAnnotation(RestController.class)
-                .forEach((xd, xdd) -> {
-                    System.out.println(xd);
-                    System.out.println(xdd);
-                });
     }
 
     @Test
