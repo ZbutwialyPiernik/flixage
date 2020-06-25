@@ -6,10 +6,13 @@ import com.zbutwialypiernik.flixage.service.DatabaseUserDetails;
 import com.zbutwialypiernik.flixage.validator.ValidPassword;
 import lombok.Value;
 import ma.glasnost.orika.MapperFacade;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @RestController
 public class RegisterController {
@@ -38,6 +41,8 @@ public class RegisterController {
     @Value
     private static class RegisterRequest {
 
+        @NotNull(message = "Username cannot be null")
+        @Length(min = 5, max = 32, message = "Username length should be between 5 and 32")
         String username;
 
         @ValidPassword
