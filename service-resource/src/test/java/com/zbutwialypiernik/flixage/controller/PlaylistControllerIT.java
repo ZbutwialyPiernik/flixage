@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -66,6 +67,8 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
     public void setup() {
         mockMvc(mockMvc);
     }
+
+    //------------------------------- RETRIEVING PLAYLIST --------------------------------
 
     @Test
     public void logged_user_is_able_to_retrieve_playlist_when_playlist_exists() {
@@ -103,6 +106,8 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         // @formatter:on
     }
 
+    //------------------------------- CREATING PLAYLIST --------------------------------
+
     @Test
     public void logged_user_is_able_to_create_playlist() {
         var request = new PlaylistRequest("My Playlist");
@@ -122,7 +127,10 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
                     .path("id");
         // @formatter:on
 
-        Assertions.assertTrue(playlistRepository.existsById(id));
+        var playlist = playlistRepository.getOne(id);
+
+        assertNotNull(playlist);
+        assertEquals(playlist.getOwner(), user);
     }
 
     @Test
@@ -139,8 +147,10 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         // @formatter:on
     }
 
+    //------------------------------- UPDATING TRACK FROM PLAYLIST --------------------------------
+
     @Test
-    public void logged_user_is_able_to_update_playlist() {
+    public void owner_is_able_to_update_playlist() {
         var playlist = new Playlist();
         playlist.setName("Playlist name");
         playlist.setOwner(user);
@@ -164,10 +174,10 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
     }
 
     @Test
-    public void logged_user_is_able_to_delete_playlist() {
+    public void not_owner_is_not_able_to_update_playlist() {
         var playlist = new Playlist();
         playlist.setName("Playlist name");
-        playlist.setOwner(user);
+        playlist.setOwner(otherUser);
 
         playlistService.create(playlist);
 
@@ -179,6 +189,70 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
             .contentType(ContentType.JSON)
             .body(request)
         .when()
+            .put("/playlists/" + playlist.getId())
+        .then()
+            .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+
+        var notUpdatedPlaylist = playlistRepository.getOne(playlist.getId());
+
+        assertEquals(playlist.getId(), notUpdatedPlaylist.getId());
+        assertEquals(playlist.getName(), notUpdatedPlaylist.getName());
+        assertEquals(playlist.getOwner(), notUpdatedPlaylist.getOwner());
+    }
+
+    @Test
+    public void logged_user_is_not_able_to_update_non_existing_playlist() {
+        var request = new PlaylistRequest("New playlist name");
+
+        // @formatter:off
+        given()
+            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .put("/playlists/" + UUID.randomUUID())
+        .then()
+            .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
+    }
+
+    @Test
+    public void not_logged_user_is_not_able_to_update_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("Playlist name");
+        playlist.setOwner(user);
+
+        playlistService.create(playlist);
+
+        var request = new PlaylistRequest("New playlist name");
+
+        // @formatter:off
+        given()
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .put("/playlists/" + UUID.randomUUID())
+        .then()
+            .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+    }
+
+    //------------------------------- REMOVING PLAYLIST --------------------------------
+
+    @Test
+    public void owner_is_able_to_delete_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("Playlist name");
+        playlist.setOwner(user);
+
+        playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .contentType(ContentType.JSON)
+        .when()
             .delete("/playlists/" + playlist.getId())
             .then()
             .status(HttpStatus.NO_CONTENT);
@@ -188,8 +262,62 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
     }
 
     @Test
+    public void not_owner_is_not_able_to_delete_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("Playlist name");
+        playlist.setOwner(user);
+
+        playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/playlists/" + playlist.getId())
+                .then()
+                .status(HttpStatus.NO_CONTENT);
+        // @formatter:on
+
+        assertFalse(playlistRepository.existsById(playlist.getId()));
+    }
+
+    @Test
+    public void logged_user_is_not_able_to_delete_non_existing_playlist() {
+        // @formatter:off
+        given()
+                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/playlists/" + UUID.randomUUID().toString())
+                .then()
+                .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
+    }
+
+    @Test
+    public void not_logged_user_is_not_able_to_delete_existing_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("Playlist name");
+        playlist.setOwner(user);
+
+        playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/playlists/" + UUID.randomUUID().toString())
+        .then()
+            .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+    }
+
+    //------------------------------- ADDING TRACK FROM PLAYLIST --------------------------------
+
+    @Test
     @Transactional
-    public void logged_user_is_able_to_add_tracks_to_playlist() {
+    public void owner_is_able_to_add_existing_tracks_to_playlist() {
         var playlist = new Playlist();
         playlist.setName("Playlist name");
         playlist.setOwner(user);
@@ -226,7 +354,78 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
     @Test
     @Transactional
-    public void logged_user_is_able_to_remove_tracks_from_playlist() {
+    public void owner_is_not_able_to_add_non_existing_tracks_to_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("Playlist name");
+        playlist.setOwner(user);
+
+        playlistService.create(playlist);
+
+        var track1 = new Track();
+        track1.setName("Bohemian Rhapsody");
+
+        trackService.create(track1);
+
+        var request = new IdsRequest(Set.of(track1.getId(), UUID.randomUUID().toString()));
+
+        // @formatter:off
+        given()
+            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .put("/playlists/" + playlist.getId() + "/tracks")
+        .then()
+            .status(HttpStatus.BAD_REQUEST);
+        // @formatter:on
+
+        var tracks = playlistRepository.getOne(playlist.getId()).getTracks();
+
+        assertEquals(0, tracks.size());
+    }
+
+    @Test
+    @Transactional
+    public void not_owner_is_able_to_add_existing_tracks_to_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("Playlist name");
+        playlist.setOwner(otherUser);
+
+        playlistService.create(playlist);
+
+        var track1 = new Track();
+        track1.setName("Bohemian Rhapsody");
+
+        trackService.create(track1);
+
+        var track2 = new Track();
+        track2.setName("Don't Stop Me Now");
+
+        trackService.create(track2);
+
+        var request = new IdsRequest(Set.of(track1.getId(), track2.getId()));
+
+        // @formatter:off
+        given()
+                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .put("/playlists/" + playlist.getId() + "/tracks")
+                .then()
+                .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+
+        var tracks = playlistRepository.getOne(playlist.getId()).getTracks();
+
+        assertEquals(0, tracks.size());
+    }
+
+    //------------------------------- REMOVING TRACK FROM PLAYLIST --------------------------------
+
+    @Test
+    @Transactional
+    public void owner_is_able_to_remove_tracks_from_playlist() {
         var playlist = new Playlist();
         playlist.setName("Playlist name");
         playlist.setOwner(user);
@@ -267,7 +466,50 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
     @Test
     @Transactional
-    public void logged_user_is_able_to_upload_thumbnail_to_playlist() throws URISyntaxException, IOException {
+    public void not_owner_is_able_to_remove_tracks_from_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("Playlist name");
+        playlist.setOwner(otherUser);
+
+        playlistService.create(playlist);
+
+        var track1 = new Track();
+        track1.setName("Bohemian Rhapsody");
+
+        var track2 = new Track();
+        track2.setName("Don't Stop Me Now");
+
+        trackService.create(track1);
+        trackService.create(track2);
+
+        playlist.getTracks().add(track1);
+        playlist.getTracks().add(track2);
+
+        playlistService.update(playlist);
+
+        var request = new IdsRequest(Set.of(track1.getId(), track2.getId()));
+
+        // @formatter:off
+        given()
+                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .delete("/playlists/" + playlist.getId() + "/tracks")
+                .then()
+                .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+
+        var tracks = playlistRepository.getOne(playlist.getId()).getTracks();
+
+        assertEquals(2, tracks.size());
+    }
+
+    //------------------------------- THUMBNAIL UPLOAD --------------------------------
+
+    @Test
+    @Transactional
+    public void logged_user_is_able_to_upload_thumbnail_to_playlist() throws URISyntaxException {
         var playlist = new Playlist();
         playlist.setName("Playlist name");
         playlist.setOwner(user);

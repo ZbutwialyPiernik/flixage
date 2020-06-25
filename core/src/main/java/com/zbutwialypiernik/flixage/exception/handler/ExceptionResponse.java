@@ -8,6 +8,7 @@ import java.time.Instant;
 @Getter
 @RequiredArgsConstructor
 public class ExceptionResponse {
+
     private final String message;
 
     private final int status;

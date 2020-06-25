@@ -133,10 +133,6 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     @PutMapping("/{id}/tracks")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addTracks(@PathVariable String id, @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
-        if (idsRequest.getIds().isEmpty()) {
-            throw new BadRequestException("Missing required track ids");
-        }
-
         Playlist playlist = playlistService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
 
         if (isNotOwner(authentication, playlist)) {
@@ -149,10 +145,6 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     @DeleteMapping("/{id}/tracks")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeTracks(@PathVariable String id, @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
-        if (idsRequest.getIds().isEmpty()) {
-            throw new BadRequestException("Missing required track ids");
-        }
-
         Playlist playlist = playlistService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
 
         if (isNotOwner(authentication, playlist)) {

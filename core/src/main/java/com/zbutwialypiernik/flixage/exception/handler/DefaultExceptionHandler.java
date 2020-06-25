@@ -7,11 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.handler.ResponseStatusExceptionHandler;
 
+import javax.validation.ValidationException;
+import java.net.BindException;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 /**
  * Intent of this class is to hide possible vulnerability and implementation details
@@ -39,6 +45,23 @@ public class DefaultExceptionHandler {
                     .body(new ExceptionResponse(exception.getMessage(),
                             httpStatus.value(),
                             Instant.now(clock)));
+        }
+
+        if (exception instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException validationException = (MethodArgumentNotValidException) exception;
+
+            var errors = validationException.getBindingResult()
+                    .getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.badRequest()
+                    .body(new ValidationExceptionResponse(
+                            "Validation error",
+                            HttpStatus.BAD_REQUEST.value(),
+                            Instant.now(clock),
+                            errors));
         }
 
         log.error("Unhandled internal exception: ", exception);
