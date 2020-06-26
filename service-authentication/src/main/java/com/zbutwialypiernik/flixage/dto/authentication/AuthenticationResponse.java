@@ -2,29 +2,17 @@ package com.zbutwialypiernik.flixage.dto.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 
 import java.time.Duration;
 
-@Data
+@Value
 public class AuthenticationResponse {
 
-    private String accessToken;
+    String accessToken;
 
-    private String refreshToken;
+    String refreshToken;
 
-    private long expireTime;
+    long expireTime;
 
-    public AuthenticationResponse(String accessToken, String refreshToken, Duration expireTime) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.expireTime = expireTime.toSeconds();
-    }
-
-    public Duration getExpireTime() {
-        return Duration.ofSeconds(expireTime);
-    }
-
-    public void setExpireTime(Duration expireTime) {
-        this.expireTime = expireTime.toSeconds();
-    }
 }

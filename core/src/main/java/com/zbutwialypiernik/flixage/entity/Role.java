@@ -3,7 +3,7 @@ package com.zbutwialypiernik.flixage.entity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public enum Role {
-    USER, ADMIN;
+    USER, ADMIN, SYSTEM;
 
     public SimpleGrantedAuthority toAuthority() {
         return new SimpleGrantedAuthority( "ROLE_" + name());

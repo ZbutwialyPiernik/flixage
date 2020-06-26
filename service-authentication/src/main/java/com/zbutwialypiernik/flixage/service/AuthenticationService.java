@@ -47,7 +47,7 @@ public class AuthenticationService {
 
         var refreshToken = tokenService.generateRefreshToken(user);
 
-        return new AuthenticationResponse(tokenService.generateAccessToken(user), refreshToken.getId(), refreshToken.getExpireTime());
+        return new AuthenticationResponse(tokenService.generateAccessToken(user), refreshToken.getId(), refreshToken.getExpireTime().toSeconds());
     }
 
     /**
@@ -73,7 +73,7 @@ public class AuthenticationService {
             throw new AuthenticationException("Refresh token is expired");
         }
 
-        return new AuthenticationResponse(tokenService.generateAccessToken(refreshToken.getUser()), refreshToken.getId(), refreshToken.getExpireTime());
+        return new AuthenticationResponse(tokenService.generateAccessToken(refreshToken.getUser()), refreshToken.getId(), refreshToken.getExpireTime().toSeconds());
     }
 
     public void invalidateToken(String refreshToken) {

@@ -31,6 +31,10 @@ subprojects {
     }
 
     dependencies {
+        if (project.name != "core") {
+            implementation project(":core")
+        }
+
         // Only services should have spring boot tools
         if (project.name.contains("service")) {
             implementation "org.springframework.boot:spring-boot-starter-actuator"
@@ -78,9 +82,9 @@ project(':core') {
     }
 
     dependencies {
-        // Validator
-        implementation 'org.passay:passay:1.5.0'
+        // Validation
         implementation "org.hibernate:hibernate-validator:6.1.2.Final"
+        implementation 'org.passay:passay:1.5.0'
 
         // Object Mapping
         implementation 'ma.glasnost.orika:orika-core:1.5.4'
@@ -112,7 +116,6 @@ project(':core-resource') {
     }
 
     dependencies {
-        implementation project(":core")
         // Object Mapping
         implementation 'ma.glasnost.orika:orika-core:1.5.4'
 
@@ -199,7 +202,6 @@ project(':service-discovery') {
 
 project(':service-authentication') {
     dependencies {
-        implementation project(':core')
         implementation project(':core-authentication')
 
         // Object Mapping
@@ -239,7 +241,6 @@ project(':service-resource') {
     }
 
     dependencies {
-        implementation project(':core')
         implementation project(':core-resource')
 
         // Object Mapping

@@ -1,7 +1,6 @@
 package com.zbutwialypiernik.flixage.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.handler.ExceptionResponse;
 import lombok.extern.log4j.Log4j2;
@@ -15,7 +14,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.desktop.SystemSleepEvent;
 import java.io.IOException;
 import java.time.Clock;
 

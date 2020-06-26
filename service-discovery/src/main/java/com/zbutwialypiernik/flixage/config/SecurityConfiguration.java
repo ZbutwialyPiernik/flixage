@@ -1,5 +1,6 @@
 package com.zbutwialypiernik.flixage.config;
 
+import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.service.DatabaseUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +20,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
         http.csrf().disable()
-            .authorizeRequests().anyRequest().hasRole("ADMIN");
+            .authorizeRequests()
+                .antMatchers("/eureka/**").hasRole(Role.ADMIN.name())
+                //.anyRequest().hasRole(Role.SYSTEM.name()) TODO: Add authentication for
+                .anyRequest().permitAll()
+            .and()
+                .formLogin().permitAll()
+            .and()
+                .logout().permitAll();
+        // @formatter:on
     }
 
     @Override
