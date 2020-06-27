@@ -17,7 +17,7 @@ public class CustomConverterConfiguration {
         return new BidirectionalConverter<>() {
             @Override
             public Long convertTo(Duration source, Type<Long> destinationType, MappingContext mappingContext) {
-                return source.getSeconds();
+                return source.toSeconds();
             }
 
             @Override
