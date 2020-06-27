@@ -18,7 +18,7 @@ import java.util.Collection;
  */
 public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHandler {
 
-    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -50,14 +50,6 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         }
 
         throw new IllegalStateException("User has no role");
-    }
-
-    public void setRedirectStrategy(RedirectStrategy redirectStrategy) {
-        this.redirectStrategy = redirectStrategy;
-    }
-
-    protected RedirectStrategy getRedirectStrategy() {
-        return redirectStrategy;
     }
 
 }

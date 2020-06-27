@@ -34,7 +34,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .authorizeRequests()
                         .antMatchers("/eureka/**").hasRole(Role.ADMIN.name())
-                        .antMatchers("/tracks/*/stream").permitAll() // TODO: remove that after i will resolve problem with authorization headers in Flutter audio player
                         .antMatchers("/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
                 .and()
                     .addFilter(new JwtAuthenticationFilter(authenticationManager(), parser, mapper, clock));
