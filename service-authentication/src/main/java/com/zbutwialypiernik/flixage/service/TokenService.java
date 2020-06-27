@@ -54,6 +54,7 @@ public class TokenService {
         var refreshToken = new RefreshToken();
         refreshToken.setId(UUID.randomUUID().toString());
         refreshToken.setUser(user);
+        refreshToken.setExpireTime(config.getRefreshTokenExpireTime());
         refreshToken.setCreationTime(Instant.now(clock));
 
         tokenRepository.save(refreshToken);
