@@ -31,7 +31,7 @@ public class FileStorageConfiguration {
                         source.setFileId(UUID.randomUUID().toString());
                     }
 
-                    return "./storage/track/" + source.getFileId() + "." + source.getExtension();
+                    return "/track/" + source.getFileId() + "." + source.getExtension();
                 }
             });
 
@@ -43,7 +43,7 @@ public class FileStorageConfiguration {
                         source.setFileId(UUID.randomUUID().toString());
                     }
 
-                    return "./storage/image/" + source.getFileId() + "." + source.getExtension();
+                    return "/image/" + source.getFileId() + "." + source.getExtension();
                 }
             });
         };
