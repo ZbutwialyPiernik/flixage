@@ -4,7 +4,7 @@ WORKDIR /usr/app
 
 ENV GATEWAY_SERVICE_PORT 8080
 
-ENV DISCOVERY_SERVICE_URL http://host.docker.internal:8090/eureka/
+ENV DISCOVERY_SERVICE_URL http://discovery:Passw0rd@host.docker.internal:8090/eureka/
 
 ENV DATABASE_USERNAME root
 ENV DATABASE_PASSWORD password

@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.config.JwtConfig;
 import com.zbutwialypiernik.flixage.dto.authentication.AuthenticationResponse;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;

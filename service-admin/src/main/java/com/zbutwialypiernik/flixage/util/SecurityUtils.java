@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 
 public class SecurityUtils {
 
+    private SecurityUtils() {}
+
     /**
      * Checks if request is internal from the Vaadin framework
      */

@@ -174,8 +174,6 @@ project(':core-authentication') {
 
 project(':service-gateway') {
     dependencies {
-        implementation project(':core-authentication')
-
         implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
@@ -189,8 +187,6 @@ project(':service-gateway') {
 
 project(':service-discovery') {
     dependencies {
-        implementation project(':core-authentication')
-
         implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
         implementation 'org.springframework.boot:spring-boot-starter-security'
 
