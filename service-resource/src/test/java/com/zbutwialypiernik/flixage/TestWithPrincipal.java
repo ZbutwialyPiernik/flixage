@@ -3,6 +3,8 @@ package com.zbutwialypiernik.flixage;
 import com.zbutwialypiernik.flixage.config.GatewayUriFactory;
 import com.zbutwialypiernik.flixage.config.MapperConfiguration;
 import com.zbutwialypiernik.flixage.config.WebSecurityConfig;
+import com.zbutwialypiernik.flixage.config.ZoneConfiguration;
+import com.zbutwialypiernik.flixage.controller.TrackControllerIT;
 import com.zbutwialypiernik.flixage.dto.mapper.DtoMappersConfiguration;
 import com.zbutwialypiernik.flixage.dto.mapper.converter.CustomConverterConfiguration;
 import com.zbutwialypiernik.flixage.entity.Role;
@@ -19,7 +21,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 @Import({
-        /* Security */ WebSecurityConfig.class,
+        /* Security */ WebSecurityConfig.class, ZoneConfiguration.class,
         /* Mapper */ DtoMappersConfiguration.class, GatewayUriFactory.class, MapperConfiguration.class, CustomConverterConfiguration.class})
 public abstract class TestWithPrincipal {
 

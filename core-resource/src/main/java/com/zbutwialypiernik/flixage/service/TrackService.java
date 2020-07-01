@@ -2,6 +2,8 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
+import com.zbutwialypiernik.flixage.exception.AuthenticationException;
+import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,9 +23,15 @@ public class TrackService extends QueryableService<Track> {
 
     private final TrackFileService trackFileService;
 
-    public TrackService(TrackRepository repository, ImageFileService thumbnailService, TrackFileService trackFileService)  {
+    private final UserService userService;
+
+    private final Clock clock;
+
+    public TrackService(TrackRepository repository, ImageFileService thumbnailService, TrackFileService trackFileService, UserService userService, Clock clock)  {
         super(repository, thumbnailService);
         this.trackFileService = trackFileService;
+        this.userService = userService;
+        this.clock = clock;
     }
 
     @Transactional
@@ -42,10 +51,20 @@ public class TrackService extends QueryableService<Track> {
     }
 
     @Transactional
-    public void increasePlayCount(String trackId) {
-        Track track = getRepository().findById(trackId).orElseThrow(ResourceNotFoundException::new);
+    public void increaseStreamCount(String userId, String trackId) {
+        var user = userService.findById(userId).orElseThrow(() -> new AuthenticationException("Invalid Token"));
+        var track = getRepository().findById(trackId).orElseThrow(ResourceNotFoundException::new);
 
-        track.setPlayCount(track.getPlayCount() + 1);
+        if (track.getAudioFile() == null) {
+            throw new ResourceNotFoundException();
+        }
+
+        if (user.getLastAudioStream() != null && clock.instant().isBefore(user.getLastAudioStream().plusSeconds(30))) {
+            throw new ConflictException("User has already streamed audio in last 30 seconds");
+        }
+
+        track.setStreamCount(track.getStreamCount() + 1);
+        user.setLastAudioStream(clock.instant());
     }
 
     public AudioResource getTrackFile(String id) {

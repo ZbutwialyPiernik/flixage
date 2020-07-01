@@ -29,6 +29,6 @@ public class Track extends Queryable {
     private AudioFileEntity audioFile;
 
     @Column(nullable = false)
-    private long playCount;
+    private long streamCount;
 
 }

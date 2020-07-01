@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +45,9 @@ public class User extends Queryable implements UserDetails {
 
     @Column(nullable = false)
     private boolean expiredCredentials = false;
+
+    @Column
+    private Instant lastAudioStream;
 
     @Enumerated(value = EnumType.STRING)
     private Role role = Role.USER;

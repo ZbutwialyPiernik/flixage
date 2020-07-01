@@ -24,7 +24,7 @@ public class QueryableService<T extends Queryable>{
 
     private final QueryableRepository<T> repository;
 
-    private final ImageFileService thumbnailService;
+    protected final ImageFileService thumbnailService;
 
     public QueryableService(QueryableRepository<T> repository, ImageFileService thumbnailService) {
         this.thumbnailService = thumbnailService;
@@ -184,4 +184,5 @@ public class QueryableService<T extends Queryable>{
     protected QueryableRepository<T> getRepository() {
         return repository;
     }
+
 }

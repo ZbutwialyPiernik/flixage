@@ -7,14 +7,21 @@ import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.servlet.MockMvc;
 
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.mockito.Mockito.when;
 
 // Recreates database after every test
+@AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class IntegrationTestWithPrincipal {
+public abstract class IntegrationTestWithPrincipal {
+
+    @Autowired
+    protected MockMvc mockMvc;
 
     @MockBean
     public JwtAuthenticationParser parser;
@@ -32,6 +39,8 @@ public class IntegrationTestWithPrincipal {
 
     @BeforeEach
     void prepare() {
+        mockMvc(mockMvc);
+
         user = new User();
         user.setUsername("user");
         user.setPassword("Passw0rd");

@@ -48,11 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-@AutoConfigureMockMvc
 public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Autowired
     private PlaylistRepository playlistRepository;
@@ -62,11 +58,6 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
     @Autowired
     private TrackService trackService;
-
-    @BeforeEach
-    public void setup() {
-        mockMvc(mockMvc);
-    }
 
     //------------------------------- RETRIEVING PLAYLIST --------------------------------
 

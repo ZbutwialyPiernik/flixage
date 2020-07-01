@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 
 @WebMvcTest(QueryableControllerTest.StubController.class)
 public class QueryableControllerTest extends TestWithPrincipal {
@@ -60,9 +61,12 @@ public class QueryableControllerTest extends TestWithPrincipal {
     @MockBean
     public QueryableService<QueryableStub> service;
 
+    @Autowired
+    public MapperFactory mapperFactory;
+
     @BeforeEach
     public void setup() {
-        mockMvc(mockMvc);
+        standaloneSetup(new StubController(service, mapperFactory));
     }
 
     @Test

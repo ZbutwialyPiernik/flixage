@@ -35,7 +35,7 @@ public class PlaylistService extends QueryableService<Playlist> {
 
     @Transactional
     public List<Track> getTracks(String playlistId) {
-        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(ResourceNotFoundException::new);
 
         Hibernate.initialize(playlist.getTracks());
 
