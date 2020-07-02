@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
-@Route(value = Routes.ALBUM, layout = RootPage.class)
+@Route(value = Routes.ALBUMS, layout = RootPage.class)
 public class AlbumPage extends VerticalLayout implements HasUrlParameter<String> {
 
     // Services
@@ -38,7 +38,7 @@ public class AlbumPage extends VerticalLayout implements HasUrlParameter<String>
     }
 
     private void init(Album album) {
-        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> UI.getCurrent().getPage().getHistory().back());
+        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> UI.getCurrent().navigate(ArtistPage.class, album.getArtist().getId()));
         var artistName = new Label(album.getName());
         var artistAvatar = new Image();
 

@@ -10,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
 import com.vaadin.flow.server.StreamResource;
 import com.zbutwialypiernik.flixage.config.Routes;
 import com.zbutwialypiernik.flixage.entity.Artist;
@@ -42,10 +43,7 @@ public class ArtistPage extends VerticalLayout implements HasUrlParameter<String
     }
 
     private void init(Artist artist) {
-        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> {
-            //var path = uriFactory.newBuilder().pathSegment(Routes.LIBRARY).toUriString();
-            UI.getCurrent().navigate(Routes.ARTISTS);
-        });
+        var backButton = new Button(VaadinIcon.ARROW_BACKWARD.create(), event -> UI.getCurrent().navigate(LibraryPage.class));
         var artistName = new Label(artist.getName());
         var artistAvatar = new Image();
         artistAvatar.setAlt("artist avatar#" + artist.getId());
@@ -88,7 +86,7 @@ public class ArtistPage extends VerticalLayout implements HasUrlParameter<String
     }
 
     @Override
-    public void setParameter(BeforeEvent event, String parameter) {
+    public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
         Optional<Artist> artistOptional = artistService.findById(parameter);
 
         if (artistOptional.isPresent()) {

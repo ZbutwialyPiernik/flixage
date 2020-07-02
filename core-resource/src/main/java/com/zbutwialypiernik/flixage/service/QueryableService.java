@@ -176,7 +176,7 @@ public class QueryableService<T extends Queryable>{
      * @return the optional of byte[] containing thumbnail
      */
     public Optional<ImageResource> getThumbnailById(String id) {
-        T entity = findById(id).orElseThrow(ResourceNotFoundException::new);
+        var entity = findById(id).orElseThrow(ResourceNotFoundException::new);
 
         return thumbnailService.get(entity.getThumbnail());
     }

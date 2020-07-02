@@ -67,7 +67,6 @@ public abstract class AbstractResourceService<E extends FileEntity, T extends Ab
 
         try (var inputStream = store.getContent(entity)) {
             if (inputStream == null) {
-                // TODO: Return error image instead of empty value?
                 log.error("Resource not found with file id " + entity.getFileId() + "." + entity.getExtension());
 
                 return Optional.empty();

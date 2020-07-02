@@ -7,6 +7,7 @@ import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import com.zbutwialypiernik.flixage.service.resource.track.TrackFileService;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -48,6 +50,16 @@ public class TrackService extends QueryableService<Track> {
         trackFileService.save(track.getAudioFile(), resource);
 
         getRepository().save(track);
+    }
+
+    public Optional<ImageResource> getThumbnailById(String id, boolean mustHaveAudioFile) {
+        var entity = findById(id).orElseThrow(ResourceNotFoundException::new);
+
+        if (mustHaveAudioFile && entity.getAudioFile() == null) {
+            throw new ResourceNotFoundException();
+        }
+
+        return thumbnailService.get(entity.getThumbnail());
     }
 
     @Transactional

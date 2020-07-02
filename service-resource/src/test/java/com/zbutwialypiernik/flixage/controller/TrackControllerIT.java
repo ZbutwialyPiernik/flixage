@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.boot.test.context.SpringBootTest.*;
 
@@ -72,6 +73,87 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     public void setup() {
         mockMvc(mockMvc);
     }
+
+    //------------------------------- RETRIEVING TRACK --------------------------------
+
+    @Test
+    public void logged_user_is_able_to_retrieve_track_when_exists() {
+        var audioFile = createMockFile();
+
+        var track = new Track();
+        track.setName("Playlist name");
+        track.setAudioFile(audioFile);
+
+        trackService.create(track);
+
+        // @formatter:off
+        given()
+            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .contentType(ContentType.JSON)
+        .when()
+            .get("/tracks/" + track.getId())
+        .then()
+            .status(HttpStatus.OK)
+            .body("id", equalTo(track.getId()))
+            .body("name", equalTo(track.getName()));    // @formatter:on
+    }
+
+    @Test
+    public void logged_user_is_not_able_to_retrieve_track_when_track_does_not_exists() {
+        // @formatter:off
+        given()
+            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .contentType(ContentType.JSON)
+        .when()
+            .get("/tracks/" + UUID.randomUUID().toString())
+        .then()
+            .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
+    }
+
+    @Test
+    public void logged_user_is_not_able_to_retrieve_track_when_audio_file_does_not_exists() {
+        var track = new Track();
+        track.setName("Playlist name");
+        track.setAudioFile(null);
+
+        user.setLastAudioStream(NOW.minus(Duration.ofSeconds(35)));
+        userService.update(user);
+
+        trackService.create(track);
+
+        // @formatter:off
+        given()
+            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .contentType(ContentType.JSON)
+        .when()
+            .get("/tracks/" + track.getId())
+        .then()
+            .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
+    }
+
+    @Test
+    public void not_logged_user_is_not_able_to_retrieve_track_when_track_does_exists() {
+        var audioFile = createMockFile();
+
+        var track = new Track();
+        track.setName("Playlist name");
+        track.setAudioFile(audioFile);
+
+        trackService.create(track);
+
+        // @formatter:off
+        given()
+            .contentType(ContentType.JSON)
+        .when()
+            .get("/tracks/" + UUID.randomUUID().toString())
+        .then()
+            .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+    }
+
+    //------------------------------- INCREASING STREAM COUNT --------------------------------
 
     @Test
     @Transactional

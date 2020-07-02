@@ -77,7 +77,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
             .post("/playlists/" + playlist.getId())
         .then()
             .status(HttpStatus.CREATED)
-            .body("id", notNullValue())
+            .body("id", equalTo(playlist.getId()))
             .body("name", equalTo(playlist.getName()));
         // @formatter:on
     }

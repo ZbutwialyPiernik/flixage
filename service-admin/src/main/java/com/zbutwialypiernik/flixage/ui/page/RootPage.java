@@ -39,9 +39,7 @@ public class RootPage extends AppLayout implements AfterNavigationObserver {
         routeToTab.put(Routes.LIBRARY.toLowerCase(), createTab(VaadinIcon.MUSIC, "Library"));
         routeToTab.values().forEach(tabs::add);
 
-        tabs.addSelectedChangeListener(event -> {
-            UI.getCurrent().navigate(event.getSelectedTab().getLabel().toLowerCase());
-        });
+        tabs.addSelectedChangeListener(event -> UI.getCurrent().navigate(event.getSelectedTab().getLabel().toLowerCase()));
 
         var centeredTabs = new FlexLayout();
         centeredTabs.setWidthFull();
