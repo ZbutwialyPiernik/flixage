@@ -16,7 +16,7 @@ public class ImageConfiguration {
 
     @Bean
     public ImageFileService thumbnailImageService(ImageFileStore imageFileStore) {
-        return new ImageFileService(imageFileStore, new ImageProcessingService(256, 256));
+        return new ImageFileService(imageFileStore, new ImageProcessingService(512, 512));
     }
 
 }

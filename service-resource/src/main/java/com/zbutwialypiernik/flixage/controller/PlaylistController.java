@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -122,7 +123,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
         if (isNotOwner(authentication, playlist)) {
             throw new ResourceForbiddenException();
         }
-
+        
         try {
             playlistService.saveThumbnail(playlist, new ImageResource(file.getBytes(), file.getOriginalFilename(), FilenameUtils.getExtension(file.getOriginalFilename()), file.getContentType()));
         } catch (IOException e) {
