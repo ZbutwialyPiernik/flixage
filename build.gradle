@@ -39,6 +39,10 @@ subprojects {
         if (project.name.contains("service")) {
             implementation "org.springframework.boot:spring-boot-starter-actuator"
             runtimeOnly 'org.springframework.boot:spring-boot-devtools:2.2.6.RELEASE'
+
+            testImplementation('org.springframework.boot:spring-boot-starter-test') {
+                exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+            }
         }
 
         compileOnly 'org.projectlombok:lombok:1.18.12'
@@ -92,11 +96,6 @@ project(':core') {
         // Database
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-security'
-
-        //Tests
-        testImplementation('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-        }
     }
 }
 
@@ -197,6 +196,10 @@ project(':service-discovery') {
 }
 
 project(':service-authentication') {
+    ext {
+        restAssuredVersion = '4.0.0'
+    }
+
     dependencies {
         implementation project(':core-authentication')
 
@@ -220,6 +223,12 @@ project(':service-authentication') {
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
         runtimeOnly 'mysql:mysql-connector-java'
+
+        testImplementation "io.rest-assured:json-path:$restAssuredVersion"
+        testImplementation "io.rest-assured:xml-path:$restAssuredVersion"
+        testImplementation "io.rest-assured:spring-mock-mvc:$restAssuredVersion"
+        testImplementation "io.rest-assured:rest-assured-all:$restAssuredVersion"
+        testImplementation 'org.hamcrest:hamcrest-all:1.3'
 
         testRuntimeOnly 'com.h2database:h2'
     }

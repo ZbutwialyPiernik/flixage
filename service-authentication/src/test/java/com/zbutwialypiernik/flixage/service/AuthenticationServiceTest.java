@@ -1,4 +1,4 @@
-package com.zbutwialypiernik.flixage;
+package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.RefreshToken;
 import com.zbutwialypiernik.flixage.entity.Role;
@@ -141,7 +141,7 @@ public class AuthenticationServiceTest {
 
         assertEquals(refreshToken.getId(), authentication.getRefreshToken());
         assertEquals(accessToken, authentication.getAccessToken());
-        assertEquals(refreshToken.getExpireTime(), authentication.getExpireTime());
+        assertEquals(refreshToken.getExpireTime().getSeconds(), authentication.getExpireTime());
     }
 
     @Test

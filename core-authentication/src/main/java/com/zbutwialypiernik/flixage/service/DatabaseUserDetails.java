@@ -53,7 +53,12 @@ public class DatabaseUserDetails implements UserDetailsService {
             throw new ConflictException("Username is already taken by other user");
         }
 
+        user.setId(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (user.getName() == null) {
+            user.setName(user.getUsername());
+        }
 
         userRepository.save(user);
     }

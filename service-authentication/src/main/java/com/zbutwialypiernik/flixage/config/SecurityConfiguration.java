@@ -34,7 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.POST,
                             "/authentication",
                             "/authentication/renew",
-                            "authentication/invalidate")
+                            "authentication/invalidate",
+                            "authentication/register")
                         .permitAll();
         // @formatter:on
     }
