@@ -38,9 +38,6 @@ public class User extends Queryable implements UserDetails {
     private boolean enabled = true;
 
     @Column(nullable = false)
-    private boolean expired = false;
-
-    @Column(nullable = false)
     private boolean locked = false;
 
     @Column(nullable = false)
@@ -59,7 +56,7 @@ public class User extends Queryable implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return !expired;
+        return true;
     }
 
     @Override

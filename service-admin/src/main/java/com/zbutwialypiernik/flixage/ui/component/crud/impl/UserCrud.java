@@ -54,8 +54,6 @@ public class UserCrud extends PaginatedCrud<User, UserForm> {
                 .setHeader("Role");
         addColumn(User::isEnabled)
                 .setHeader("Enabled");
-        addColumn(User::isExpired)
-                .setHeader("Expired");
         addColumn(User::isLocked)
                 .setHeader("Locked");
         addColumn(User::isExpiredCredentials)
