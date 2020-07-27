@@ -6,6 +6,7 @@ import com.zbutwialypiernik.flixage.exception.ResourceLoadingException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.service.TrackService;
+import com.zbutwialypiernik.flixage.service.TrackStreamService;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import lombok.extern.log4j.Log4j2;
@@ -22,10 +23,12 @@ import java.io.IOException;
 public class TrackController extends QueryableController<Track, TrackResponse>{
 
     private final TrackService service;
+    private final TrackStreamService streamService;
 
-    public TrackController(TrackService trackService, MapperFactory mapperFactory) {
+    public TrackController(TrackService trackService, TrackStreamService streamService, MapperFactory mapperFactory) {
         super(trackService, mapperFactory);
         this.service = trackService;
+        this.streamService = streamService;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
 
     @PostMapping("{id}/streamCount")
     public void increaseStreamCount(@PathVariable String id, @AuthenticationPrincipal JwtAuthenticationToken principal) {
-        service.increaseStreamCount(principal.getId(), id);
+        streamService.increaseStreamCount(principal.getId(), id);
     }
 
 }

@@ -67,7 +67,7 @@ public class AuthenticationServiceTest {
 
         assertEquals(refreshToken.getId(), authentication.getRefreshToken());
         assertEquals(accessToken, authentication.getAccessToken());
-        assertEquals(refreshToken.getExpireTime().toSeconds(), authentication.getExpireTime());
+        assertEquals(refreshToken.getExpireTime().toMillis(), authentication.getExpireTime());
     }
 
     @Test
@@ -141,7 +141,7 @@ public class AuthenticationServiceTest {
 
         assertEquals(refreshToken.getId(), authentication.getRefreshToken());
         assertEquals(accessToken, authentication.getAccessToken());
-        assertEquals(refreshToken.getExpireTime().getSeconds(), authentication.getExpireTime());
+        assertEquals(refreshToken.getExpireTime().toMillis(), authentication.getExpireTime());
     }
 
     @Test

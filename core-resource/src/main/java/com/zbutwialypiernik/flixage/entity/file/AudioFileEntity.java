@@ -22,10 +22,10 @@ public class AudioFileEntity extends FileEntity {
     private long duration;
 
     public Duration getDuration() {
-        return Duration.ofSeconds(duration);
+        return Duration.ofMillis(duration);
     }
 
     public void setDuration(Duration duration) {
-        this.duration = duration.toSeconds();
+        this.duration = duration.toMillis();
     }
 }

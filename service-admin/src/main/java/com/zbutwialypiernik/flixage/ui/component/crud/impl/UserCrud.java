@@ -41,7 +41,7 @@ public class UserCrud extends PaginatedCrud<User, UserForm> {
         Form<UserForm> updateForm = formGenerator.build();
 
         updateForm.getBinder().withValidator(Validator.from(
-                (dto) -> !service.isUsernameTakenByOtherUser(dto.getId(), dto.getUsername()),
+                dto -> !service.isUsernameTakenByOtherUser(dto.getId(), dto.getUsername()),
                 "Username is already taken"));
 
         setForm(updateForm, factory.createMapper());

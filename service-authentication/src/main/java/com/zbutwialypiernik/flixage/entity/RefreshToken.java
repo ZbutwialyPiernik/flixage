@@ -8,10 +8,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -30,11 +28,11 @@ public class RefreshToken extends BaseEntity {
     private boolean isBlacklisted = false;
 
     public void setExpireTime(Duration expireTime) {
-        this.expireTime = expireTime.toSeconds();
+        this.expireTime = expireTime.toMillis();
     }
 
     public Duration getExpireTime() {
-        return Duration.ofSeconds(expireTime);
+        return Duration.ofMillis(expireTime);
     }
 
     public Instant getExpireDate() {

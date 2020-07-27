@@ -2,10 +2,13 @@ package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.IntegrationTestWithPrincipal;
 import com.zbutwialypiernik.flixage.entity.Track;
+import com.zbutwialypiernik.flixage.entity.TrackStreamId;
 import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
+import com.zbutwialypiernik.flixage.repository.TrackStreamRepository;
 import com.zbutwialypiernik.flixage.service.TrackService;
+import com.zbutwialypiernik.flixage.service.TrackStreamService;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +46,9 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
 
     @Autowired
     private TrackService trackService;
+
+    @Autowired
+    private TrackStreamRepository streamRepository;
 
     @TestConfiguration
     public static class TimeZoneConfig {
@@ -179,7 +185,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.OK);
         // @formatter:on
 
-        assertEquals(1, trackRepository.getOne(track.getId()).getStreamCount());
+        assertEquals(1, streamRepository.getOne(new TrackStreamId(user, track)).getStreamCount());
     }
 
     @Test
@@ -201,7 +207,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.NOT_FOUND);
         // @formatter:on
 
-        assertEquals(0, trackRepository.getOne(track.getId()).getStreamCount());
+        assertEquals(0, streamRepository.getOne(new TrackStreamId(user, track)).getStreamCount());
     }
 
     @Test
@@ -228,7 +234,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.CONFLICT);
         // @formatter:on
 
-        assertEquals(0, trackRepository.getOne(track.getId()).getStreamCount());
+        assertEquals(0, streamRepository.getOne(new TrackStreamId(user, track)).getStreamCount());
     }
 
     @Test
@@ -251,7 +257,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.FORBIDDEN);
         // @formatter:on
 
-        assertEquals(0, trackRepository.getOne(track.getId()).getStreamCount());
+        assertEquals(0, streamRepository.getOne(new TrackStreamId(user, track)).getStreamCount());
     }
 
 }

@@ -27,8 +27,8 @@ public class User extends Queryable implements UserDetails {
     @Column(nullable = false, length = 60)
     private String password;
 
-    @JoinColumn(name="owner_id")
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id")
     private List<Playlist> playlists = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)

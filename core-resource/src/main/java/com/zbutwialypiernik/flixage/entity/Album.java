@@ -20,7 +20,7 @@ public class Album extends Queryable {
     @JoinColumn(name = "album")
     private List<Track> tracks = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Artist artist;
 
 }

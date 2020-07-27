@@ -25,15 +25,9 @@ public class TrackService extends QueryableService<Track> {
 
     private final TrackFileService trackFileService;
 
-    private final UserService userService;
-
-    private final Clock clock;
-
-    public TrackService(TrackRepository repository, ImageFileService thumbnailService, TrackFileService trackFileService, UserService userService, Clock clock)  {
+    public TrackService(TrackRepository repository, ImageFileService thumbnailService, TrackFileService trackFileService)  {
         super(repository, thumbnailService);
         this.trackFileService = trackFileService;
-        this.userService = userService;
-        this.clock = clock;
     }
 
     @Transactional
@@ -60,23 +54,6 @@ public class TrackService extends QueryableService<Track> {
         }
 
         return thumbnailService.get(entity.getThumbnail());
-    }
-
-    @Transactional
-    public void increaseStreamCount(String userId, String trackId) {
-        var user = userService.findById(userId).orElseThrow(() -> new AuthenticationException("Invalid Token"));
-        var track = getRepository().findById(trackId).orElseThrow(ResourceNotFoundException::new);
-
-        if (track.getAudioFile() == null) {
-            throw new ResourceNotFoundException();
-        }
-
-        if (user.getLastAudioStream() != null && clock.instant().isBefore(user.getLastAudioStream().plusSeconds(30))) {
-            throw new ConflictException("User has already streamed audio in last 30 seconds");
-        }
-
-        track.setStreamCount(track.getStreamCount() + 1);
-        user.setLastAudioStream(clock.instant());
     }
 
     public AudioResource getTrackFile(String id) {

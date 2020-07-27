@@ -17,12 +17,12 @@ public class CustomConverterConfiguration {
         return new BidirectionalConverter<>() {
             @Override
             public Long convertTo(Duration source, Type<Long> destinationType, MappingContext mappingContext) {
-                return source.toSeconds();
+                return source.toMillis();
             }
 
             @Override
             public Duration convertFrom(Long source, Type<Duration> destinationType, MappingContext mappingContext) {
-                return Duration.ofSeconds(Optional.ofNullable(source).orElse(0L));
+                return Duration.ofMillis(Optional.ofNullable(source).orElse(0L));
             }
         };
     }
