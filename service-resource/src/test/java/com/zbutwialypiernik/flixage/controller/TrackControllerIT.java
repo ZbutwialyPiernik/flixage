@@ -8,7 +8,6 @@ import com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.repository.TrackStreamRepository;
 import com.zbutwialypiernik.flixage.service.TrackService;
-import com.zbutwialypiernik.flixage.service.TrackStreamService;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +30,7 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.boot.test.context.SpringBootTest.*;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {TrackControllerIT.TimeZoneConfig.class})
 public class TrackControllerIT extends IntegrationTestWithPrincipal {

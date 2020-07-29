@@ -4,13 +4,13 @@ import com.vaadin.flow.router.RouterLink;
 import com.zbutwialypiernik.flixage.entity.Album;
 import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.service.AlbumService;
-import com.zbutwialypiernik.flixage.ui.page.AlbumPage;
 import com.zbutwialypiernik.flixage.ui.component.crud.Crud;
 import com.zbutwialypiernik.flixage.ui.component.crud.DtoFormDialog;
 import com.zbutwialypiernik.flixage.ui.component.crud.SingleCallbackDataProvider;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.MapperFactory;
 import com.zbutwialypiernik.flixage.ui.component.form.FormBuilder;
 import com.zbutwialypiernik.flixage.ui.component.form.dto.AlbumForm;
+import com.zbutwialypiernik.flixage.ui.page.AlbumPage;
 
 public class AlbumCrud extends Crud<Album, AlbumForm> {
 

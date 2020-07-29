@@ -4,7 +4,6 @@ import com.zbutwialypiernik.flixage.config.GatewayUriFactory;
 import com.zbutwialypiernik.flixage.config.MapperConfiguration;
 import com.zbutwialypiernik.flixage.config.WebSecurityConfig;
 import com.zbutwialypiernik.flixage.config.ZoneConfiguration;
-import com.zbutwialypiernik.flixage.controller.TrackControllerIT;
 import com.zbutwialypiernik.flixage.dto.mapper.DtoMappersConfiguration;
 import com.zbutwialypiernik.flixage.dto.mapper.converter.CustomConverterConfiguration;
 import com.zbutwialypiernik.flixage.entity.Role;
@@ -14,8 +13,6 @@ import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-
-import java.time.Clock;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;

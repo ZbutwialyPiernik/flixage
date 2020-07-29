@@ -2,8 +2,6 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
-import com.zbutwialypiernik.flixage.exception.AuthenticationException;
-import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
@@ -15,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +51,10 @@ public class TrackService extends QueryableService<Track> {
         }
 
         return thumbnailService.get(entity.getThumbnail());
+    }
+
+    public Page<Track> getRecentlyAdded(int offset, int limit) {
+        return getRepository().findAllByOrderByCreationTimeDesc(PageRequest.of(offset / limit, limit));
     }
 
     public AudioResource getTrackFile(String id) {

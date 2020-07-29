@@ -1,5 +1,6 @@
 package com.zbutwialypiernik.flixage.controller;
 
+import com.zbutwialypiernik.flixage.dto.PageResponse;
 import com.zbutwialypiernik.flixage.dto.TrackResponse;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.exception.ResourceLoadingException;
@@ -8,7 +9,6 @@ import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.service.TrackService;
 import com.zbutwialypiernik.flixage.service.TrackStreamService;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
-import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import lombok.extern.log4j.Log4j2;
 import ma.glasnost.orika.MapperFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,7 +34,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
     @Override
     @GetMapping("{id}")
     public TrackResponse getById(@PathVariable String id) {
-        var track = service.findById(id).orElseThrow(ResourceNotFoundException::new);
+        final var track = service.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (track.getAudioFile() == null) {
             throw new ResourceNotFoundException();
@@ -56,7 +56,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
 
     @GetMapping("{id}/stream")
     public void streamTrack(@PathVariable String id, HttpServletResponse response) throws IOException {
-        AudioResource resource = service.getTrackFile(id);
+        final var resource = service.getTrackFile(id);
 
         response.setContentType(resource.getMimeType());
         response.getOutputStream().write(resource.getContent());
@@ -65,6 +65,15 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
     @PostMapping("{id}/streamCount")
     public void increaseStreamCount(@PathVariable String id, @AuthenticationPrincipal JwtAuthenticationToken principal) {
         streamService.increaseStreamCount(principal.getId(), id);
+    }
+
+    @GetMapping("/recent")
+    public PageResponse<TrackResponse> getRecentlyAddedTrack(@RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "10") int limit) {
+        final var page = service.getRecentlyAdded(offset, limit);
+
+        return new PageResponse<>(page
+                .map(dtoMapper::map)
+                .toList(), page.getTotalElements());
     }
 
 }

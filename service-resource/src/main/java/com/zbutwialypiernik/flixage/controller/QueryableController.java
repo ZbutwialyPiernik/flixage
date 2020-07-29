@@ -54,4 +54,7 @@ public class QueryableController<E extends Queryable, R extends QueryableRespons
         }
     }
 
+    public QueryableService<E> getService() {
+        return service;
+    }
 }

@@ -59,7 +59,7 @@ public class TrackStreamService {
     }
 
     public Page<TrackStream> findRecentlyStreamedTracks(String userId, int offset, int limit) {
-        return repository.findByIdUserIdOrderByUpdateTimeDesc(userId, PageRequest.of(offset * limit, limit));
+        return repository.findByIdUserIdOrderByUpdateTimeDesc(userId, PageRequest.of(offset / limit, limit));
     }
 
 }

@@ -2,7 +2,6 @@ package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.TestWithPrincipal;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
-import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.service.QueryableService;
 import io.restassured.http.ContentType;
@@ -14,10 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
-import static org.mockito.Mockito.mock;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
 import static org.mockito.Mockito.when;
 
 

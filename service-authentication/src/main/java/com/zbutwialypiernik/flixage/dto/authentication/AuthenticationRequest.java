@@ -4,7 +4,6 @@ import com.zbutwialypiernik.flixage.validator.ValidPassword;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 import javax.validation.constraints.Size;
 

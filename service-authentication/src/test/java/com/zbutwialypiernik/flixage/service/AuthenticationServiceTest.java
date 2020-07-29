@@ -4,9 +4,6 @@ import com.zbutwialypiernik.flixage.entity.RefreshToken;
 import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
-import com.zbutwialypiernik.flixage.service.DatabaseUserDetails;
-import com.zbutwialypiernik.flixage.service.AuthenticationService;
-import com.zbutwialypiernik.flixage.service.TokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -20,8 +17,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 public class AuthenticationServiceTest {
 
