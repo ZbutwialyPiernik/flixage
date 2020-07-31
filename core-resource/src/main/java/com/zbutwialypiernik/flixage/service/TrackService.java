@@ -54,7 +54,7 @@ public class TrackService extends QueryableService<Track> {
     }
 
     public Page<Track> getRecentlyAdded(int offset, int limit) {
-        return getRepository().findAllByOrderByCreationTimeDesc(PageRequest.of(offset / limit, limit));
+        return getRepository().findAllByOrderByCreationTimeDescAndFileIsNotNull(PageRequest.of(offset / limit, limit));
     }
 
     public AudioResource getTrackFile(String id) {

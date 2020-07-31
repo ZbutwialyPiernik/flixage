@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface TrackRepository extends QueryableRepository<Track> {
 
-    Page<Track> findAllByOrderByCreationTimeDesc(Pageable pageable);
+    Page<Track> findAllByOrderByCreationTimeDescAndFileIsNotNull(Pageable pageable);
 
     //
     Page<Track> findByNameContainingIgnoreCaseAndAudioFileIsNotNull(String name, Pageable pageable);
