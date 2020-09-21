@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface TrackRepository extends QueryableRepository<Track> {
 
+    Page<Track> findByAudioFileIsNotNullOrderByCreationTimeDesc(Pageable pageable);
+
     //
     Page<Track> findByNameContainingIgnoreCaseAndAudioFileIsNotNull(String name, Pageable pageable);
     
@@ -26,7 +28,7 @@ public interface TrackRepository extends QueryableRepository<Track> {
     List<Track> findByArtistIdAndAlbumIsNull(String artistId);
 
     //
-    List<Track> findByAlbumIdAndAudioFileAndIsNotNull(String albumId);
+    List<Track> findByAlbumIdAndAudioFileIsNotNull(String albumId);
 
     List<Track> findByAlbumId(String albumId);
 

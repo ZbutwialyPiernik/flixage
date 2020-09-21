@@ -1,6 +1,6 @@
 package com.zbutwialypiernik.flixage.filter;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.handler.ExceptionResponse;
 import lombok.extern.log4j.Log4j2;
@@ -31,14 +31,14 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final JwtAuthenticationParser parser;
 
-    private final JsonMapper jsonMapper;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtAuthenticationParser parser, JsonMapper jsonMapper, Clock clock) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtAuthenticationParser parser, ObjectMapper objectMapper, Clock clock) {
         super(authenticationManager);
         this.clock = clock;
         this.parser = parser;
-        this.jsonMapper = jsonMapper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -46,6 +46,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         String token = request.getHeader(TOKEN_HEADER);
 
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -55,6 +56,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
             logger.debug("Request issued with token: " + token);
 
             JwtAuthenticationToken authenticationToken = parser.parseToken(token);
+
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
         } catch (AuthenticationException e) {
@@ -69,7 +71,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         try {
-            jsonMapper.writeValue(response.getWriter(), exceptionResponse);
+            objectMapper.writeValue(response.getWriter(), exceptionResponse);
             response.getWriter().flush();
         } catch (IOException e) {
             logger.error(e);

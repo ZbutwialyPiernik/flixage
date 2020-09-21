@@ -20,6 +20,6 @@ public class Routes {
 
     public static final String ARTISTS = LIBRARY + "/artists";
 
-    public static final String ALBUM = LIBRARY + "/albums";
+    public static final String ALBUMS = LIBRARY + "/albums";
 
 }

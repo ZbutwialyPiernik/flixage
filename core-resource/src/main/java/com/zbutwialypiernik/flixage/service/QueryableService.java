@@ -24,7 +24,7 @@ public class QueryableService<T extends Queryable>{
 
     private final QueryableRepository<T> repository;
 
-    private final ImageFileService thumbnailService;
+    protected final ImageFileService thumbnailService;
 
     public QueryableService(QueryableRepository<T> repository, ImageFileService thumbnailService) {
         this.thumbnailService = thumbnailService;
@@ -176,7 +176,7 @@ public class QueryableService<T extends Queryable>{
      * @return the optional of byte[] containing thumbnail
      */
     public Optional<ImageResource> getThumbnailById(String id) {
-        T entity = findById(id).orElseThrow(ResourceNotFoundException::new);
+        var entity = findById(id).orElseThrow(ResourceNotFoundException::new);
 
         return thumbnailService.get(entity.getThumbnail());
     }
@@ -184,4 +184,5 @@ public class QueryableService<T extends Queryable>{
     protected QueryableRepository<T> getRepository() {
         return repository;
     }
+
 }

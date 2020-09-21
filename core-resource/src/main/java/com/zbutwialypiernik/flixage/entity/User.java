@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,8 +27,8 @@ public class User extends Queryable implements UserDetails {
     @Column(nullable = false, length = 60)
     private String password;
 
-    @JoinColumn(name="owner_id")
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner_id")
     private List<Playlist> playlists = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -37,13 +38,13 @@ public class User extends Queryable implements UserDetails {
     private boolean enabled = true;
 
     @Column(nullable = false)
-    private boolean expired = false;
-
-    @Column(nullable = false)
     private boolean locked = false;
 
     @Column(nullable = false)
     private boolean expiredCredentials = false;
+
+    @Column
+    private Instant lastAudioStream;
 
     @Enumerated(value = EnumType.STRING)
     private Role role = Role.USER;
@@ -55,7 +56,7 @@ public class User extends Queryable implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return !expired;
+        return true;
     }
 
     @Override

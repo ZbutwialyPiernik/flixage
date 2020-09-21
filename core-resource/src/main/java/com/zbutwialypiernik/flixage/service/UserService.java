@@ -41,6 +41,10 @@ public class UserService extends QueryableService<User> {
             throw new ConflictException("Username is already taken by other user");
         }
 
+        if (user.getName() == null) {
+            user.setName(user.getUsername());
+        }
+
         user.setPassword(encoder.encode(user.getPassword()));
 
         return super.create(user);

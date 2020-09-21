@@ -23,6 +23,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // @formatter:off
         http.csrf()
                 .disable()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -33,8 +34,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                         .antMatchers(HttpMethod.POST,
                             "/authentication",
                             "/authentication/renew",
-                            "authentication/invalidate")
+                            "authentication/invalidate",
+                            "authentication/register")
                         .permitAll();
+        // @formatter:on
     }
 
     @Override

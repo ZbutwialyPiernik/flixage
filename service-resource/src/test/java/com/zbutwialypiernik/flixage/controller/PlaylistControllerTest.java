@@ -1,7 +1,7 @@
 package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.TestWithPrincipal;
-import com.zbutwialypiernik.flixage.dto.playlist.AddTracksRequest;
+import com.zbutwialypiernik.flixage.dto.playlist.IdsRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
 import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.repository.PlaylistRepository;
@@ -12,7 +12,6 @@ import io.restassured.http.ContentType;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,6 +29,7 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,18 +61,21 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         var createdPlaylist = new Playlist();
         createdPlaylist.setName("My Playlist");
 
-        when(userService.findById(Mockito.any())).thenReturn(Optional.of(user));
-        when(playlistService.create(Mockito.any())).thenReturn(createdPlaylist);
+        when(userService.findById(any())).thenReturn(Optional.of(user));
+        when(playlistService.create(any())).thenReturn(createdPlaylist);
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .body(request).when()
-                .post("/playlists")
-                .then()
-                .log().all()
-                .status(HttpStatus.CREATED)
-                .body("id", notNull())
-                .body("name", equalTo("My Playlist"));
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .post("/playlists")
+        .then()
+            .status(HttpStatus.CREATED)
+            .body("id", notNull())
+            .body("name", equalTo("My Playlist"));
+        // @formatter:on
     }
 
     // Can occur when JWT token is valid, but user account got deleted
@@ -80,15 +83,18 @@ public class PlaylistControllerTest extends TestWithPrincipal {
     public void playlist_gets_created_has_invalid_authentication() {
         var request = new PlaylistRequest("My Playlist");
 
-        when(userService.findById(Mockito.any())).thenReturn(Optional.empty());
+        when(userService.findById(any())).thenReturn(Optional.empty());
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .post("/playlists")
-                .then()
-                .status(HttpStatus.UNAUTHORIZED);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .post("/playlists")
+        .then()
+            .status(HttpStatus.UNAUTHORIZED);
+        // @formatter:on
     }
 
     @Test
@@ -106,18 +112,21 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         newPlaylist.setOwner(user);
         newPlaylist.setName("My New Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
-        when(playlistService.update(Mockito.any())).thenReturn(newPlaylist);
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
+        when(playlistService.update(any())).thenReturn(newPlaylist);
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .put("/playlists/" + playlistId)
-                .then()
-                .status(HttpStatus.OK)
-                .body("id", equalTo(playlistId))
-                .body("name", equalTo("My New Playlist Name"));
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .put("/playlists/" + playlistId)
+        .then()
+            .status(HttpStatus.OK)
+            .body("id", equalTo(playlistId))
+            .body("name", equalTo("My New Playlist Name"));
+        // @formatter:on
     }
 
     @Test
@@ -125,15 +134,18 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         final var request = new PlaylistRequest("My New Playlist Name");
         final var playlistId = "0000-0000-0000-0000";
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.empty());
+        when(playlistService.findById(any())).thenReturn(Optional.empty());
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .put("/playlists/" + playlistId)
-                .then()
-                .status(HttpStatus.NOT_FOUND);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .put("/playlists/" + playlistId)
+        .then()
+            .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
     }
 
     @Test
@@ -146,15 +158,18 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         playlist.setOwner(otherUser);
         playlist.setName("My Old Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .body(request)
-                .when()
-                .put("/playlists/" + playlistId)
-                .then()
-                .status(HttpStatus.FORBIDDEN);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+            .body(request)
+        .when()
+            .put("/playlists/" + playlistId)
+        .then()
+            .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
     }
 
     @Test
@@ -166,28 +181,34 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         playlist.setOwner(user);
         playlist.setName("My Old Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/playlists/" + playlistId)
-                .then()
-                .status(HttpStatus.NO_CONTENT);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/playlists/" + playlistId)
+        .then()
+            .status(HttpStatus.NO_CONTENT);
+        // @formatter:on
     }
 
     @Test
     public void playlist_does_not_get_deleted_when_does_not_exists() {
         final var playlistId = "0000-0000-0000-0000";
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.empty());
+        when(playlistService.findById(any())).thenReturn(Optional.empty());
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/playlists/" + playlistId)
-                .then()
-                .status(HttpStatus.NOT_FOUND);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/playlists/" + playlistId)
+        .then()
+            .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
     }
 
     @Test
@@ -199,86 +220,101 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         playlist.setOwner(otherUser);
         playlist.setName("My Old Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
-        given().header("Authorization", "Bearer token")
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/playlists/" + playlistId)
-                .then()
-                .status(HttpStatus.FORBIDDEN);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/playlists/" + playlistId)
+        .then()
+            .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
     }
 
     @Test
     public void can_add_track_to_playlist_when_user_is_owner() {
         final var playlistId = "0000-0000-0000-0000";
-        final var request = new AddTracksRequest(Set.of("1234-1234-1234-1234"));
+        final var request = new IdsRequest(Set.of("1234-1234-1234-1234"));
 
         var playlist = new Playlist();
         playlist.setId(playlistId);
         playlist.setOwner(user);
         playlist.setName("My Old Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
-        given().header("Authorization", "Bearer token")
-                .body(request)
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + playlistId + "/tracks")
-                .then()
-                .status(HttpStatus.OK);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .body(request)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + playlistId + "/tracks")
+        .then()
+            .status(HttpStatus.OK);
+        // @formatter:on
     }
 
     @Test
     public void cannot_add_track_to_playlist_when_track_ids_are_missing() {
         final var playlistId = "0000-0000-0000-0000";
-        final var request = new AddTracksRequest(Collections.emptySet());
+        final var request = new IdsRequest(Collections.emptySet());
 
-        given().header("Authorization", "Bearer token")
-                .body(request)
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + playlistId + "/tracks")
-                .then()
-                .status(HttpStatus.BAD_REQUEST);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .body(request)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + playlistId + "/tracks")
+        .then()
+            .status(HttpStatus.BAD_REQUEST);
+        // @formatter:on
     }
 
     @Test
     public void cannot_add_track_to_playlist_when_playlist_does_not_exists() {
         final var playlistId = "0000-0000-0000-0000";
-        final var request = new AddTracksRequest(Set.of("1234-1234-1234-1234"));
+        final var request = new IdsRequest(Set.of("1234-1234-1234-1234"));
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.empty());
+        when(playlistService.findById(any())).thenReturn(Optional.empty());
 
-        given().header("Authorization", "Bearer token")
-                .body(request)
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + playlistId + "/tracks")
-                .then()
-                .status(HttpStatus.NOT_FOUND);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .body(request)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + playlistId + "/tracks")
+        .then()
+            .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
     }
 
     @Test
     public void cannot_add_track_to_playlist_when_user_is_not_owner() {
         final var playlistId = "0000-0000-0000-0000";
-        final var request = new AddTracksRequest(Set.of("1234-1234-1234-1234"));
+        final var request = new IdsRequest(Set.of("1234-1234-1234-1234"));
 
         var playlist = new Playlist();
         playlist.setId(playlistId);
         playlist.setOwner(otherUser);
         playlist.setName("My Old Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
-        given().header("Authorization", "Bearer token")
-                .body(request)
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + playlistId + "/tracks")
-                .then()
-                .status(HttpStatus.FORBIDDEN);
+        // @formatter:off
+        given()
+            .header("Authorization", "Bearer token")
+            .body(request)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + playlistId + "/tracks")
+        .then()
+            .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
     }
 
     // RestAssured does not support MockMultipartFile
@@ -294,7 +330,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         playlist.setOwner(user);
         playlist.setName("My Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
         mockMvc.perform(
                 multipart("/playlists/" + playlistId + "/thumbnail")
@@ -317,7 +353,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         playlist.setOwner(otherUser);
         playlist.setName("My Old Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
         mockMvc.perform(
                 multipart("/playlists/" + playlistId + "/thumbnail")
@@ -341,7 +377,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         playlist.setOwner(user);
         playlist.setName("My Playlist Name");
 
-        when(playlistService.findById(Mockito.any())).thenReturn(Optional.of(playlist));
+        when(playlistService.findById(any())).thenReturn(Optional.of(playlist));
 
         mockMvc.perform(
                 multipart("/playlists/" + playlistId + "/thumbnail")

@@ -10,8 +10,10 @@ import java.util.stream.Stream;
 
 public class SecurityUtils {
 
+    private SecurityUtils() {}
+
     /**
-     * Method to check if request is internal from the Vaadin framework
+     * Checks if request is internal from the Vaadin framework
      */
     public static boolean isFrameworkInternalRequest(HttpServletRequest request) {
         final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
@@ -20,7 +22,7 @@ public class SecurityUtils {
     }
 
     /**
-     * Method to check if current user is logged in, in case of anonymous authentication returns false.
+     * Checks if current user is logged in, in case of anonymous authentication returns false.
      */
     public static boolean isUserLoggedIn() {
         return SecurityContextHolder.getContext().getAuthentication() != null &&

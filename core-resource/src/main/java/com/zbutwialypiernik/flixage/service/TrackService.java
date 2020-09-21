@@ -5,6 +5,7 @@ import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
+import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import com.zbutwialypiernik.flixage.service.resource.track.AudioResource;
 import com.zbutwialypiernik.flixage.service.resource.track.TrackFileService;
 import org.springframework.data.domain.Page;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,11 +43,18 @@ public class TrackService extends QueryableService<Track> {
         getRepository().save(track);
     }
 
-    @Transactional
-    public void increasePlayCount(String trackId) {
-        Track track = getRepository().findById(trackId).orElseThrow(ResourceNotFoundException::new);
+    public Optional<ImageResource> findThumbnailById(String id, boolean mustHaveAudioFile) {
+        var entity = findById(id).orElseThrow(ResourceNotFoundException::new);
 
-        track.setPlayCount(track.getPlayCount() + 1);
+        if (mustHaveAudioFile && entity.getAudioFile() == null) {
+            throw new ResourceNotFoundException();
+        }
+
+        return thumbnailService.get(entity.getThumbnail());
+    }
+
+    public Page<Track> getRecentlyAdded(int offset, int limit) {
+        return getRepository().findByAudioFileIsNotNullOrderByCreationTimeDesc(PageRequest.of(offset / limit, limit));
     }
 
     public AudioResource getTrackFile(String id) {
@@ -74,7 +83,7 @@ public class TrackService extends QueryableService<Track> {
 
     public List<Track> getTracksByAlbumId(String albumId, boolean mustHaveAudioFile) {
         return mustHaveAudioFile
-                ? getRepository().findByAlbumIdAndAudioFileAndIsNotNull(albumId)
+                ? getRepository().findByAlbumIdAndAudioFileIsNotNull(albumId)
                 : getRepository().findByAlbumId(albumId);
     }
 

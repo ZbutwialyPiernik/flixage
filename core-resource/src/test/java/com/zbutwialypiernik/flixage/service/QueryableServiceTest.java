@@ -57,7 +57,7 @@ public class QueryableServiceTest {
 
         entity.setId(entityId);
 
-        when(repository.findById(entityId)).thenReturn(Optional.of(oldEntity));
+        when(repository.existsById(any())).thenReturn(true);
         when(repository.save(entity)).thenReturn(entity);
 
         entity = service.update(entity);

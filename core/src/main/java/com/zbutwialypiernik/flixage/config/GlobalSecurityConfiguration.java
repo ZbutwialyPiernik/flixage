@@ -27,7 +27,7 @@ public class GlobalSecurityConfiguration {
                 new CharacterRule(EnglishCharacterData.LowerCase, 1),
                 new CharacterRule(EnglishCharacterData.Digit, 1),
                 new WhitespaceRule()
-                ));
+        ));
     }
 
 }

@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.ui.page;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -27,7 +26,6 @@ import java.util.LinkedHashMap;
 @Theme(value = Lumo.class, variant = Lumo.DARK)
 public class RootPage extends AppLayout implements AfterNavigationObserver {
 
-    private final HashMap<String, Class<? extends Component>> routes = new HashMap<>();
     private final HashMap<String, Tab> routeToTab = new LinkedHashMap<>();
 
     private final Tabs tabs;
@@ -36,19 +34,12 @@ public class RootPage extends AppLayout implements AfterNavigationObserver {
     public RootPage() {
         tabs = new Tabs();
 
-        routes.put(Routes.DASHBOARD.toLowerCase(), DashboardPage.class);
-        routes.put(Routes.USERS.toLowerCase(), UsersPage.class);
-        routes.put(Routes.LIBRARY.toLowerCase(), LibraryPage.class);
-
         routeToTab.put(Routes.DASHBOARD.toLowerCase(), createTab(VaadinIcon.DASHBOARD, "Dashboard"));
         routeToTab.put(Routes.USERS.toLowerCase(), createTab(VaadinIcon.USERS, "Users"));
         routeToTab.put(Routes.LIBRARY.toLowerCase(), createTab(VaadinIcon.MUSIC, "Library"));
         routeToTab.values().forEach(tabs::add);
 
-        tabs.addSelectedChangeListener(event -> {
-            var routeClass = routes.get(event.getSelectedTab().getLabel().toLowerCase());
-            UI.getCurrent().navigate(routeClass);
-        });
+        tabs.addSelectedChangeListener(event -> UI.getCurrent().navigate(event.getSelectedTab().getLabel().toLowerCase()));
 
         var centeredTabs = new FlexLayout();
         centeredTabs.setWidthFull();

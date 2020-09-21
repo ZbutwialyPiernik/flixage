@@ -22,7 +22,7 @@ public class Playlist extends Queryable {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Track> tracks = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private User owner;
 
 }

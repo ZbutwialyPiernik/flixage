@@ -1,6 +1,7 @@
 package com.zbutwialypiernik.flixage.config;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +24,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private Clock clock;
 
     @Autowired
-    private JsonMapper mapper;
+    private ObjectMapper mapper;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable()
+        // @formatter:off
+        http.csrf().disable()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeRequests()
-                        .antMatchers("api/tracks/**/stream").permitAll() // TODO: remove that after i will resolve problem with authorization headers in Flutter audio player
-                        .anyRequest().authenticated()
+                        .antMatchers("/eureka/**").hasRole(Role.ADMIN.name())
+                        .antMatchers("/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
                 .and()
                     .addFilter(new JwtAuthenticationFilter(authenticationManager(), parser, mapper, clock));
+        // @formatter:on
     }
 
 }

@@ -35,7 +35,7 @@ public class PlaylistService extends QueryableService<Playlist> {
 
     @Transactional
     public List<Track> getTracks(String playlistId) {
-        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(() -> new ResourceNotFoundException("Playlist not found"));
+        Playlist playlist = playlistRepository.findById(playlistId).orElseThrow(ResourceNotFoundException::new);
 
         Hibernate.initialize(playlist.getTracks());
 
@@ -46,7 +46,7 @@ public class PlaylistService extends QueryableService<Playlist> {
     public void addTracks(Playlist playlist, Set<String> trackIds) {
         List<Track> tracks = trackIds
                 .stream()
-                .map(id -> trackService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Track with id " + id + "does not exists")))
+                .map(id -> trackService.findById(id).orElseThrow(() -> new BadRequestException("Track with id " + id + "does not exists")))
                 .collect(Collectors.toList());
 
         Hibernate.initialize(playlist.getTracks());

@@ -34,8 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .authorizeRequests()
                     .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-                        .antMatchers("/**").hasRole(Role.ADMIN.name())
-                        .anyRequest().authenticated()
+                    .anyRequest().hasRole(Role.ADMIN.name())
                 .and()
                     .formLogin()
                         .loginPage("/" + Routes.LOGIN)
@@ -50,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().antMatchers(
                 "/VAADIN/**",
 

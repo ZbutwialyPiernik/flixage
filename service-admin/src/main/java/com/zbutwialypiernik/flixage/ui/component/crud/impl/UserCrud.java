@@ -7,7 +7,6 @@ import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.service.UserService;
 import com.zbutwialypiernik.flixage.ui.component.crud.PaginatedCrud;
 import com.zbutwialypiernik.flixage.ui.component.crud.mapper.MapperFactory;
-import com.zbutwialypiernik.flixage.ui.component.crud.mapper.OrikaMapperFactory;
 import com.zbutwialypiernik.flixage.ui.component.form.Form;
 import com.zbutwialypiernik.flixage.ui.component.form.FormBuilder;
 import com.zbutwialypiernik.flixage.ui.component.form.dto.UserForm;
@@ -41,7 +40,7 @@ public class UserCrud extends PaginatedCrud<User, UserForm> {
         Form<UserForm> updateForm = formGenerator.build();
 
         updateForm.getBinder().withValidator(Validator.from(
-                (dto) -> !service.isUsernameTakenByOtherUser(dto.getId(), dto.getUsername()),
+                dto -> !service.isUsernameTakenByOtherUser(dto.getId(), dto.getUsername()),
                 "Username is already taken"));
 
         setForm(updateForm, factory.createMapper());
@@ -54,8 +53,6 @@ public class UserCrud extends PaginatedCrud<User, UserForm> {
                 .setHeader("Role");
         addColumn(User::isEnabled)
                 .setHeader("Enabled");
-        addColumn(User::isExpired)
-                .setHeader("Expired");
         addColumn(User::isLocked)
                 .setHeader("Locked");
         addColumn(User::isExpiredCredentials)

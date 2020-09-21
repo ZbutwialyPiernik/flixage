@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
-@Route(value = Routes.ALBUM, layout = RootPage.class)
+@Route(value = Routes.ALBUMS, layout = RootPage.class)
 public class AlbumPage extends VerticalLayout implements HasUrlParameter<String> {
 
     // Services

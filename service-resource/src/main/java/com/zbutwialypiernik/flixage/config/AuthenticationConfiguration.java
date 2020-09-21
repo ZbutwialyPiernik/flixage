@@ -14,7 +14,7 @@ public class AuthenticationConfiguration {
     // TODO: replace with Spring Cloud Vault, it will prevent hardcoding secrets in authentication microservice.
     @Lazy
     @Bean("public-parser")
-    public JwtParser publicParser(@Value("${JWT_PUBLIC_KEY}") String publicKey) {
+    public JwtParser publicParser(@Value("${jwt.public-key}") String publicKey) {
         return Jwts.parserBuilder()
                 .setSigningKey(KeyUtil.getRsaPublicKey(publicKey))
                 .build();

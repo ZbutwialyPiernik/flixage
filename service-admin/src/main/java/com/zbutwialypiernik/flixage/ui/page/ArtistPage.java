@@ -10,6 +10,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.WildcardParameter;
 import com.vaadin.flow.server.StreamResource;
 import com.zbutwialypiernik.flixage.config.Routes;
 import com.zbutwialypiernik.flixage.entity.Artist;
@@ -35,10 +36,10 @@ public class ArtistPage extends VerticalLayout implements HasUrlParameter<String
 
     @Autowired
     public ArtistPage(ArtistService artistService, TrackService trackService, AlbumService albumService, MapperFactory factory) {
-        this.factory = factory;
         this.artistService = artistService;
         this.trackService = trackService;
         this.albumService = albumService;
+        this.factory = factory;
     }
 
     private void init(Artist artist) {
@@ -85,7 +86,7 @@ public class ArtistPage extends VerticalLayout implements HasUrlParameter<String
     }
 
     @Override
-    public void setParameter(BeforeEvent event, String parameter) {
+    public void setParameter(BeforeEvent event, @WildcardParameter String parameter) {
         Optional<Artist> artistOptional = artistService.findById(parameter);
 
         if (artistOptional.isPresent()) {

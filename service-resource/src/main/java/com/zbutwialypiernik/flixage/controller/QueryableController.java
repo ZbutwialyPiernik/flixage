@@ -47,11 +47,14 @@ public class QueryableController<E extends Queryable, R extends QueryableRespons
     @GetMapping(value = "/{id}/thumbnail", produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] getThumbnail(@PathVariable String id) {
         try {
-            return service.getThumbnailById(id).map(ImageResource::getInputStream).orElseThrow(() -> new ResourceNotFoundException("Image not found")).readAllBytes();
+            return service.getThumbnailById(id).map(ImageResource::getInputStream).orElseThrow(ResourceNotFoundException::new).readAllBytes();
         } catch (IOException e) {
             log.error("Error during loading of thumbnail", e);
             throw new ResourceLoadingException("Error during loading of thumbnail");
         }
     }
 
+    public QueryableService<E> getService() {
+        return service;
+    }
 }

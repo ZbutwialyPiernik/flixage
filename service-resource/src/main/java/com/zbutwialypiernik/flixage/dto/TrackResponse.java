@@ -16,4 +16,6 @@ public class TrackResponse extends QueryableResponse {
 
     private long duration;
 
+    private long streamCount;
+
 }

@@ -17,6 +17,7 @@ dependencyManagement {
     }
 }
 
+
 dependencies {
     implementation project(':core')
     implementation project(':core-resource')
@@ -31,6 +32,7 @@ dependencies {
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'com.vaadin:vaadin-spring-boot-starter'
 
     // Validation
@@ -48,4 +50,5 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+
 }
