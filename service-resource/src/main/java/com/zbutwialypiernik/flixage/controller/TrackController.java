@@ -47,7 +47,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
     @GetMapping("{id}/thumbnail")
     public byte[] getThumbnail(@PathVariable String id) {
         try {
-            return service.getThumbnailById(id, true).map(ImageResource::getInputStream).orElseThrow(ResourceNotFoundException::new).readAllBytes();
+            return service.findThumbnailById(id, true).map(ImageResource::getInputStream).orElseThrow(ResourceNotFoundException::new).readAllBytes();
         } catch (IOException e) {
             log.error("Error during loading of thumbnail", e);
             throw new ResourceLoadingException("Error during loading of thumbnail");

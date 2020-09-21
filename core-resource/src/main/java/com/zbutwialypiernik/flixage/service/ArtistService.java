@@ -2,7 +2,6 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.repository.ArtistRepository;
-import com.zbutwialypiernik.flixage.repository.QueryableRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,4 +22,5 @@ public class ArtistService extends QueryableService<Artist> {
     protected ArtistRepository getRepository() {
         return (ArtistRepository) super.getRepository();
     }
+    
 }

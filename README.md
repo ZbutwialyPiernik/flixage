@@ -11,9 +11,21 @@ Project contains 8 modules, frontend done in Flutter, docker-compose for ready l
 7. **service-resource** - Resource microservice, serves content thought REST API to [Flutter](https://flutter.dev/) frontend, uses JWT tokens as stateless Authentication. For media files storage project uses [Spring Content](https://paulcwarren.github.io/spring-content/).
 8. **service-authentication** - Authentication microservice with JWT tokens, allows registering new users.
 
+## Building project
+
+The easiest way to build project is running 
+
+>gradle jar
+
+then
+
+>docker-compose -f ./docker-compose.yml up -d --build
+
+docker will take care of everything including database
+
 ## Todo list
 - Custom gradle task with docker
-- Fix docker compose (provide something like Amazon S3 or MongoDB GridFS to share files instead of using raw file system)
+- Fix docker compose (provide something like Amazon S3 or MongoDB GridFS to share files instead of using raw file system) ✅ partially done
 - Tests, tests, tests and more tests...
 - Connect admin panel microservice to eureka | Partially done
 - Importing artist data from external services like last.fm API

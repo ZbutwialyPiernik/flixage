@@ -1,15 +1,6 @@
 version: '2.3'
 
 services:
-  #admin:
-  #  depends_on:
-  #    - database
-  #    - discovery
-  #  build:
-  #    context: service-admin
-  #    dockerfile: dockerfile
-  #  ports:
-  #    - "8093:8093"
   gateway:
     depends_on:
       - database
@@ -36,17 +27,28 @@ services:
       dockerfile: dockerfile
     ports:
       - "8091:8091"
-  #resource:
-  #  depends_on:
-  #    - database
-  #    - discovery
-  #  volumes:
-  #    - ./storage:/usr/app
-  #  build:
-  #    context: service-resource
-  #    dockerfile: dockerfile
-  #  ports:
-  #    - "8092:8092"
+  resource:
+    depends_on:
+      - database
+      - discovery
+    volumes:
+      - ./storage:/usr/app/storage
+    build:
+      context: service-resource
+      dockerfile: dockerfile
+    ports:
+      - "8092:8092"
+  admin:
+    depends_on:
+    - database
+    - discovery
+    volumes:
+      - ./storage:/usr/app/storage
+    build:
+      context: service-admin
+      dockerfile: dockerfile
+    ports:
+      - "8093:8093"
 
 # External Dependencies
   database:

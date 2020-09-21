@@ -2,21 +2,31 @@ package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.dto.AlbumResponse;
 import com.zbutwialypiernik.flixage.dto.PageResponse;
+import com.zbutwialypiernik.flixage.dto.TrackResponse;
 import com.zbutwialypiernik.flixage.entity.Album;
+import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.service.AlbumService;
 import com.zbutwialypiernik.flixage.service.QueryableService;
+import com.zbutwialypiernik.flixage.service.TrackService;
+import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(("/albums"))
+@RequestMapping("/albums")
 public class AlbumController extends QueryableController<Album, AlbumResponse>  {
 
-    public AlbumController(QueryableService<Album> service, MapperFactory mapperFactory) {
+    private final TrackService trackService;
+
+    private final BoundMapperFacade<Track, TrackResponse> trackMapper;
+
+    public AlbumController(QueryableService<Album> service, TrackService trackService, MapperFactory mapperFactory) {
         super(service, mapperFactory);
+        this.trackService = trackService;
+        this.trackMapper = mapperFactory.getMapperFacade(Track.class, TrackResponse.class);
     }
 
     @GetMapping("/recent")
@@ -26,6 +36,13 @@ public class AlbumController extends QueryableController<Album, AlbumResponse>  
         return new PageResponse<>(page
                 .map(dtoMapper::map)
                 .toList(), page.getTotalElements());
+    }
+
+    @GetMapping("/{id}/tracks")
+    public List<TrackResponse> getTracks(@PathVariable String id) {
+        return trackService.getTracksByAlbumId(id, true).stream()
+                .map(trackMapper::map)
+                .collect(Collectors.toList());
     }
 
     @Override

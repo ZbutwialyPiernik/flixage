@@ -43,7 +43,7 @@ public class TrackService extends QueryableService<Track> {
         getRepository().save(track);
     }
 
-    public Optional<ImageResource> getThumbnailById(String id, boolean mustHaveAudioFile) {
+    public Optional<ImageResource> findThumbnailById(String id, boolean mustHaveAudioFile) {
         var entity = findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (mustHaveAudioFile && entity.getAudioFile() == null) {
@@ -54,7 +54,7 @@ public class TrackService extends QueryableService<Track> {
     }
 
     public Page<Track> getRecentlyAdded(int offset, int limit) {
-        return getRepository().findAllByOrderByCreationTimeDescAndFileIsNotNull(PageRequest.of(offset / limit, limit));
+        return getRepository().findByAudioFileIsNotNullOrderByCreationTimeDesc(PageRequest.of(offset / limit, limit));
     }
 
     public AudioResource getTrackFile(String id) {
