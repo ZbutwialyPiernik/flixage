@@ -16,7 +16,7 @@ public class ThumbnailUrlConverter<A extends Queryable, B extends QueryableRespo
     private final String resourcePath;
 
     /**
-     * @param resourcePath the api path to resource example: gateway.com/api/v1/{resourcePath}/1324-1234-1234-1234/thumbnail
+     * @param resourcePath the api path to resource example: host.com/api/v1/{resourcePath}/1324-1234-1234-1234/thumbnail
      */
     public ThumbnailUrlConverter(GatewayUriFactory builder, String resourcePath) {
         this.builder = builder;

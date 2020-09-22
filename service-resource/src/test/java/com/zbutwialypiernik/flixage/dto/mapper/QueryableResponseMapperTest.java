@@ -52,7 +52,7 @@ public class QueryableResponseMapperTest {
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();
 
-        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory(BASE_URL, "/api"));
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory());
         mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
 
         MapperFacade mapperFacade = mapperFactory.getMapperFacade();
@@ -75,7 +75,7 @@ public class QueryableResponseMapperTest {
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();
 
-        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory(BASE_URL, "/api"));
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory());
         mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
 
         MapperFacade mapperFacade = mapperFactory.getMapperFacade();
