@@ -17,8 +17,6 @@ public class RouteConfig {
     public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route(r -> r.path("/admin/**")
-                    // Prevent redirect to local address
-                    .filters(f -> f.rewriteLocationResponseHeader(StripVersion.AS_IN_REQUEST.name(), HttpHeaders.LOCATION, "", ""))
                     .uri("lb://admin-service/admin")
                     .id("admin-service"))
                 .route(r -> r.path("/api/authentication/**")

@@ -90,7 +90,8 @@ project(':core') {
         // Object Mapping
         implementation 'ma.glasnost.orika:orika-core:1.5.4'
 
-        // Database
+        // Spring
+        implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-security'
     }
