@@ -13,15 +13,14 @@ Project contains 8 modules, the frontend made in Flutter, docker-compose ready f
 
 ## Building project
 
-The easiest way to build project is running 
+The easiest way to build project is running, docker will take care of everything including database
+```
+gradle jar
+```
+```
+docker-compose -f ./docker-compose.yml up -d --build
+```
 
->gradle jar
-
-then
-
->docker-compose -f ./docker-compose.yml up -d --build
-
-docker will take care of everything including database
 
 ## Todo list
 - Custom gradle task with docker
