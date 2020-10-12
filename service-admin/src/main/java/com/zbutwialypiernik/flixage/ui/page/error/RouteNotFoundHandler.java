@@ -22,4 +22,5 @@ public class RouteNotFoundHandler extends RouteNotFoundError {
 
         return HttpServletResponse.SC_NOT_FOUND;
     }
+
 }

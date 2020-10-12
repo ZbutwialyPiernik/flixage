@@ -1,5 +1,6 @@
 package com.zbutwialypiernik.flixage.service;
 
+import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.entity.TrackStream;
 import com.zbutwialypiernik.flixage.entity.TrackStreamId;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
@@ -12,7 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
+/**
+ * Service for counting track streams
+ */
 @Service
 public class TrackStreamService {
 
@@ -24,7 +30,7 @@ public class TrackStreamService {
 
     private final Clock clock;
 
-    public TrackStreamService(TrackStreamRepository repository, UserService userService, TrackService trackService, PlaylistService playlistService, Clock clock) {
+    public TrackStreamService(TrackStreamRepository repository, UserService userService, TrackService trackService, Clock clock) {
         this.repository = repository;
         this.userService = userService;
         this.trackService = trackService;
@@ -45,7 +51,6 @@ public class TrackStreamService {
         }
 
         final var id = new TrackStreamId(user, track);
-
         final var stream = repository.findById(id).orElseGet(() -> {
             TrackStream newStream = new TrackStream();
             newStream.setId(id);
@@ -58,8 +63,22 @@ public class TrackStreamService {
         repository.save(stream);
     }
 
+    /**
+     *
+     * @return most recent streamed tracks
+     */
     public Page<TrackStream> findRecentlyStreamedTracks(String userId, int offset, int limit) {
         return repository.findByIdUserIdOrderByUpdateTimeDesc(userId, PageRequest.of(offset / limit, limit));
+    }
+
+    /**
+     *
+     * @return most streamed artists within last 30 days
+     */
+    public Page<Artist> findMostStreamedArtists(String userId, int offset, int limit) {
+        Instant now = clock.instant();
+
+        return repository.findMostListenedArtists(userId, now, now.plus(30, ChronoUnit.DAYS), PageRequest.of(offset / limit, limit));
     }
 
 }

@@ -1,9 +1,11 @@
 package com.zbutwialypiernik.flixage.controller;
 
+import com.zbutwialypiernik.flixage.dto.ArtistResponse;
 import com.zbutwialypiernik.flixage.dto.PageResponse;
 import com.zbutwialypiernik.flixage.dto.TrackResponse;
 import com.zbutwialypiernik.flixage.dto.UserResponse;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistResponse;
+import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.User;
@@ -30,6 +32,7 @@ public class UserController extends QueryableController<User, UserResponse> {
 
     private final BoundMapperFacade<Playlist, PlaylistResponse> playlistMapper;
     private final BoundMapperFacade<Track, TrackResponse> trackMapper;
+    private final BoundMapperFacade<Artist, ArtistResponse> artistMapper;
 
     public UserController(UserService userService, PlaylistService playlistService, TrackStreamService streamService, MapperFactory mapperFactory) {
         super(userService, mapperFactory);
@@ -38,6 +41,7 @@ public class UserController extends QueryableController<User, UserResponse> {
         this.streamService = streamService;
         this.playlistMapper = mapperFactory.getMapperFacade(Playlist.class, PlaylistResponse.class);
         this.trackMapper = mapperFactory.getMapperFacade(Track.class, TrackResponse.class);
+        this.artistMapper = mapperFactory.getMapperFacade(Artist.class, ArtistResponse.class);
     }
 
     @GetMapping("/me")
@@ -57,14 +61,26 @@ public class UserController extends QueryableController<User, UserResponse> {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/me/recent")
+    @GetMapping("/me/recentlyListened")
     public PageResponse<TrackResponse> getLastStreamedTracks(@AuthenticationPrincipal JwtAuthenticationToken principal, @RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "20") int limit) {
-        var page = streamService.findRecentlyStreamedTracks(principal.getId(), offset, limit);
+        final var page = streamService.findRecentlyStreamedTracks(principal.getId(), offset, limit);
 
         return new PageResponse<>(page
                 .map(stream -> stream.getId().getTrack())
                 .map(trackMapper::map)
                 .toList(), page.getTotalElements());
+    }
+
+    /**
+     * Returns most listened artist within last 30 days
+     */
+    @GetMapping("/me/mostListened")
+    public PageResponse<ArtistResponse> getMostListenedArtists(@AuthenticationPrincipal JwtAuthenticationToken principal, @RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "20") int limit) {
+        final var page= streamService.findMostStreamedArtists(principal.getId(), offset, limit);
+
+        return new PageResponse<>(page.stream()
+                .map(artistMapper::map)
+                .collect(Collectors.toList()), page.getTotalElements());
     }
 
 }
