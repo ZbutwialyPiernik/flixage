@@ -78,7 +78,7 @@ public class TrackStreamService {
     public Page<Artist> findMostStreamedArtists(String userId, int offset, int limit) {
         Instant now = clock.instant();
 
-        return repository.findMostListenedArtists(userId, now, now.plus(30, ChronoUnit.DAYS), PageRequest.of(offset / limit, limit));
+        return repository.findMostListenedArtists(userId, now.minus(30, ChronoUnit.DAYS), now, PageRequest.of(offset / limit, limit));
     }
 
 }
