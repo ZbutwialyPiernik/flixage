@@ -25,7 +25,7 @@ public interface TrackStreamRepository extends JpaRepository<TrackStream, TrackS
      * @param pageable
      * @return
      */
-    @Query(value = "SELECT t.artist FROM TrackStream s " +
+    @Query("SELECT t.artist FROM TrackStream s " +
             "JOIN s.id.track t " +
             "WHERE s.id.user.id = :userId " +
             "AND " +

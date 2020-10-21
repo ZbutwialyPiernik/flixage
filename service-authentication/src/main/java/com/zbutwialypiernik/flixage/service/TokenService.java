@@ -34,7 +34,7 @@ public class TokenService {
     }
 
     public String generateAccessToken(User user) {
-        long now = clock.millis();
+        final long now = clock.millis();
 
         return Jwts.builder()
                 .setIssuer(user.getId())
@@ -48,10 +48,10 @@ public class TokenService {
 
     public RefreshToken generateRefreshToken(User user) {
         if (tokenRepository.countByUserId(user.getId()) >= config.getMaxSessionCount()) {
-            throw new AuthenticationException("Session count exceeded");
+            tokenRepository.deleteOldestToken(user.getId());
         }
 
-        var refreshToken = new RefreshToken();
+        final var refreshToken = new RefreshToken();
         refreshToken.setId(UUID.randomUUID().toString());
         refreshToken.setUser(user);
         refreshToken.setExpireTime(config.getRefreshTokenExpireTime());
