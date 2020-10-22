@@ -49,7 +49,8 @@ public class TokenService {
 
     @Transactional
     public RefreshToken generateRefreshToken(User user) {
-        if (tokenRepository.countByUserId(user.getId()) >= config.getMaxSessionCount()) {
+        // 0 or lower means that user can have unlimited amount of sessions at one time
+        if (config.getMaxSessionCount() > 0 && tokenRepository.countByUserId(user.getId()) >= config.getMaxSessionCount()) {
             tokenRepository.deleteOldestToken(user.getId());
         }
 

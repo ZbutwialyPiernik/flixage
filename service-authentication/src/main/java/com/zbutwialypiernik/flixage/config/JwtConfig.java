@@ -26,7 +26,7 @@ public class JwtConfig {
     private Duration refreshTokenExpireTime;
 
     @Positive
-    @Value("${jwt.refresh-token.max-count:20}")
+    @Value("${jwt.refresh-token.max-count:3}")
     private int maxSessionCount;
 
     @NotNull
