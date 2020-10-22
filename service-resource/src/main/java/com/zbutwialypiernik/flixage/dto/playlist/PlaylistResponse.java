@@ -13,4 +13,6 @@ public class PlaylistResponse extends QueryableResponse {
 
     private UserResponse owner;
 
+    private String shareCode;
+
 }
