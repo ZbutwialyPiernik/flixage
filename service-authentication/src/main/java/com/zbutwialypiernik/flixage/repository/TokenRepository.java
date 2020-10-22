@@ -10,10 +10,10 @@ public interface TokenRepository extends JpaRepository<RefreshToken, String> {
 
     long countByUserId(String id);
 
-    @Query("DELETE FROM RefreshToken t" +
-            "ORDER BY t.creationTime ASC " +
-            "LIMIT 1;" +
-            "WHERE t.user.id = :userId")
+    @Query(nativeQuery = true, value = "DELETE FROM refresh_token " +
+            "WHERE user_id = :userId " +
+            "ORDER BY refresh_token.creation_time ASC " +
+            "LIMIT 1")
     void deleteOldestToken(String userId);
 
 }
