@@ -9,6 +9,7 @@ import com.zbutwialypiernik.flixage.util.KeyUtil;
 import io.jsonwebtoken.Jwts;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.security.PrivateKey;
 import java.time.Clock;
 import java.time.Instant;
@@ -46,6 +47,7 @@ public class TokenService {
                 .compact();
     }
 
+    @Transactional
     public RefreshToken generateRefreshToken(User user) {
         if (tokenRepository.countByUserId(user.getId()) >= config.getMaxSessionCount()) {
             tokenRepository.deleteOldestToken(user.getId());
