@@ -9,7 +9,7 @@ public class ShareCodeGenerator {
 
     public static final int ALPHABET_LENGTH = 26;
 
-    public static final char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWYXZ".toCharArray();
+    public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWYXZ";
 
     public static final Random RANDOM = new Random();
 
@@ -17,7 +17,7 @@ public class ShareCodeGenerator {
         final var builder = new StringBuilder();
 
         for (int i = 0; i < length; i++) {
-            builder.append(ALPHABET[RANDOM.nextInt(ALPHABET_LENGTH)]);
+            builder.append(ALPHABET.charAt(RANDOM.nextInt(ALPHABET_LENGTH)));
         }
 
         return builder.toString();

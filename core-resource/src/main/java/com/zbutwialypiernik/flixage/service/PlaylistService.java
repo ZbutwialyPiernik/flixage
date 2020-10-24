@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,8 +69,8 @@ public class PlaylistService extends QueryableService<Playlist> {
      *
      * @param shareCode
      */
-    public Playlist findByShareCode(String shareCode) {
-        return getRepository().findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
+    public Optional<Playlist> findByShareCode(String shareCode) {
+        return getRepository().findByShareCode(shareCode);
     }
 
     /**
@@ -91,6 +92,7 @@ public class PlaylistService extends QueryableService<Playlist> {
             }
         }
     }
+
     @Override
     protected PlaylistRepository getRepository() {
         return (PlaylistRepository) super.getRepository();

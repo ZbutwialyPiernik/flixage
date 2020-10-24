@@ -158,9 +158,4 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
         return !playlist.getOwner().getId().equals(authentication.getId());
     }
 
-    @GetMapping
-    public PlaylistResponse findByShareCode(@RequestParam String shareCode) {
-        return dtoMapper.map(playlistService.findByShareCode(shareCode));
-    }
-
 }

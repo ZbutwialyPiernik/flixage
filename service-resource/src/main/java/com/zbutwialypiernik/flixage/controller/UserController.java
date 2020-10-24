@@ -10,8 +10,10 @@ import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
+import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
+import com.zbutwialypiernik.flixage.service.ShareCodeGenerator;
 import com.zbutwialypiernik.flixage.service.TrackStreamService;
 import com.zbutwialypiernik.flixage.service.UserService;
 import ma.glasnost.orika.BoundMapperFacade;
@@ -19,12 +21,17 @@ import ma.glasnost.orika.MapperFactory;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 public class UserController extends QueryableController<User, UserResponse> {
+
+    private static final String SHARE_CODE_REGEX = "[" + ShareCodeGenerator.ALPHABET + "]{6}";
 
     private final PlaylistService playlistService;
     private final UserService userService;
@@ -81,6 +88,42 @@ public class UserController extends QueryableController<User, UserResponse> {
         return new PageResponse<>(page.stream()
                 .map(artistMapper::map)
                 .collect(Collectors.toList()), page.getTotalElements());
+    }
+
+    @DeleteMapping("/me/followedPlaylists")
+    public List<PlaylistResponse> getFollowedPlaylists(@AuthenticationPrincipal JwtAuthenticationToken principal) {
+        final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
+
+        return user.getObservedPlaylists().stream()
+                .map(playlistMapper::map)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns most listened artist within last 30 days
+     */
+    @PutMapping("/me/followedPlaylists/{shareCode}")
+    public void followPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
+        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
+        final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
+
+        user.getObservedPlaylists().add(playlist);
+        userService.update(user);
+    }
+
+    /**
+     * Returns most listened artist within last 30 days
+     */
+    @DeleteMapping("/me/followedPlaylists/{shareCode}")
+    public void unfollowPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
+        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
+        final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
+
+        if (!user.getObservedPlaylists().remove(playlist)) {
+            throw new ResourceNotFoundException("Playlist is not observed yet");
+        }
+
+        userService.update(user);
     }
 
 }

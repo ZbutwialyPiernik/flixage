@@ -32,6 +32,9 @@ public class User extends Queryable implements UserDetails {
     private List<Playlist> playlists = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
+    private List<Playlist> observedPlaylists = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Track> savedTracks = new ArrayList<>();
 
     @Column(nullable = false)
