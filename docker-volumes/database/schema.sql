@@ -3,12 +3,14 @@ create table artist (id varchar(255) not null, creation_time datetime not null, 
 create table audio_file (id varchar(255) not null, creation_time datetime not null, update_time datetime, extension varchar(255), file_id varchar(255), mime_type varchar(255), size bigint not null, duration bigint not null, primary key (id));
 create table image_file (id varchar(255) not null, creation_time datetime not null, update_time datetime, extension varchar(255), file_id varchar(255), mime_type varchar(255), size bigint not null, height bigint not null, width bigint not null, primary key (id));
 create table playlist (id varchar(255) not null, creation_time datetime not null, update_time datetime, name varchar(255) not null, thumbnail_id varchar(255), owner_id varchar(255), share_code varchar(6) not null unique, primary key (id));
+create table user_observed_playlists (user_id varchar(255) not null, observed_playlists_id varchar(255) not null)
 create table playlist_tracks (playlist_id varchar(255) not null, tracks_id varchar(255) not null);
 create table track (id varchar(255) not null, creation_time datetime not null, update_time datetime, name varchar(255) not null, genre varchar(255), thumbnail_id varchar(255), album_id varchar(255), artist_id varchar(255), audio_file_id varchar(255), album varchar(255), primary key (id));
 create table track_stream (creation_time timestamp not null, stream_count bigint not null, update_time timestamp not null, user_id varchar(255) not null, track_id varchar(255) not null, primary key (track_id, user_id));
 create table user (id varchar(255) not null, creation_time datetime not null, update_time datetime, name varchar(255) not null, last_audio_stream datetime, enabled bit not null, expired_credentials bit  not null, locked bit not null, password varchar(60) not null, role varchar(255), username varchar(32) not null, thumbnail_id varchar(255), primary key (id));
 create table user_saved_tracks (user_id varchar(255) not null, saved_tracks_id varchar(255) not null);
 create table refresh_token (id varchar(255) not null, creation_time datetime(6), update_time datetime(6), expire_time bigint, is_blacklisted bit, user_id varchar(255), primary key (id));
+alter table playlist add constraint UK_mace7euf0d4f5ocj8s5wbb7b unique (share_code)
 alter table user add constraint UK_sb8bbouer5wak8vyiiy4pf2bx unique (username);
 alter table album add constraint FK6v7kfmm72rhnr7b3liclhve2m foreign key (thumbnail_id) references image_file (id);
 alter table album add constraint FKmwc4fyyxb6tfi0qba26gcf8s1 foreign key (artist_id) references artist (id);
@@ -23,6 +25,8 @@ alter table track add constraint FKi28jadqiuqk1dlxtl0me7hqh2 foreign key (artist
 alter table track add constraint FKspe3cvw3t6sbyw4ah2mw0ojy2 foreign key (audio_file_id) references audio_file (id);
 alter table track add constraint FKrdqpaxtar239vj2gngp8e5ujx foreign key (album) references album (id);
 alter table user add constraint FKl1wprtaec08rg3lgbw6kj187a foreign key (thumbnail_id) references image_file (id);
+alter table user_observed_playlists add constraint FK6r2ytt4ihq3r2akjes5lwwkit foreign key (observed_playlists_id) references playlist (id)
+alter table user_observed_playlists add constraint FKks5v1ttfyov52qabqbl5ru9lj foreign key (user_id) references user (id)
 alter table user_saved_tracks add constraint FK6kql7by8aa6uae4jj8dv65p3b foreign key (saved_tracks_id) references track (id);
 alter table user_saved_tracks add constraint FKgvl661ucqwy92juwcxn97mbeh foreign key (user_id) references user (id);
 alter table refresh_token add constraint FKfgk1klcib7i15utalmcqo7krt foreign key (user_id) references user (id);
