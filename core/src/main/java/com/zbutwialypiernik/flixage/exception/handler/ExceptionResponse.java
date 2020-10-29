@@ -13,6 +13,4 @@ public class ExceptionResponse {
 
     private final int status;
 
-    private final Instant timestamp;
-
 }

@@ -15,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Clock;
 
 /**
  * JWT Filter class for services other than Authentication.
@@ -27,16 +26,13 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String TOKEN_HEADER = "Authorization";
 
-    private final Clock clock;
-
     private final JwtAuthenticationParser parser;
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtAuthenticationParser parser, ObjectMapper objectMapper, Clock clock) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtAuthenticationParser parser, ObjectMapper objectMapper) {
         super(authenticationManager);
-        this.clock = clock;
         this.parser = parser;
         this.objectMapper = objectMapper;
     }
@@ -65,7 +61,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     private void printException(HttpServletResponse response, String message) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(message, HttpServletResponse.SC_UNAUTHORIZED, clock.instant());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(message, HttpServletResponse.SC_UNAUTHORIZED);
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

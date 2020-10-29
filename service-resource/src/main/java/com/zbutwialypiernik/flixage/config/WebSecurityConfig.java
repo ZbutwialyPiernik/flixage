@@ -21,9 +21,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtAuthenticationParser parser;
 
     @Autowired
-    private Clock clock;
-
-    @Autowired
     private ObjectMapper mapper;
 
     @Override
@@ -36,7 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .antMatchers("/eureka/**").hasRole(Role.ADMIN.name())
                         .antMatchers("/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
                 .and()
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager(), parser, mapper, clock));
+                    .addFilter(new JwtAuthenticationFilter(authenticationManager(), parser, mapper));
         // @formatter:on
     }
 

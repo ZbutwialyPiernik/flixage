@@ -10,8 +10,8 @@ public class ValidationExceptionResponse extends ExceptionResponse {
 
     private final List<String> validationErrors;
 
-    public ValidationExceptionResponse(String message, int status, Instant timestamp, List<String> validationErrors) {
-        super(message, status, timestamp);
+    public ValidationExceptionResponse(String message, int status, List<String> validationErrors) {
+        super(message, status);
         this.validationErrors = validationErrors;
     }
 }

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,9 +98,6 @@ public class UserController extends QueryableController<User, UserResponse> {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Returns most listened artist within last 30 days
-     */
     @PutMapping("/me/followedPlaylists/{shareCode}")
     public void followPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
         final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
@@ -112,7 +108,9 @@ public class UserController extends QueryableController<User, UserResponse> {
     }
 
     /**
-     * Returns most listened artist within last 30 days
+     *
+     * @param principal
+     * @param shareCode
      */
     @DeleteMapping("/me/followedPlaylists/{shareCode}")
     public void unfollowPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {

@@ -16,10 +16,6 @@ import java.util.List;
 @Entity
 public class Album extends Queryable {
 
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "album")
-    private List<Track> tracks = new ArrayList<>();
-
     @ManyToOne(optional = false)
     private Artist artist;
 

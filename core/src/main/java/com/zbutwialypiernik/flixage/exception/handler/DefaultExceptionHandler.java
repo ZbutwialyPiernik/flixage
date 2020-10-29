@@ -52,12 +52,6 @@ import java.util.stream.Collectors;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class DefaultExceptionHandler {
 
-    private final Clock clock;
-
-    @Autowired
-    public DefaultExceptionHandler(Clock clock) {
-        this.clock = clock;
-    }
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ExceptionResponse> handle(Exception exception, HttpServletRequest request, HttpServletResponse response, @Nullable Object handler) {
@@ -66,8 +60,7 @@ public class DefaultExceptionHandler {
 
             return ResponseEntity.status(httpStatus)
                     .body(new ExceptionResponse(exception.getMessage(),
-                            httpStatus.value(),
-                            Instant.now(clock)));
+                            httpStatus.value()));
         }
 
         ResponseEntity<ExceptionResponse> defaultMessage = handleDefaultExceptions(exception, request, response, handler);
@@ -155,8 +148,7 @@ public class DefaultExceptionHandler {
 
         return builder.body(new ExceptionResponse(
                         HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(),
-                        HttpStatus.METHOD_NOT_ALLOWED.value(),
-                        Instant.now(clock)));
+                        HttpStatus.METHOD_NOT_ALLOWED.value()));
     }
 
     protected ResponseEntity<ExceptionResponse> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
@@ -169,8 +161,7 @@ public class DefaultExceptionHandler {
 
         return builder.body(new ExceptionResponse(
                 HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(),
-                HttpStatus.METHOD_NOT_ALLOWED.value(),
-                Instant.now(clock)));
+                HttpStatus.METHOD_NOT_ALLOWED.value()));
     }
 
     protected ResponseEntity<ExceptionResponse> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex,
@@ -245,7 +236,6 @@ public class DefaultExceptionHandler {
                 .body(new ValidationExceptionResponse(
                         "Validation error",
                         HttpStatus.BAD_REQUEST.value(),
-                        Instant.now(clock),
                         errors));
     }
 
@@ -284,8 +274,7 @@ public class DefaultExceptionHandler {
         return ResponseEntity.status(status)
                 .body(new ExceptionResponse(
                         message,
-                        status.value(),
-                        Instant.now(clock)));
+                        status.value()));
     }
 
 }

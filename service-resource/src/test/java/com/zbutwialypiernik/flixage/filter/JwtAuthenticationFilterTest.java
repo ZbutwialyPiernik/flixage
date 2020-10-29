@@ -43,7 +43,7 @@ public class JwtAuthenticationFilterTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        filter = new JwtAuthenticationFilter(authenticationManager, parser, jsonMapper, Clock.systemUTC());
+        filter = new JwtAuthenticationFilter(authenticationManager, parser, jsonMapper);
     }
 
     /**
