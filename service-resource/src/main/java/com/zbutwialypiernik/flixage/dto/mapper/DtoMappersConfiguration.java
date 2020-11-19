@@ -9,18 +9,28 @@ import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.metadata.ClassMapBuilder;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
+
 @Configuration
 public class DtoMappersConfiguration {
 
     private final MapperFactory mapperFactory;
 
-    private final GatewayUriFactory gatewayUriFactory;
-
-    // TODO: make this process fully automatic and more flexible
-    public DtoMappersConfiguration(MapperFactory mapperFactory, GatewayUriFactory gatewayUriFactory) {
+    private final GatewayUriFactory uriBuilder;
+    
+    public DtoMappersConfiguration(MapperFactory mapperFactory, GatewayUriFactory uriBuilder) {
         this.mapperFactory = mapperFactory;
-        this.gatewayUriFactory = gatewayUriFactory;
+        this.uriBuilder = uriBuilder;
+    }
 
+    protected <A extends Queryable, B extends QueryableResponse> ClassMapBuilder<A, B> createCustomMapping(Class<A> entityClass, Class<B> responseClass, String resourcePath) {
+        return mapperFactory.classMap(entityClass, responseClass)
+                .customize(new ThumbnailUrlConverter<>(uriBuilder, resourcePath))
+                .byDefault();
+    }
+
+    @PostConstruct
+    public void init() {
         createCustomMapping(Playlist.class, PlaylistResponse.class, "playlists").register();
         createCustomMapping(Album.class, AlbumResponse.class, "albums").register();
         createCustomMapping(User.class, UserResponse.class, "users").register();
@@ -28,12 +38,6 @@ public class DtoMappersConfiguration {
         createCustomMapping(Track.class, TrackResponse.class, "tracks")
                 .fieldMap("audioFile.duration", "duration").add()
                 .register();
-    }
-    
-    protected <A extends Queryable, B extends QueryableResponse> ClassMapBuilder<A, B> createCustomMapping(Class<A> entityClass, Class<B> responseClass, String resourcePath) {
-        return mapperFactory.classMap(entityClass, responseClass)
-                .customize(new ThumbnailUrlConverter<>(gatewayUriFactory, resourcePath))
-                .byDefault();
     }
 
 }

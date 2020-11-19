@@ -1,66 +1,49 @@
 package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.IntegrationTestWithPrincipal;
+import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.TrackStreamId;
 import com.zbutwialypiernik.flixage.entity.file.AudioFileEntity;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter;
-import com.zbutwialypiernik.flixage.repository.TrackRepository;
 import com.zbutwialypiernik.flixage.repository.TrackStreamRepository;
+import com.zbutwialypiernik.flixage.service.ArtistService;
 import com.zbutwialypiernik.flixage.service.TrackService;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = {TrackControllerIT.TimeZoneConfig.class})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TrackControllerIT extends IntegrationTestWithPrincipal {
-
-    public static final Instant NOW = Instant.now();
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private TrackRepository trackRepository;
-
-    @Autowired
     private TrackService trackService;
 
     @Autowired
+    private ArtistService artistService;
+
+    @Autowired
     private TrackStreamRepository streamRepository;
-
-    @TestConfiguration
-    public static class TimeZoneConfig {
-
-        @Bean
-        @Primary
-        public Clock clock() {
-            System.out.println("CUSTOM CLOCK");
-
-            return Clock.fixed(NOW, ZoneId.of("UTC"));
-        }
-
-    }
 
     private AudioFileEntity createMockFile() {
         var audioFile = new AudioFileEntity();
@@ -85,15 +68,21 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     public void logged_user_is_able_to_retrieve_track_when_exists() {
         var audioFile = createMockFile();
 
-        var track = new Track();
-        track.setName("Playlist name");
-        track.setAudioFile(audioFile);
+        var artist = new Artist();
+        artist.setName("Queen");
 
-        trackService.create(track);
+        artistService.create(artist);
+
+        var track = new Track();
+        track.setName("Track name");
+        track.setAudioFile(audioFile);
+        track.setArtist(artist);
+
+        track = trackService.create(track);
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .get("/tracks/" + track.getId())
@@ -107,7 +96,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     public void logged_user_is_not_able_to_retrieve_track_when_track_does_not_exists() {
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .get("/tracks/" + UUID.randomUUID().toString())
@@ -118,18 +107,24 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
 
     @Test
     public void logged_user_is_not_able_to_retrieve_track_when_audio_file_does_not_exists() {
+        var artist = new Artist();
+        artist.setName("Artist");
+
+        artistService.create(artist);
+
         var track = new Track();
         track.setName("Playlist name");
         track.setAudioFile(null);
+        track.setArtist(artist);
 
-        user.setLastAudioStream(NOW.minus(Duration.ofSeconds(35)));
+        user.setLastAudioStream(Instant.now());
         userService.update(user);
 
-        trackService.create(track);
+        track = trackService.create(track);
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .get("/tracks/" + track.getId())
@@ -142,9 +137,15 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     public void not_logged_user_is_not_able_to_retrieve_track_when_track_does_exists() {
         var audioFile = createMockFile();
 
+        var artist = new Artist();
+        artist.setName("Artist");
+
+        artistService.create(artist);
+
         var track = new Track();
         track.setName("Playlist name");
         track.setAudioFile(audioFile);
+        track.setArtist(artist);
 
         trackService.create(track);
 
@@ -165,18 +166,24 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     public void logged_user_is_able_to_increase_track_stream_count_when_track_exists_and_has_audio_file() {
         var audioFile = createMockFile();
 
-        var track = new Track();
-        track.setName("Playlist name");
-        track.setAudioFile(audioFile);
+        var artist = new Artist();
+        artist.setName("Artist");
 
-        user.setLastAudioStream(NOW.minus(Duration.ofSeconds(35)));
+        artistService.create(artist);
+
+        var track = new Track();
+        track.setName("Track name");
+        track.setAudioFile(audioFile);
+        track.setArtist(artist);
+
+        user.setLastAudioStream(Instant.now().minus(Duration.ofSeconds(35)));
         userService.update(user);
 
-        trackService.create(track);
+        track = trackService.create(track);
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .post("/tracks/" + track.getId() + "/streamCount")
@@ -190,15 +197,21 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     @Test
     @Transactional
     public void logged_user_is_not_able_to_increase_track_stream_count_when_track_exists_and_has_not_audio_file() {
+        var artist = new Artist();
+        artist.setName("Artist");
+
+        artistService.create(artist);
+
         var track = new Track();
         track.setName("Playlist name");
         track.setAudioFile(null);
+        track.setArtist(artist);
 
-        trackService.create(track);
+        track = trackService.create(track);
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .post("/tracks/" + track.getId() + "/streamCount")
@@ -206,7 +219,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.NOT_FOUND);
         // @formatter:on
 
-        assertEquals(0, streamRepository.getOne(new TrackStreamId(user, track)).getStreamCount());
+        assertTrue(streamRepository.findById(new TrackStreamId(user, track)).isEmpty());
     }
 
     @Test
@@ -214,18 +227,24 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     public void logged_user_is_not_able_to_increase_track_stream_count_when_request_is_sent_before_cooldown() {
         var audioFile = createMockFile();
 
+        var artist = new Artist();
+        artist.setName("Artist");
+
+        artistService.create(artist);
+
         var track = new Track();
         track.setName("Playlist name");
         track.setAudioFile(audioFile);
+        track.setArtist(artist);
 
-        user.setLastAudioStream(NOW.minus(Duration.ofSeconds(27)));
+        user.setLastAudioStream(Instant.now());
         userService.update(user);
 
-        trackService.create(track);
+        track = trackService.create(track);
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .post("/tracks/" + track.getId() + "/streamCount")
@@ -233,7 +252,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.CONFLICT);
         // @formatter:on
 
-        assertEquals(0, streamRepository.getOne(new TrackStreamId(user, track)).getStreamCount());
+        assertTrue(streamRepository.findById(new TrackStreamId(user, track)).isEmpty());
     }
 
     @Test
@@ -241,9 +260,15 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
     public void not_logged_user_is_not_able_to_increase_track_stream_count() {
         var audioFile = createMockFile();
 
+        var artist = new Artist();
+        artist.setName("Artist");
+
+        artistService.create(artist);
+
         var track = new Track();
         track.setName("Playlist name");
         track.setAudioFile(audioFile);
+        track.setArtist(artist);
 
         trackService.create(track);
 
@@ -256,7 +281,7 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.FORBIDDEN);
         // @formatter:on
 
-        assertEquals(0, streamRepository.getOne(new TrackStreamId(user, track)).getStreamCount());
+        assertTrue(streamRepository.findById(new TrackStreamId(user, track)).isEmpty());
     }
 
 }

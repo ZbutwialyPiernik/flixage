@@ -1,6 +1,7 @@
 package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.TestWithPrincipal;
+import com.zbutwialypiernik.flixage.config.GatewayUriFactory;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.service.QueryableService;
@@ -13,11 +14,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
@@ -25,9 +30,16 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.standaloneSetup;
 import static org.mockito.Mockito.when;
 
-
 @WebMvcTest(QueryableControllerTest.StubController.class)
 public class QueryableControllerTest extends TestWithPrincipal {
+
+    @TestConfiguration
+    static class MockConfig {
+        @Bean
+        public GatewayUriFactory createFactory() {
+            return () -> UriComponentsBuilder.fromUriString("localhost");
+        }
+    }
 
     @Autowired
     public MockMvc mockMvc;
@@ -75,7 +87,7 @@ public class QueryableControllerTest extends TestWithPrincipal {
 
         when(service.findById(Mockito.any())).thenReturn(Optional.of(stub));
 
-        given().header("Authorization", "Bearer token")
+        given().header(HttpHeaders.AUTHORIZATION, "Bearer token")
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/stubs/" + entityId)

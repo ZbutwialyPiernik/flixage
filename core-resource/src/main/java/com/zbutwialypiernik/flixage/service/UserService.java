@@ -1,5 +1,6 @@
 package com.zbutwialypiernik.flixage.service;
 
+import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -73,7 +75,7 @@ public class UserService extends QueryableService<User> {
             user.setPassword(encoder.encode(user.getPassword()));
         }
 
-        return super.update(user);
+        return getRepository().save(user);
     }
 
     /**
@@ -107,6 +109,11 @@ public class UserService extends QueryableService<User> {
      */
     public Optional<User> findByUsername(String username) {
         return repository.findByUsernameIgnoreCase(username);
+    }
+
+    @Transactional
+    public void observePlaylist(User user, Playlist playlist) {
+
     }
 
 }

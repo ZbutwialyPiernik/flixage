@@ -79,7 +79,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
             throw new ResourceForbiddenException();
         }
 
-        Playlist playlist = requestMapper.map(request);
+        Playlist playlist = requestMapper.map(request, oldPlaylist);
         playlist.setId(id);
 
         playlist = playlistService.update(playlist);
@@ -131,8 +131,8 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
     }
 
     @PutMapping("/{id}/tracks")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addTracks(@PathVariable String id, @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+    @ResponseStatus(HttpStatus.OK)
+    public void addTracks(@PathVariable String id, @Valid @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
         Playlist playlist = playlistService.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (isNotOwner(authentication, playlist)) {
@@ -144,7 +144,7 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
 
     @DeleteMapping("/{id}/tracks")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeTracks(@PathVariable String id, @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
+    public void removeTracks(@PathVariable String id, @Valid @RequestBody IdsRequest idsRequest, @AuthenticationPrincipal JwtAuthenticationToken authentication) {
         Playlist playlist = playlistService.findById(id).orElseThrow(ResourceNotFoundException::new);
 
         if (isNotOwner(authentication, playlist)) {

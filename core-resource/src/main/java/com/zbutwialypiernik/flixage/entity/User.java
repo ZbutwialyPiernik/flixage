@@ -9,10 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -28,10 +25,10 @@ public class User extends Queryable implements UserDetails {
     private String password;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    private List<Playlist> observedPlaylists = new ArrayList<>();
+    private Set<Playlist> observedPlaylists = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
-    private List<Track> savedTracks = new ArrayList<>();
+    private Set<Track> savedTracks = new HashSet<>();
 
     @Column(nullable = false)
     private boolean enabled = true;

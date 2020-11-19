@@ -11,13 +11,16 @@ import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
-import com.zbutwialypiernik.flixage.filter.JwtAuthenticationToken;
+import com.zbutwialypiernik.flixage.exception.handler.ExceptionResponse;
+import com.zbutwialypiernik.flixage.security.AbstractAuthentication;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.ShareCodeGenerator;
 import com.zbutwialypiernik.flixage.service.TrackStreamService;
 import com.zbutwialypiernik.flixage.service.UserService;
 import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,12 +54,12 @@ public class UserController extends QueryableController<User, UserResponse> {
     }
 
     @GetMapping("/me")
-    public UserResponse getCurrentUser(@AuthenticationPrincipal JwtAuthenticationToken principal) {
+    public UserResponse getCurrentUser(@AuthenticationPrincipal AbstractAuthentication principal) {
         return dtoMapper.map(userService.findById(principal.getId()).orElseThrow(() -> new AuthenticationException("Invalid JWT Token")));
     }
 
     @GetMapping("/me/playlists")
-    public List<PlaylistResponse> getCurrentUserPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal) {
+    public List<PlaylistResponse> getCurrentUserPlaylist(@AuthenticationPrincipal AbstractAuthentication principal) {
         return getUserPlaylists(principal.getId());
     }
 
@@ -68,7 +71,7 @@ public class UserController extends QueryableController<User, UserResponse> {
     }
 
     @GetMapping("/me/recentlyListened")
-    public PageResponse<TrackResponse> getLastStreamedTracks(@AuthenticationPrincipal JwtAuthenticationToken principal, @RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "20") int limit) {
+    public PageResponse<TrackResponse> getLastStreamedTracks(@AuthenticationPrincipal AbstractAuthentication principal, @RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "20") int limit) {
         final var page = streamService.findRecentlyStreamedTracks(principal.getId(), offset, limit);
 
         return new PageResponse<>(page
@@ -81,7 +84,7 @@ public class UserController extends QueryableController<User, UserResponse> {
      * Returns most listened artist within last 30 days
      */
     @GetMapping("/me/mostListened")
-    public PageResponse<ArtistResponse> getMostListenedArtists(@AuthenticationPrincipal JwtAuthenticationToken principal, @RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "20") int limit) {
+    public PageResponse<ArtistResponse> getMostListenedArtists(@AuthenticationPrincipal AbstractAuthentication principal, @RequestParam(defaultValue = "0") int offset, @RequestParam(defaultValue = "20") int limit) {
         final var page= streamService.findMostStreamedArtists(principal.getId(), offset, limit);
 
         return new PageResponse<>(page.stream()
@@ -90,7 +93,7 @@ public class UserController extends QueryableController<User, UserResponse> {
     }
 
     @DeleteMapping("/me/followedPlaylists")
-    public List<PlaylistResponse> getFollowedPlaylists(@AuthenticationPrincipal JwtAuthenticationToken principal) {
+    public List<PlaylistResponse> getFollowedPlaylists(@AuthenticationPrincipal AbstractAuthentication principal) {
         final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
 
         return user.getObservedPlaylists().stream()
@@ -99,29 +102,36 @@ public class UserController extends QueryableController<User, UserResponse> {
     }
 
     @PutMapping("/me/followedPlaylists/{shareCode}")
-    public void followPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
+    public ResponseEntity<?> followPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
         final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
         final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
 
+        if (playlist.getOwner().equals(user)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ExceptionResponse("User cannot follow his own playlist", HttpStatus.BAD_REQUEST.value()));
+        }
+
         user.getObservedPlaylists().add(playlist);
         userService.update(user);
+
+        return ResponseEntity.ok().build();
     }
 
-    /**
-     *
-     * @param principal
-     * @param shareCode
-     */
     @DeleteMapping("/me/followedPlaylists/{shareCode}")
-    public void unfollowPlaylist(@AuthenticationPrincipal JwtAuthenticationToken principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
+    public ResponseEntity<?> unfollowPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
         final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
         final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
 
         if (!user.getObservedPlaylists().remove(playlist)) {
-            throw new ResourceNotFoundException("Playlist is not observed yet");
+            return ResponseEntity
+                    .badRequest()
+                    .body(new ExceptionResponse("Playlist is not observed yet", HttpStatus.BAD_REQUEST.value()));
         }
 
         userService.update(user);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

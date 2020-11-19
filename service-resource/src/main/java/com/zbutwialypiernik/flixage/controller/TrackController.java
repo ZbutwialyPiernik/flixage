@@ -32,7 +32,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
     }
 
     @Override
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public TrackResponse getById(@PathVariable String id) {
         final var track = service.findById(id).orElseThrow(ResourceNotFoundException::new);
 
@@ -44,7 +44,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
     }
 
     @Override
-    @GetMapping("{id}/thumbnail")
+    @GetMapping("/{id}/thumbnail")
     public byte[] getThumbnail(@PathVariable String id) {
         try {
             return service.findThumbnailById(id, true).map(ImageResource::getInputStream).orElseThrow(ResourceNotFoundException::new).readAllBytes();
@@ -54,7 +54,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
         }
     }
 
-    @GetMapping("{id}/stream")
+    @GetMapping("/{id}/stream")
     public void streamTrack(@PathVariable String id, HttpServletResponse response) throws IOException {
         final var resource = service.getTrackFile(id);
 
@@ -62,7 +62,7 @@ public class TrackController extends QueryableController<Track, TrackResponse>{
         response.getOutputStream().write(resource.getContent());
     }
 
-    @PostMapping("{id}/streamCount")
+    @PostMapping("/{id}/streamCount")
     public void increaseStreamCount(@PathVariable String id, @AuthenticationPrincipal JwtAuthenticationToken principal) {
         streamService.increaseStreamCount(principal.getId(), id);
     }

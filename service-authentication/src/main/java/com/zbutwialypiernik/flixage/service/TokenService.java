@@ -3,7 +3,6 @@ package com.zbutwialypiernik.flixage.service;
 import com.zbutwialypiernik.flixage.config.JwtConfig;
 import com.zbutwialypiernik.flixage.entity.RefreshToken;
 import com.zbutwialypiernik.flixage.entity.User;
-import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.repository.TokenRepository;
 import com.zbutwialypiernik.flixage.util.KeyUtil;
 import io.jsonwebtoken.Jwts;

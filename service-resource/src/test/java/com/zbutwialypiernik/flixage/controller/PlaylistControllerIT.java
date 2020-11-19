@@ -1,12 +1,15 @@
 package com.zbutwialypiernik.flixage.controller;
 
 import com.zbutwialypiernik.flixage.IntegrationTestWithPrincipal;
+import com.zbutwialypiernik.flixage.dto.mapper.DtoMappersConfiguration;
 import com.zbutwialypiernik.flixage.dto.playlist.IdsRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
+import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter;
 import com.zbutwialypiernik.flixage.repository.PlaylistRepository;
+import com.zbutwialypiernik.flixage.service.ArtistService;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.TrackService;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
@@ -15,6 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -33,6 +38,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Import(DtoMappersConfiguration.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
@@ -44,6 +50,9 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
     @Autowired
     private TrackService trackService;
+
+    @Autowired
+    private ArtistService artistService;
 
     //------------------------------- RETRIEVING PLAYLIST --------------------------------
 
@@ -57,12 +66,12 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
-            .post("/playlists/" + playlist.getId())
+            .get("/playlists/" + playlist.getId())
         .then()
-            .status(HttpStatus.CREATED)
+            .status(HttpStatus.OK)
             .body("id", equalTo(playlist.getId()))
             .body("name", equalTo(playlist.getName()));
         // @formatter:on
@@ -74,7 +83,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .get("/playlists/" + id)
@@ -86,13 +95,14 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
     //------------------------------- CREATING PLAYLIST --------------------------------
 
     @Test
+    @Transactional
     public void logged_user_is_able_to_create_playlist() {
         var request = new PlaylistRequest("My Playlist");
 
         // @formatter:off
         String id =
                 given()
-                    .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                    .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
                     .contentType(ContentType.JSON)
                     .body(request).when()
                     .post("/playlists")
@@ -104,7 +114,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
                     .path("id");
         // @formatter:on
 
-        var playlist = playlistRepository.getOne(id);
+        var playlist = playlistRepository.findById(id).get();
 
         assertNotNull(playlist);
         assertEquals(playlist.getOwner(), user);
@@ -138,7 +148,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -156,13 +166,13 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         playlist.setName("Playlist name");
         playlist.setOwner(otherUser);
 
-        playlistService.create(playlist);
+        playlist = playlistService.create(playlist);
 
         var request = new PlaylistRequest("New playlist name");
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -171,7 +181,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
             .status(HttpStatus.FORBIDDEN);
         // @formatter:on
 
-        var notUpdatedPlaylist = playlistRepository.getOne(playlist.getId());
+        var notUpdatedPlaylist = playlistRepository.findById(playlist.getId()).get();
 
         assertEquals(playlist.getId(), notUpdatedPlaylist.getId());
         assertEquals(playlist.getName(), notUpdatedPlaylist.getName());
@@ -184,7 +194,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -227,7 +237,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
         .when()
             .delete("/playlists/" + playlist.getId())
@@ -248,7 +258,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
                 .contentType(ContentType.JSON)
                 .when()
                 .delete("/playlists/" + playlist.getId())
@@ -263,7 +273,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
     public void logged_user_is_not_able_to_delete_non_existing_playlist() {
         // @formatter:off
         given()
-                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
                 .contentType(ContentType.JSON)
                 .when()
                 .delete("/playlists/" + UUID.randomUUID().toString())
@@ -315,13 +325,13 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
         .when()
             .put("/playlists/" + playlist.getId() + "/tracks")
         .then()
-            .status(HttpStatus.NO_CONTENT);
+            .status(HttpStatus.OK);
         // @formatter:on
 
         var tracks = playlistRepository.getOne(playlist.getId()).getTracks();
@@ -347,7 +357,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -384,7 +394,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -403,6 +413,9 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
     @Test
     @Transactional
     public void owner_is_able_to_remove_tracks_from_playlist() {
+        var artist = new Artist();
+        artist.setName("Queen");
+
         var playlist = new Playlist();
         playlist.setName("Playlist name");
         playlist.setOwner(user);
@@ -410,10 +423,14 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         playlistService.create(playlist);
 
         var track1 = new Track();
+        track1.setArtist(artist);
         track1.setName("Bohemian Rhapsody");
 
         var track2 = new Track();
+        track2.setArtist(artist);
         track2.setName("Don't Stop Me Now");
+
+        artistService.create(artist);
 
         trackService.create(track1);
         trackService.create(track2);
@@ -427,7 +444,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -450,11 +467,18 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         playlistService.create(playlist);
 
+        var artist = new Artist();
+        artist.setName("Queen");
+
+        artistService.create(artist);
+
         var track1 = new Track();
         track1.setName("Bohemian Rhapsody");
+        track1.setArtist(artist);
 
         var track2 = new Track();
         track2.setName("Don't Stop Me Now");
+        track2.setArtist(artist);
 
         trackService.create(track1);
         trackService.create(track2);
@@ -468,7 +492,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+                .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
                 .contentType(ContentType.JSON)
                 .body(request)
                 .when()
@@ -493,17 +517,17 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         playlistService.create(playlist);
 
-        var thumbnailFile = new File(ClassLoader.getSystemResource("thumbnail.png").toURI());
+        var thumbnailFile = new File(ClassLoader.getSystemResource("test_thumbnail.png").toURI());
         
         // @formatter:off
         given()
-            .header("Authorization", JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
+            .header(HttpHeaders.AUTHORIZATION, JwtAuthenticationFilter.TOKEN_PREFIX + TOKEN)
             .contentType(ContentType.JSON)
             .multiPart(thumbnailFile)
         .when()
             .post("/playlists/" + playlist.getId() + "/thumbnail")
         .then()
-            .status(HttpStatus.OK);
+            .status(HttpStatus.CREATED);
         // @formatter:on
 
         var thumbnail = playlistRepository.getOne(playlist.getId()).getThumbnail();
@@ -521,13 +545,13 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         playlistService.create(playlist);
 
-        var mockMultipartFile = new MockMultipartFile("file","thumbnail.png", MediaType.IMAGE_JPEG_VALUE,
+        var mockMultipartFile = new MockMultipartFile("file","test_thumbnail.png", MediaType.IMAGE_JPEG_VALUE,
                 new byte[(int) (ImageResource.MAX_FILE_SIZE - FileUtils.ONE_MB)]);
 
         mockMvc.perform(
                 multipart("/playlists/" + playlist.getId() + "/thumbnail")
                         .file(mockMultipartFile)
-                        .header("Authorization", "Bearer token")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.IMAGE_JPEG))
                 .andExpect(status().isForbidden());
 
@@ -553,7 +577,7 @@ public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         mockMvc.perform(
                 multipart("/playlists/" + playlist.getId() + "/thumbnail")
                         .file(mockMultipartFile)
-                        .header("Authorization", "Bearer token")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.IMAGE_JPEG))
                 .andExpect(status().isPayloadTooLarge());
 

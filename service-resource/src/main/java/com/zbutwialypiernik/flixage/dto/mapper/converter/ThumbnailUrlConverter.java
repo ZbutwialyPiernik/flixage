@@ -31,7 +31,7 @@ public class ThumbnailUrlConverter<A extends Queryable, B extends QueryableRespo
             return;
         }
 
-        queryableResponse.setThumbnailUrl(builder.newBuilder()
+        queryableResponse.setThumbnailUrl(builder.createUriBuilder()
                 .pathSegment(resourcePath, queryable.getId(), "thumbnail")
                 .build()
                 .toUriString());

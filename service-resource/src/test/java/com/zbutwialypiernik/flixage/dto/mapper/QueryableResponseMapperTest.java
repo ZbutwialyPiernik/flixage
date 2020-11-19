@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.dto.mapper;
 
-import com.zbutwialypiernik.flixage.config.GatewayUriFactory;
 import com.zbutwialypiernik.flixage.dto.QueryableResponse;
 import com.zbutwialypiernik.flixage.entity.Queryable;
 import com.zbutwialypiernik.flixage.entity.file.ImageFileEntity;
@@ -8,12 +7,13 @@ import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class QueryableResponseMapperTest {
 
     // Test field is made only to test if Orika will map child fields too.
 
-    public static class QueryableStub extends Queryable {
+    public static class QueryableEntityTest extends Queryable {
 
         private String testField;
 
@@ -26,7 +26,7 @@ public class QueryableResponseMapperTest {
         }
     }
 
-    public static class QueryableResponseStub extends QueryableResponse {
+    public static class QueryableResponseTest extends QueryableResponse {
 
         private String testField;
 
@@ -43,30 +43,30 @@ public class QueryableResponseMapperTest {
 
     @Test
     public void entity_gets_mapped_properly_when_thumbnail_is_not_null() {
-        var entityStub = new QueryableStub();
-        entityStub.setId("1234-1234-1234-1234");
-        entityStub.setName("Test name");
-        entityStub.setTestField("Test field");
-        entityStub.setThumbnail(new ImageFileEntity());
+        final var entity = new QueryableEntityTest();
+        entity.setId("1234-1234-1234-1234");
+        entity.setName("Test name");
+        entity.setTestField("Test field");
+        entity.setThumbnail(new ImageFileEntity());
 
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();
 
-        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory());
-        mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, () -> UriComponentsBuilder.fromUriString(BASE_URL));
+        mappersConfiguration.createCustomMapping(QueryableEntityTest.class, QueryableResponseTest.class, "stubs").register();
 
         MapperFacade mapperFacade = mapperFactory.getMapperFacade();
-        QueryableResponseStub responseStub = mapperFacade.map(entityStub, QueryableResponseStub.class);
+        QueryableResponseTest response = mapperFacade.map(entity, QueryableResponseTest.class);
 
-        Assertions.assertEquals(entityStub.getId(), responseStub.getId());
-        Assertions.assertEquals(entityStub.getName(), responseStub.getName());
-        Assertions.assertEquals(entityStub.getTestField(), responseStub.getTestField());
-        Assertions.assertEquals(BASE_URL + "/stubs/" + entityStub.getId() + "/thumbnail", responseStub.getThumbnailUrl());
+        Assertions.assertEquals(entity.getId(), response.getId());
+        Assertions.assertEquals(entity.getName(), response.getName());
+        Assertions.assertEquals(entity.getTestField(), response.getTestField());
+        Assertions.assertEquals(BASE_URL + "/stubs/" + entity.getId() + "/thumbnail", response.getThumbnailUrl());
     }
 
     @Test
     public void entity_gets_mapped_properly_when_thumbnail_is_null() {
-        var entityStub = new QueryableStub();
+        var entityStub = new QueryableEntityTest();
         entityStub.setId("1234-1234-1234-1234");
         entityStub.setName("Test name");
         entityStub.setTestField("Test field");
@@ -75,11 +75,11 @@ public class QueryableResponseMapperTest {
         var mapperFactory = new DefaultMapperFactory.Builder()
                 .build();
 
-        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, new GatewayUriFactory());
-        mappersConfiguration.createCustomMapping(QueryableStub.class, QueryableResponseStub.class, "stubs");
+        DtoMappersConfiguration mappersConfiguration = new DtoMappersConfiguration(mapperFactory, () -> UriComponentsBuilder.fromUriString(BASE_URL));
+        mappersConfiguration.createCustomMapping(QueryableEntityTest.class, QueryableResponseTest.class, "stubs");
 
         MapperFacade mapperFacade = mapperFactory.getMapperFacade();
-        QueryableResponseStub responseStub = mapperFacade.map(entityStub, QueryableResponseStub.class);
+        QueryableResponseTest responseStub = mapperFacade.map(entityStub, QueryableResponseTest.class);
 
         Assertions.assertEquals(entityStub.getId(), responseStub.getId());
         Assertions.assertEquals(entityStub.getName(), responseStub.getName());

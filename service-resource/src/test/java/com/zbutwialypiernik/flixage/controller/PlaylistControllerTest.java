@@ -15,20 +15,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -55,10 +55,10 @@ public class PlaylistControllerTest extends TestWithPrincipal {
     }
 
     @Test
-    @WithMockUser
     public void playlist_gets_created_when_has_valid_authentication() {
         var request = new PlaylistRequest("My Playlist");
         var createdPlaylist = new Playlist();
+        createdPlaylist.setId(UUID.randomUUID().toString());
         createdPlaylist.setName("My Playlist");
 
         when(userService.findById(any())).thenReturn(Optional.of(user));
@@ -66,14 +66,14 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
             .body(request)
         .when()
             .post("/playlists")
         .then()
             .status(HttpStatus.CREATED)
-            .body("id", notNull())
+            .body("id", equalTo(createdPlaylist.getId()))
             .body("name", equalTo("My Playlist"));
         // @formatter:on
     }
@@ -87,7 +87,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -117,7 +117,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -138,7 +138,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -162,7 +162,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
             .body(request)
         .when()
@@ -185,7 +185,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
         .when()
             .delete("/playlists/" + playlistId)
@@ -202,7 +202,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
         .when()
             .delete("/playlists/" + playlistId)
@@ -224,7 +224,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(ContentType.JSON)
         .when()
             .delete("/playlists/" + playlistId)
@@ -235,11 +235,10 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
     @Test
     public void can_add_track_to_playlist_when_user_is_owner() {
-        final var playlistId = "0000-0000-0000-0000";
         final var request = new IdsRequest(Set.of("1234-1234-1234-1234"));
 
         var playlist = new Playlist();
-        playlist.setId(playlistId);
+        playlist.setId("0000-0000-0000-0000");
         playlist.setOwner(user);
         playlist.setName("My Old Playlist Name");
 
@@ -247,11 +246,11 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .body(request)
             .contentType(ContentType.JSON)
         .when()
-            .put("/playlists/" + playlistId + "/tracks")
+            .put("/playlists/" + playlist.getId() + "/tracks")
         .then()
             .status(HttpStatus.OK);
         // @formatter:on
@@ -264,7 +263,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .body(request)
             .contentType(ContentType.JSON)
         .when()
@@ -283,7 +282,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .body(request)
             .contentType(ContentType.JSON)
         .when()
@@ -307,7 +306,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
 
         // @formatter:off
         given()
-            .header("Authorization", "Bearer token")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .body(request)
             .contentType(ContentType.JSON)
         .when()
@@ -335,7 +334,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         mockMvc.perform(
                 multipart("/playlists/" + playlistId + "/thumbnail")
                         .file(mockMultipartFile)
-                        .header("Authorization", "Bearer token")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.IMAGE_JPEG))
                         .andExpect(status().isCreated());
     }
@@ -358,7 +357,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         mockMvc.perform(
                 multipart("/playlists/" + playlistId + "/thumbnail")
                         .file(mockMultipartFile)
-                        .header("Authorization", "Bearer token")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.IMAGE_JPEG))
                 .andExpect(status().isForbidden());
     }
@@ -382,7 +381,7 @@ public class PlaylistControllerTest extends TestWithPrincipal {
         mockMvc.perform(
                 multipart("/playlists/" + playlistId + "/thumbnail")
                         .file(mockMultipartFile)
-                        .header("Authorization", "Bearer token")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.IMAGE_JPEG))
                 .andExpect(status().isPayloadTooLarge());
     }
