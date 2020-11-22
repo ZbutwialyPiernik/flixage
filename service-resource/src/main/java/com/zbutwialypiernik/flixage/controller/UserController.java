@@ -11,7 +11,6 @@ import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
-import com.zbutwialypiernik.flixage.exception.handler.ExceptionResponse;
 import com.zbutwialypiernik.flixage.security.AbstractAuthentication;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
 import com.zbutwialypiernik.flixage.service.ShareCodeGenerator;
@@ -20,7 +19,6 @@ import com.zbutwialypiernik.flixage.service.UserService;
 import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -92,7 +90,7 @@ public class UserController extends QueryableController<User, UserResponse> {
                 .collect(Collectors.toList()), page.getTotalElements());
     }
 
-    @DeleteMapping("/me/followedPlaylists")
+    @GetMapping("/me/followedPlaylists")
     public List<PlaylistResponse> getFollowedPlaylists(@AuthenticationPrincipal AbstractAuthentication principal) {
         final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
 
@@ -101,37 +99,16 @@ public class UserController extends QueryableController<User, UserResponse> {
                 .collect(Collectors.toList());
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/me/followedPlaylists/{shareCode}")
-    public ResponseEntity<?> followPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
-        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
-        final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
-
-        if (playlist.getOwner().equals(user)) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ExceptionResponse("User cannot follow his own playlist", HttpStatus.BAD_REQUEST.value()));
-        }
-
-        user.getObservedPlaylists().add(playlist);
-        userService.update(user);
-
-        return ResponseEntity.ok().build();
+    public void followPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
+        userService.followPlaylist(principal.getId(), shareCode);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/me/followedPlaylists/{shareCode}")
-    public ResponseEntity<?> unfollowPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
-        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
-        final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
-
-        if (!user.getObservedPlaylists().remove(playlist)) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new ExceptionResponse("Playlist is not observed yet", HttpStatus.BAD_REQUEST.value()));
-        }
-
-        userService.update(user);
-
-        return ResponseEntity.noContent().build();
+    public void unfollowPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
+        userService.unfollowPlaylist(principal.getId(), shareCode);
     }
 
 }

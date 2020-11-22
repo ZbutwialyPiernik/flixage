@@ -1,5 +1,6 @@
-package com.zbutwialypiernik.flixage;
+package com.zbutwialypiernik.flixage.controller;
 
+import com.zbutwialypiernik.flixage.AuthenticationTestHelper;
 import com.zbutwialypiernik.flixage.entity.Role;
 import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.filter.JwtAuthenticationParser;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.zbutwialypiernik.flixage.filter.JwtAuthenticationFilter.TOKEN_PREFIX;
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.mockMvc;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +38,8 @@ public abstract class IntegrationTestWithPrincipal {
     public JwtAuthenticationToken token;
 
     public static final String TOKEN = "token";
+
+    public static final String TOKEN_HEADER = TOKEN_PREFIX + TOKEN;
 
     @BeforeEach
     void prepare() {

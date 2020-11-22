@@ -28,6 +28,9 @@ public class UserServiceTest {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    PlaylistService playlistService;
+
     @Spy
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -35,13 +38,13 @@ public class UserServiceTest {
 
     User user;
 
-    Clock clock = Clock.fixed(Instant.parse("2020-04-25T00:00:00.00Z"), ZoneId.of("UTC"));;
+    Clock clock = Clock.fixed(Instant.parse("2020-04-25T00:00:00.00Z"), ZoneId.of("UTC"));
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
-        userService = new UserService(userRepository, passwordEncoder, imageService);
+        userService = new UserService(userRepository, passwordEncoder, imageService, playlistService);
 
         user = new User();
         user.setId(UUID.randomUUID().toString());

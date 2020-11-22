@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.controller;
 
-import com.zbutwialypiernik.flixage.IntegrationTestWithPrincipal;
 import com.zbutwialypiernik.flixage.dto.mapper.DtoMappersConfiguration;
 import com.zbutwialypiernik.flixage.dto.playlist.IdsRequest;
 import com.zbutwialypiernik.flixage.dto.playlist.PlaylistRequest;
@@ -40,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Import(DtoMappersConfiguration.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class PlaylistControllerIT extends IntegrationTestWithPrincipal {
+class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
     @Autowired
     private PlaylistRepository playlistRepository;

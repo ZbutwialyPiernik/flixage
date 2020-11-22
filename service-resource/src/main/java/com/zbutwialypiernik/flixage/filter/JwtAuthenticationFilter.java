@@ -5,6 +5,7 @@ import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.handler.ExceptionResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +25,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     public static final String TOKEN_PREFIX = "Bearer ";
-    public static final String TOKEN_HEADER = HttpHeaders.AUTHORIZATION;
 
     private final JwtAuthenticationParser parser;
 
@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader(TOKEN_HEADER);
+        String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             filterChain.doFilter(request, response);

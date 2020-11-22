@@ -1,7 +1,7 @@
 package com.zbutwialypiernik.flixage.service;
 
-import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.User;
+import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ConflictException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.UserRepository;
@@ -19,11 +19,14 @@ public class UserService extends QueryableService<User> {
     private final UserRepository repository;
     private final PasswordEncoder encoder;
 
+    private final PlaylistService playlistService;
+
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder encoder, ImageFileService imageService) {
+    public UserService(UserRepository repository, PasswordEncoder encoder, ImageFileService imageService, PlaylistService playlistService) {
         super(repository, imageService);
         this.repository = repository;
         this.encoder = encoder;
+        this.playlistService = playlistService;
     }
 
     /**
@@ -112,8 +115,23 @@ public class UserService extends QueryableService<User> {
     }
 
     @Transactional
-    public void observePlaylist(User user, Playlist playlist) {
+    public void followPlaylist(String userId, String shareCode) {
+        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
+        final var user = findById(userId).orElseThrow(ResourceNotFoundException::new);
 
+        if (playlist.getOwner().equals(user)) {
+            throw new BadRequestException("User cannot follow his own playlist");
+        }
+
+        user.getObservedPlaylists().add(playlist);
+    }
+
+    @Transactional
+    public void unfollowPlaylist(String userId, String shareCode) {
+        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
+        final var user = findById(userId).orElseThrow(ResourceNotFoundException::new);
+
+        user.getObservedPlaylists().remove(playlist);
     }
 
 }

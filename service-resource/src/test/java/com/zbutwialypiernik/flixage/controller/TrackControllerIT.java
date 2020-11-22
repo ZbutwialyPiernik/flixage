@@ -1,6 +1,5 @@
 package com.zbutwialypiernik.flixage.controller;
 
-import com.zbutwialypiernik.flixage.IntegrationTestWithPrincipal;
 import com.zbutwialypiernik.flixage.entity.Artist;
 import com.zbutwialypiernik.flixage.entity.Track;
 import com.zbutwialypiernik.flixage.entity.TrackStreamId;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -31,10 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class TrackControllerIT extends IntegrationTestWithPrincipal {
-
-    @Autowired
-    private MockMvc mockMvc;
+class TrackControllerIT extends IntegrationTestWithPrincipal {
 
     @Autowired
     private TrackService trackService;
@@ -55,11 +50,6 @@ public class TrackControllerIT extends IntegrationTestWithPrincipal {
         audioFile.setDuration(Duration.ofSeconds(1234));
 
         return audioFile;
-    }
-
-    @BeforeEach
-    public void setup() {
-        mockMvc(mockMvc);
     }
 
     //------------------------------- RETRIEVING TRACK --------------------------------

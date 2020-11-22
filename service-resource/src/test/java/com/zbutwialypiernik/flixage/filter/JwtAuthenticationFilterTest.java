@@ -2,6 +2,8 @@ package com.zbutwialypiernik.flixage.filter;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.zbutwialypiernik.flixage.entity.Role;
+import org.apache.catalina.filters.HttpHeaderSecurityFilter;
+import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -50,7 +52,7 @@ public class JwtAuthenticationFilterTest {
      * @param expectedAuthentication null if user should not get authentication, else expected mocked value
      */
     public void test(String tokenWithPrefix, JwtAuthenticationToken expectedAuthentication) throws ServletException, IOException {
-        Mockito.when(request.getHeader(JwtAuthenticationFilter.TOKEN_HEADER)).thenReturn(tokenWithPrefix);
+        Mockito.when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(tokenWithPrefix);
 
         if (expectedAuthentication != null) {
             Mockito.when(parser.parseToken(Mockito.any())).thenReturn(expectedAuthentication);
