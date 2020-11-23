@@ -114,24 +114,6 @@ public class UserService extends QueryableService<User> {
         return repository.findByUsernameIgnoreCase(username);
     }
 
-    @Transactional
-    public void followPlaylist(String userId, String shareCode) {
-        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
-        final var user = findById(userId).orElseThrow(ResourceNotFoundException::new);
 
-        if (playlist.getOwner().equals(user)) {
-            throw new BadRequestException("User cannot follow his own playlist");
-        }
-
-        user.getObservedPlaylists().add(playlist);
-    }
-
-    @Transactional
-    public void unfollowPlaylist(String userId, String shareCode) {
-        final var playlist = playlistService.findByShareCode(shareCode).orElseThrow(ResourceNotFoundException::new);
-        final var user = findById(userId).orElseThrow(ResourceNotFoundException::new);
-
-        user.getObservedPlaylists().remove(playlist);
-    }
 
 }

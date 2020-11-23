@@ -12,8 +12,6 @@ public interface PlaylistRepository extends QueryableRepository<Playlist> {
 
     List<Playlist> findByOwnerId(String id);
 
-    boolean existsByShareCode(String shareCode);
-
-    Optional<Playlist> findByShareCode(String shareCode);
+    List<Playlist> findByFollowers_Id(String id);
 
 }

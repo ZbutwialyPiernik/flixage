@@ -154,6 +154,18 @@ public class PlaylistController extends QueryableController<Playlist, PlaylistRe
         playlistService.removeTracks(playlist, idsRequest.getIds());
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{id}/followers")
+    public void followPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable String id) {
+        playlistService.followPlaylist(userService.findById(principal.getId()).orElseThrow(BadRequestException::new), id);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}/followers")
+    public void unfollowPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable String id) {
+        playlistService.unfollowPlaylist(userService.findById(principal.getId()).orElseThrow(BadRequestException::new), id);
+    }
+
     private boolean isNotOwner(AbstractAuthentication authentication, Playlist playlist) {
         return !playlist.getOwner().getId().equals(authentication.getId());
     }

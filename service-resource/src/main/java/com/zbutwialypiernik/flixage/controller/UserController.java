@@ -13,25 +13,19 @@ import com.zbutwialypiernik.flixage.exception.AuthenticationException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.security.AbstractAuthentication;
 import com.zbutwialypiernik.flixage.service.PlaylistService;
-import com.zbutwialypiernik.flixage.service.ShareCodeGenerator;
 import com.zbutwialypiernik.flixage.service.TrackStreamService;
 import com.zbutwialypiernik.flixage.service.UserService;
 import ma.glasnost.orika.BoundMapperFacade;
 import ma.glasnost.orika.MapperFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 public class UserController extends QueryableController<User, UserResponse> {
-
-    private static final String SHARE_CODE_REGEX = "[" + ShareCodeGenerator.ALPHABET + "]{6}";
 
     private final PlaylistService playlistService;
     private final UserService userService;
@@ -92,23 +86,10 @@ public class UserController extends QueryableController<User, UserResponse> {
 
     @GetMapping("/me/followedPlaylists")
     public List<PlaylistResponse> getFollowedPlaylists(@AuthenticationPrincipal AbstractAuthentication principal) {
-        final var user = userService.findById(principal.getId()).orElseThrow(ResourceNotFoundException::new);
-
-        return user.getObservedPlaylists().stream()
+        return playlistService.findFollowedPlaylists(principal.getId())
+                .stream()
                 .map(playlistMapper::map)
                 .collect(Collectors.toList());
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/me/followedPlaylists/{shareCode}")
-    public void followPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
-        userService.followPlaylist(principal.getId(), shareCode);
-    }
-
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/me/followedPlaylists/{shareCode}")
-    public void unfollowPlaylist(@AuthenticationPrincipal AbstractAuthentication principal, @PathVariable @Valid @Pattern(regexp = SHARE_CODE_REGEX) String shareCode) {
-        userService.unfollowPlaylist(principal.getId(), shareCode);
     }
 
 }

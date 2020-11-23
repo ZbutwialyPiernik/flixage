@@ -2,10 +2,10 @@ package com.zbutwialypiernik.flixage.service;
 
 import com.zbutwialypiernik.flixage.entity.Playlist;
 import com.zbutwialypiernik.flixage.entity.Track;
+import com.zbutwialypiernik.flixage.entity.User;
 import com.zbutwialypiernik.flixage.exception.BadRequestException;
 import com.zbutwialypiernik.flixage.exception.ResourceNotFoundException;
 import com.zbutwialypiernik.flixage.repository.PlaylistRepository;
-import com.zbutwialypiernik.flixage.repository.QueryableRepository;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageFileService;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,15 +25,6 @@ public class PlaylistService extends QueryableService<Playlist> {
     public PlaylistService(PlaylistRepository repository, TrackService trackService, ImageFileService thumbnailService) {
         super(repository, thumbnailService);
         this.trackService = trackService;
-    }
-
-    @Override
-    public Playlist create(Playlist entity) {
-        do {
-            entity.setShareCode(ShareCodeGenerator.generateCode(Playlist.SHARE_CODE_LENGTH));
-        } while (getRepository().existsByShareCode(entity.getShareCode()));
-
-        return super.create(entity);
     }
 
     public List<Playlist> findByUserId(String id) {
@@ -63,17 +53,6 @@ public class PlaylistService extends QueryableService<Playlist> {
     }
 
     /**
-     * Finds playlist by shareCode
-     *
-     * @throws ResourceNotFoundException when playlist with given id doesn't exists
-     *
-     * @param shareCode
-     */
-    public Optional<Playlist> findByShareCode(String shareCode) {
-        return getRepository().findByShareCode(shareCode);
-    }
-
-    /**
      * Removes tracks from playlist by id
      *
      * @throws BadRequestException when playlist does not contain given track
@@ -93,8 +72,35 @@ public class PlaylistService extends QueryableService<Playlist> {
         }
     }
 
+    @Transactional
+    public void followPlaylist(User user, String playlistId) {
+        final var playlist = findById(playlistId).orElseThrow(ResourceNotFoundException::new);
+
+        if (playlist.getOwner().equals(user)) {
+            throw new BadRequestException("User cannot follow his own playlist");
+        }
+
+        playlist.getFollowers().add(user);
+    }
+
+    @Transactional
+    public void unfollowPlaylist(User user, String playlistId) {
+        final var playlist = findById(playlistId).orElseThrow(ResourceNotFoundException::new);
+
+        if (playlist.getOwner().equals(user)) {
+            throw new BadRequestException("User cannot follow his own playlist");
+        }
+
+        playlist.getFollowers().remove(user);
+    }
+
+    public List<Playlist> findFollowedPlaylists(String userId) {
+        return getRepository().findByFollowers_Id(userId);
+    }
+
     @Override
     protected PlaylistRepository getRepository() {
         return (PlaylistRepository) super.getRepository();
     }
+
 }

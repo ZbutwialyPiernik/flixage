@@ -14,6 +14,7 @@ import com.zbutwialypiernik.flixage.service.TrackService;
 import com.zbutwialypiernik.flixage.service.resource.image.ImageResource;
 import io.restassured.http.ContentType;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -299,7 +300,7 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         // @formatter:on
     }
 
-    //------------------------------- ADDING TRACK FROM PLAYLIST --------------------------------
+    //------------------------------- ADDING TRACK TO PLAYLIST --------------------------------
 
     @Test
     @Transactional
@@ -583,6 +584,188 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         var thumbnail = playlistRepository.getOne(playlist.getId()).getThumbnail();
 
         assertNull(thumbnail);
+    }
+
+    //------------------------------- FOLLOWING PLAYLIST --------------------------------
+
+    @Test
+    @Transactional
+    void should_follow_playlist_if_user_is_logged_and_playlist_does_exists_and_user_is_not_owner() {
+        var playlist = new Playlist();
+        playlist.setName("playlist");
+        playlist.setOwner(otherUser);
+        playlist = playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+                .contentType(ContentType.JSON)
+                .when()
+                .put("/playlists/" + playlist.getId() + "/followers")
+                .then()
+                .status(HttpStatus.OK);
+        // @formatter:on
+
+        final var followers = playlistService.findById(playlist.getId()).get().getFollowers();
+
+        Assertions.assertEquals( 1, followers.size());
+        Assertions.assertTrue(followers.contains(user));
+    }
+
+    @Test
+    @Transactional
+    void should_not_follow_playlist_if_user_is_logged_and_playlist_does_not_exists() {
+        final var id = UUID.randomUUID().toString();
+
+        // @formatter:off
+        given()
+                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+                .contentType(ContentType.JSON)
+                .when()
+                .put("/playlists/" + id + "/followers")
+                .then()
+                .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
+
+        Assertions.assertTrue(playlistService.findById(id).isEmpty());
+    }
+
+    @Test
+    @Transactional
+    void should_not_follow_playlist_if_user_has_no_authentication() {
+        var playlist = new Playlist();
+        playlist.setName("playlist");
+        playlist.setOwner(user);
+        playlist = playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .put("/playlists/" + playlist.getId() +  "/followers")
+                .then()
+                .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+
+        Assertions.assertEquals( 0, playlistService.findById(playlist.getId()).get().getFollowers().size());
+    }
+
+    @Test
+    @Transactional
+    void should_not_follow_playlist_if_user_is_owner_of_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("playlist");
+        playlist.setOwner(user);
+        playlist = playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+                .contentType(ContentType.JSON)
+                .when()
+                .put("/playlists/" + playlist.getId() + "/followers")
+                .then()
+                .status(HttpStatus.BAD_REQUEST);
+        // @formatter:on
+
+        Assertions.assertEquals( 0, playlistService.findById(playlist.getId()).get().getFollowers().size());
+    }
+
+    //------------------------------- UNFOLLOWING PLAYLIST --------------------------------
+
+    @Test
+    @Transactional
+    void should_unfollow_playlist_if_user_has_observed_playlist() {
+        var playlist = new Playlist();
+        playlist.setName("playlist");
+        playlist.setOwner(otherUser);
+        playlist.getFollowers().add(user);
+        playlist = playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/playlists/" + playlist.getId() +  "/followers")
+                .then()
+                .status(HttpStatus.NO_CONTENT);
+        // @formatter:on
+
+        final var followers = playlistService.findById(playlist.getId()).get().getFollowers();
+
+        Assertions.assertEquals( 0, followers.size());
+        Assertions.assertFalse(followers.contains(user));
+    }
+
+    @Test
+    @Transactional
+    void should_not_unfollow_playlist_if_user_has_not_observed_playlists() {
+        var playlist = new Playlist();
+        playlist.setName("playlist");
+        playlist.setOwner(otherUser);
+        playlist = playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/playlists/" + playlist.getId() +  "/followers")
+                .then()
+                .status(HttpStatus.NO_CONTENT);
+        // @formatter:on
+
+        Assertions.assertEquals( 0, playlistService.findById(playlist.getId()).get().getFollowers().size());
+    }
+
+    @Test
+    @Transactional
+    void should_not_unfollow_playlist_if_playlist_has_different_id() {
+        var playlist = new Playlist();
+        playlist.setName("playlist");
+        playlist.setOwner(otherUser);
+        playlist.getFollowers().add(user);
+        playlist = playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/playlists/" + UUID.randomUUID() +  "/followers")
+                .then()
+                .status(HttpStatus.NOT_FOUND);
+        // @formatter:on
+
+        final var followers = playlistService.findById(playlist.getId()).get().getFollowers();
+
+        Assertions.assertEquals( 1, followers.size());
+        Assertions.assertTrue(followers.contains(user));
+    }
+
+    @Test
+    @Transactional
+    void should_not_unfollow_playlist_if_user_is_not_logged() {
+        var playlist = new Playlist();
+        playlist.setName("playlist");
+        playlist.setOwner(otherUser);
+        playlist.getFollowers().add(user);
+        playlist = playlistService.create(playlist);
+
+        // @formatter:off
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/users/me/followedPlaylists/" + playlist.getId())
+                .then()
+                .status(HttpStatus.FORBIDDEN);
+        // @formatter:on
+
+        final var followers = playlistService.findById(playlist.getId()).get().getFollowers();
+
+        Assertions.assertEquals( 1, followers.size());
+        Assertions.assertTrue(followers.contains(user));
     }
 
 }

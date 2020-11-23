@@ -24,12 +24,6 @@ public class User extends Queryable implements UserDetails {
     @Column(nullable = false, length = 60)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Set<Playlist> observedPlaylists = new HashSet<>();
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Set<Track> savedTracks = new HashSet<>();
-
     @Column(nullable = false)
     private boolean enabled = true;
 

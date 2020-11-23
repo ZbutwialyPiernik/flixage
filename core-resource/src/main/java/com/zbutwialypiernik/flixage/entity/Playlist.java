@@ -7,7 +7,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,7 +18,6 @@ import java.util.List;
 @Entity
 public class Playlist extends Queryable {
 
-    public static final int SHARE_CODE_LENGTH = 6;
 
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Track> tracks = new ArrayList<>();
@@ -24,7 +25,8 @@ public class Playlist extends Queryable {
     @ManyToOne(optional = false)
     private User owner;
 
-    @Column(length = SHARE_CODE_LENGTH, updatable = false, unique = true)
-    private String shareCode;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<User> followers = new HashSet<>();
+
 
 }
