@@ -111,7 +111,6 @@ create table refresh_token (
     primary key (id)
 );
 
-alter table playlist add constraint UNIQUE_PLAYLIST_SHARE_CODE unique (share_code);
 alter table user add constraint UNIQUE_USER_USERNAME unique (username);
 alter table album add constraint FK_ALBUM_THUMBNAIL_ID foreign key (thumbnail_id) references image_file (id);
 alter table album add constraint FK_ALBUM_ARTIST_ID foreign key (artist_id) references artist (id);
