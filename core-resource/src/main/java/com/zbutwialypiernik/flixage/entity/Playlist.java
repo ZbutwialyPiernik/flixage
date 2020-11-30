@@ -18,15 +18,13 @@ import java.util.Set;
 @Entity
 public class Playlist extends Queryable {
 
-
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Track> tracks = new ArrayList<>();
 
     @ManyToOne(optional = false)
     private User owner;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private Set<User> followers = new HashSet<>();
-
 
 }
