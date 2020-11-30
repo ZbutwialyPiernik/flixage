@@ -19,14 +19,11 @@ public class UserService extends QueryableService<User> {
     private final UserRepository repository;
     private final PasswordEncoder encoder;
 
-    private final PlaylistService playlistService;
-
     @Autowired
-    public UserService(UserRepository repository, PasswordEncoder encoder, ImageFileService imageService, PlaylistService playlistService) {
+    public UserService(UserRepository repository, PasswordEncoder encoder, ImageFileService imageService) {
         super(repository, imageService);
         this.repository = repository;
         this.encoder = encoder;
-        this.playlistService = playlistService;
     }
 
     /**
