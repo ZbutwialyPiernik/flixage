@@ -548,12 +548,14 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         var mockMultipartFile = new MockMultipartFile("file","test_thumbnail.png", MediaType.IMAGE_JPEG_VALUE,
                 new byte[(int) (ImageResource.MAX_FILE_SIZE - FileUtils.ONE_MB)]);
 
+        // @formatter:off
         mockMvc.perform(
                 multipart("/playlists/" + playlist.getId() + "/thumbnail")
                         .file(mockMultipartFile)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.IMAGE_JPEG))
                 .andExpect(status().isForbidden());
+        // @formatter:on
 
         var thumbnail = playlistRepository.getOne(playlist.getId()).getThumbnail();
 
@@ -574,12 +576,14 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
         var mockMultipartFile = new MockMultipartFile("file","thumbnail.png", MediaType.IMAGE_JPEG_VALUE,
                 new byte[(int) (ImageResource.MAX_FILE_SIZE + FileUtils.ONE_MB)]);
 
+        // @formatter:off
         mockMvc.perform(
                 multipart("/playlists/" + playlist.getId() + "/thumbnail")
                         .file(mockMultipartFile)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer token")
                         .contentType(MediaType.IMAGE_JPEG))
                 .andExpect(status().isPayloadTooLarge());
+        // @formatter:on
 
         var thumbnail = playlistRepository.getOne(playlist.getId()).getThumbnail();
 
@@ -598,12 +602,12 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + playlist.getId() + "/followers")
-                .then()
-                .status(HttpStatus.OK);
+            .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + playlist.getId() + "/followers")
+        .then()
+            .status(HttpStatus.OK);
         // @formatter:on
 
         final var followers = playlistService.findById(playlist.getId()).get().getFollowers();
@@ -619,12 +623,12 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + id + "/followers")
-                .then()
-                .status(HttpStatus.NOT_FOUND);
+            .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + id + "/followers")
+        .then()
+            .status(HttpStatus.NOT_FOUND);
         // @formatter:on
 
         Assertions.assertTrue(playlistService.findById(id).isEmpty());
@@ -640,11 +644,11 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + playlist.getId() +  "/followers")
-                .then()
-                .status(HttpStatus.FORBIDDEN);
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + playlist.getId() +  "/followers")
+        .then()
+            .status(HttpStatus.FORBIDDEN);
         // @formatter:on
 
         Assertions.assertEquals( 0, playlistService.findById(playlist.getId()).get().getFollowers().size());
@@ -660,12 +664,12 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
-                .contentType(ContentType.JSON)
-                .when()
-                .put("/playlists/" + playlist.getId() + "/followers")
-                .then()
-                .status(HttpStatus.BAD_REQUEST);
+            .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+            .contentType(ContentType.JSON)
+        .when()
+            .put("/playlists/" + playlist.getId() + "/followers")
+        .then()
+            .status(HttpStatus.BAD_REQUEST);
         // @formatter:on
 
         Assertions.assertEquals( 0, playlistService.findById(playlist.getId()).get().getFollowers().size());
@@ -684,12 +688,12 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/playlists/" + playlist.getId() +  "/followers")
-                .then()
-                .status(HttpStatus.NO_CONTENT);
+            .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/playlists/" + playlist.getId() +  "/followers")
+        .then()
+            .status(HttpStatus.NO_CONTENT);
         // @formatter:on
 
         final var followers = playlistService.findById(playlist.getId()).get().getFollowers();
@@ -708,12 +712,12 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/playlists/" + playlist.getId() +  "/followers")
-                .then()
-                .status(HttpStatus.NO_CONTENT);
+            .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/playlists/" + playlist.getId() +  "/followers")
+        .then()
+            .status(HttpStatus.NO_CONTENT);
         // @formatter:on
 
         Assertions.assertEquals( 0, playlistService.findById(playlist.getId()).get().getFollowers().size());
@@ -730,12 +734,12 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/playlists/" + UUID.randomUUID() +  "/followers")
-                .then()
-                .status(HttpStatus.NOT_FOUND);
+            .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER)
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/playlists/" + UUID.randomUUID() +  "/followers")
+        .then()
+            .status(HttpStatus.NOT_FOUND);
         // @formatter:on
 
         final var followers = playlistService.findById(playlist.getId()).get().getFollowers();
@@ -755,11 +759,11 @@ class PlaylistControllerIT extends IntegrationTestWithPrincipal {
 
         // @formatter:off
         given()
-                .contentType(ContentType.JSON)
-                .when()
-                .delete("/users/me/followedPlaylists/" + playlist.getId())
-                .then()
-                .status(HttpStatus.FORBIDDEN);
+            .contentType(ContentType.JSON)
+        .when()
+            .delete("/users/me/followedPlaylists/" + playlist.getId())
+        .then()
+            .status(HttpStatus.FORBIDDEN);
         // @formatter:on
 
         final var followers = playlistService.findById(playlist.getId()).get().getFollowers();

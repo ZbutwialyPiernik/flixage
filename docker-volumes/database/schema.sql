@@ -112,6 +112,7 @@ create table refresh_token (
 );
 
 alter table user add constraint UNIQUE_USER_USERNAME unique (username);
+alter table user add constraint FK_USER_THUMBNAIL_ID foreign key (thumbnail_id) references image_file (id);
 alter table album add constraint FK_ALBUM_THUMBNAIL_ID foreign key (thumbnail_id) references image_file (id);
 alter table album add constraint FK_ALBUM_ARTIST_ID foreign key (artist_id) references artist (id);
 alter table artist add constraint FK_ARTIST_THUMBNAIL_ID foreign key (thumbnail_id) references image_file (id);
@@ -123,7 +124,6 @@ alter table track add constraint FK_TRACK_THUMBNAIL_ID foreign key (thumbnail_id
 alter table track add constraint FK_TRACK_ALBUM_ID foreign key (album_id) references album (id);
 alter table track add constraint FK_TRACK_ARTIST_ID foreign key (artist_id) references artist (id);
 alter table track add constraint FK_TRACK_AUDIO_FILE_ID foreign key (audio_file_id) references audio_file (id);
-alter table user add constraint FK_USER_THUMBNAIL_ID foreign key (thumbnail_id) references image_file (id);
 alter table playlist_followers add constraint FK_PLAYLIST_PLAYLIST_FOLLOWERS_PLAYLIST_ID foreign key (playlist_id) references playlist (id);
 alter table playlist_followers add constraint FK_PLAYLIST_PLAYLIST_FOLLOWERS_USER_ID foreign key (followers_id) references user (id);
 alter table refresh_token add constraint FK_REFRESH_TOKEN_USER_ID foreign key (user_id) references user (id);
